@@ -178,8 +178,8 @@
   </h1>
   
   <article class="passage-article">
-    <p>通过GitHub创建一个仓库github.io结合HEXO就能快速搭建一个能够访问的博客站点。Hexo是一个<br>快速上手，简单高效，支持多种主题的博客系统。通过Hexo创建文章后，再用Markdown语法对文章进行编辑，<br>后发布到github.io仓库，即可访问该文章。</p>
-<h3 id="Step-One-创建-io仓库"><a href="#Step-One-创建-io仓库" class="headerlink" title="Step One:创建.io仓库"></a>Step One:创建.io仓库</h3><p>1.New repository</p>
+    <h2 id="Hexo简介"><a href="#Hexo简介" class="headerlink" title="Hexo简介"></a>Hexo简介</h2><p>通过GitHub创建一个仓库github.io结合HEXO就能快速搭建一个能够访问的博客站点。Hexo是一个<br>快速上手，简单高效，支持多种主题的博客系统（基于Node.js）。通过Hexo创建文章后，再用Markdown语法对文章进行编辑，<br>后发布到github.io仓库，即可访问该文章。</p>
+<h2 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h2><h3 id="Step-One-创建-io仓库"><a href="#Step-One-创建-io仓库" class="headerlink" title="Step One:创建.io仓库"></a>Step One:创建.io仓库</h3><p>1.New repository</p>
 <p>2.在Repository name输入框，必需为YourUserName.github.io格式。YourUserName替换为你的用户名</p>
 <p>3.Create repository</p>
 <p>4.进入仓库YourUserName.github.io,点击setting,找到GitHub Pages模块</p>
@@ -204,8 +204,15 @@
 <blockquote>
 <p>hexo clean<br>hexo generate (也可以用hexo g)<br>hexo deploy (也可以用hexo d)</p>
 </blockquote>
-<p>4:验证是否成功关联，打开<a href="http://YourUserName.github.io" target="_blank" rel="noopener">http://YourUserName.github.io</a></p>
-<h3 id="Step-Six-创建和发布文章"><a href="#Step-Six-创建和发布文章" class="headerlink" title="Step Six:创建和发布文章"></a>Step Six:创建和发布文章</h3><p>1.进入blog目录后，使用hexo new “文章标题”指令，创建MD文件<br>2.在blog/source/_posts中可以看到刚刚创建的MD文件，用编辑器打开(也可以用有道云笔记打开，现在支持Md语法了)<br>3.编辑后保存，执行hexo d -g发布文章</p>
+<p>4:验证是否成功关联，打开<code>http://YourUserName.github.io</code></p>
+<h3 id="Step-Six-创建和发布文章"><a href="#Step-Six-创建和发布文章" class="headerlink" title="Step Six:创建和发布文章"></a>Step Six:创建和发布文章</h3><p>1.进入blog目录后，使用hexo new “文章标题”指令，创建MD文件<br>2.在<code>/source/_posts</code>中可以看到刚刚创建的MD文件，用编辑器打开(也可以用有道云笔记打开，现在支持Md语法了)<br>3.编辑后保存，执行<code>hexo d -g</code>发布文章,首次使用会要求输入git账号信息</p>
+<h2 id="其他技巧"><a href="#其他技巧" class="headerlink" title="其他技巧"></a>其他技巧</h2><h3 id="如何给文章引入图片"><a href="#如何给文章引入图片" class="headerlink" title="如何给文章引入图片"></a>如何给文章引入图片</h3><p>背景：默认无法自动处理文章插入本地图片，需要通过扩展插件支持。</p>
+<p>1:_config.yml里面的post_asset_folde选项设置为true。</p>
+<p>2:安装插件hexo-asset-image，安装以后 hexo n “YourPost”指令在生成MD文件的同时会生成一个名字与MD文件相同的文件夹，将本地图片放置在此，然后在文章通过格式 <code>![xxx](xxx/xxx.png)</code> 引入图片即可。</p>
+<blockquote>
+<p>npm install <a href="https://github.com/7ym0n/hexo-asset-image" target="_blank" rel="noopener">https://github.com/7ym0n/hexo-asset-image</a> –save</p>
+</blockquote>
+<h3 id="更换电脑了，如何迁移文章"><a href="#更换电脑了，如何迁移文章" class="headerlink" title="更换电脑了，如何迁移文章"></a>更换电脑了，如何迁移文章</h3><p>背景：程序员经常都会换生产工具，需要对文章进行备份<br>解决这个问题很简单，只要把原有的_post文件夹里的内容完整copy到新机子Hexo对应的_post下即可。</p>
 <h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://hexo.io/zh-cn/docs/commands" target="_blank" rel="noopener">https://hexo.io/zh-cn/docs/commands</a></p>
 
   </article>
@@ -215,7 +222,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-One-创建-io仓库"><span class="toc-text">Step One:创建.io仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Two-安装Git"><span class="toc-text">Step Two:安装Git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Three-安装Node-Js和Hexo"><span class="toc-text">Step Three:安装Node.Js和Hexo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Four-创建本地博客站点"><span class="toc-text">Step Four:创建本地博客站点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Five-本地Hexo关联Github"><span class="toc-text">Step Five:本地Hexo关联Github</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Six-创建和发布文章"><span class="toc-text">Step Six:创建和发布文章</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文献"><span class="toc-text">参考文献</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hexo简介"><span class="toc-text">Hexo简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#快速入门"><span class="toc-text">快速入门</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-One-创建-io仓库"><span class="toc-text">Step One:创建.io仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Two-安装Git"><span class="toc-text">Step Two:安装Git</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Three-安装Node-Js和Hexo"><span class="toc-text">Step Three:安装Node.Js和Hexo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Four-创建本地博客站点"><span class="toc-text">Step Four:创建本地博客站点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Five-本地Hexo关联Github"><span class="toc-text">Step Five:本地Hexo关联Github</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Step-Six-创建和发布文章"><span class="toc-text">Step Six:创建和发布文章</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其他技巧"><span class="toc-text">其他技巧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何给文章引入图片"><span class="toc-text">如何给文章引入图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更换电脑了，如何迁移文章"><span class="toc-text">更换电脑了，如何迁移文章</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#参考文献"><span class="toc-text">参考文献</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
