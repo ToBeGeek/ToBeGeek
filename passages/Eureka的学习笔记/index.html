@@ -175,11 +175,11 @@
   
   <article class="passage-article">
     <p>“Eureka”来自古希腊词汇，意思是“发现了！”，不得不佩服老外取名字，真有趣！！</p>
-<h3 id="为什么用Eureka"><a href="#为什么用Eureka" class="headerlink" title="为什么用Eureka"></a>为什么用Eureka</h3><p><img src="Eureka%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83.jpg" alt="软负载中心"></p>
+<h3 id="为什么用Eureka"><a href="#为什么用Eureka" class="headerlink" title="为什么用Eureka"></a>为什么用Eureka</h3><p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83.jpg" alt="软负载中心"></p>
 <p>Eureka的本质就是分布式系统中的软负载中心。在分布式系统中，总会存在服务提供者与服务调用者的节点。<br>服务调用者消费服务的时候，必然需要知道提供者所提供服务的IP,Port等信息。软负载中心能够将这些地址信息聚合，<br>且提供服务上下线状态感知。</p>
 <p>如果不通过软负载中心获取调用服务所需的信息，一切将变得灰常麻烦！举个例子，服务调用者1不得不在代码中写死服务提供者A的<br>信息，随着系统的演变这类信息的出现会变得越来越难维护，很可能服务迁移到其他服务器上的是时候多处代码都不得不调整！还有<br>一个诟病，就是IP是不友好的字符串，人们会记住<a href="http://www.baidu.com而不会记住百度的IP地址。" target="_blank" rel="noopener">www.baidu.com而不会记住百度的IP地址。</a></p>
 <p>因此Eureaka，能够通过服务名称来映射对应的地址集合！当服务注册到Eureka-service时，会将自己的服务名和IP地址等信息通过<br>RestFul API形式提交给服务注册中心(Eureka-service)，消费者服务在向注册中心注册的时候也会获取一份服务注册列表信息，消<br>费者通过这份信息上的服务名称既可以找到需要调用的服务地址！此外，Eureka可以和Ribbon结合使用，通过一定策略来进行负载均衡。</p>
-<p><img src="Eureka%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Eureka-Service.jpg" alt="avatar"></p>
+<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/Eureka-Service.jpg" alt="avatar"></p>
 <h3 id="快速搭建Eureka服务"><a href="#快速搭建Eureka服务" class="headerlink" title="快速搭建Eureka服务"></a>快速搭建Eureka服务</h3><p>1：引入Eureka-Server的Maven依赖</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--引入Eureka-Server的Maven依赖--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
