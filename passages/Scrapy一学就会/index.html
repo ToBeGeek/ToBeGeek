@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>Eureka的学习笔记 | 道·术</title>
+  <title>Scrapy一学就会 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, Theme-AD">
+    <meta name="keywords" content="Python,爬虫,Python,">
   
 
   
@@ -160,8 +160,12 @@
   <div class="passage">
   <div class="passage-meta">
     <span>
-      <i class="fa fa-calendar"></i>2019-04-06
+      <i class="fa fa-calendar"></i>2019-09-09
     </span>
+    
+      <span>
+        | <a href="/categories/Python/"><i class="fa fa-bookmark"></i>Python</a>
+      </span>
     
     
       <span>
@@ -170,26 +174,39 @@
     
   </div>
   <h1 class="passage-title">
-    Eureka的学习笔记
+    Scrapy一学就会
   </h1>
   
   <article class="passage-article">
-    <p>“Eureka”来自古希腊词汇，意思是“发现了！”，不得不佩服老外取名字，真有趣！！</p>
-<h3 id="为什么用Eureka"><a href="#为什么用Eureka" class="headerlink" title="为什么用Eureka"></a>为什么用Eureka</h3><p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83.jpg" alt="软负载中心"></p>
-<p>Eureka的本质就是分布式系统中的软负载中心。在分布式系统中，总会存在服务提供者与服务调用者的节点。<br>服务调用者消费服务的时候，必然需要知道提供者所提供服务的IP,Port等信息。软负载中心能够将这些地址信息聚合，<br>且提供服务上下线状态感知。</p>
-<p>如果不通过软负载中心获取调用服务所需的信息，一切将变得灰常麻烦！举个例子，服务调用者1不得不在代码中写死服务提供者A的<br>信息，随着系统的演变这类信息的出现会变得越来越难维护，很可能服务迁移到其他服务器上的是时候多处代码都不得不调整！还有<br>一个诟病，就是IP是不友好的字符串，人们会记住<a href="http://www.baidu.com而不会记住百度的IP地址。" target="_blank" rel="noopener">www.baidu.com而不会记住百度的IP地址。</a></p>
-<p>因此Eureaka，能够通过服务名称来映射对应的地址集合！当服务注册到Eureka-service时，会将自己的服务名和IP地址等信息通过<br>RestFul API形式提交给服务注册中心(Eureka-service)，消费者服务在向注册中心注册的时候也会获取一份服务注册列表信息，消<br>费者通过这份信息上的服务名称既可以找到需要调用的服务地址！此外，Eureka可以和Ribbon结合使用，通过一定策略来进行负载均衡。</p>
-<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/Eureka-Service.jpg" alt="avatar"></p>
-<h3 id="快速搭建Eureka服务"><a href="#快速搭建Eureka服务" class="headerlink" title="快速搭建Eureka服务"></a>快速搭建Eureka服务</h3><p>1：引入Eureka-Server的Maven依赖</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--引入Eureka-Server的Maven依赖--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+    <p>这大半年来因为工作的需要开始接触到一些大数据相关的开发技术(数仓建设，ETL，爬虫..)，故而想对其中的爬虫技术做一个简单的总结，亦作为公司小伙伴们学习分享的入门实践资料。</p>
+<p>本文将以如下形式展开讲述：</p>
+<!-- TOC -->
 
-<p>2：编写对应的配置文件，YAML文件</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8761</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">eurka-server</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#在默认情况下，Eureka-Server会向自己注册，将registerWithEureka、fetchRegistry设置为false防止自己注册自己</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">localhost</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    registerWithEureka:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    fetchRegistry:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://$&#123;eureka.instance.hostname&#125;:$&#123;server.port&#125;/eureka/</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><a href="#scrapy框架介绍">Scrapy框架介绍</a><ul>
+<li><a href="#什么是scrapy框架">什么是Scrapy框架</a></li>
+<li><a href="#scrapy的体系结构概述">Scrapy的体系结构概述</a></li>
+<li><a href="#一定要了解的基础概念itemspiderpipeline">一定要了解的基础概念(item,spider,pipeline)</a></li>
+</ul>
+</li>
+<li><a href="#快速入门demo示例">快速入门，Demo示例</a><ul>
+<li><a href="#安装指南">安装指南</a></li>
+<li><a href="#通过scrapy快速构建项目工程">通过Scrapy快速构建项目工程</a></li>
+<li><a href="#对目标数据进行建模定义item">对目标数据进行建模(定义item)</a></li>
+<li><a href="#分析以及编写对应的爬取策略编写spider">分析以及编写对应的爬取策略(编写spider)</a></li>
+<li><a href="#加工处理采集的数据pipeline中加工采集数据">加工处理采集的数据(pipeline中加工采集数据)</a></li>
+</ul>
+</li>
+<li><a href="#其他">其他</a><ul>
+<li><a href="#settingspy文件解析">settings.py文件解析</a></li>
+<li><a href="#scrapy中如何输出日志信息">Scrapy中如何输出日志信息</a></li>
+<li><a href="#如何避免被ban掉">如何避免被Ban掉</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
 
-<p>3：编写springboot工程启动的Application类@SpringBootApplication</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//没有这个注解服务无法正常使用</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EurekaServerApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run( EurekaServerApplication.class, args );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<h3 id="1-Scrapy框架介绍"><a href="#1-Scrapy框架介绍" class="headerlink" title="..1. Scrapy框架介绍"></a>..1. Scrapy框架介绍</h3><h4 id="1-1-什么是Scrapy框架"><a href="#1-1-什么是Scrapy框架" class="headerlink" title="..1.1. 什么是Scrapy框架"></a>..1.1. 什么是Scrapy框架</h4><h4 id="1-2-Scrapy的体系结构概述"><a href="#1-2-Scrapy的体系结构概述" class="headerlink" title="..1.2. Scrapy的体系结构概述"></a>..1.2. Scrapy的体系结构概述</h4><h4 id="1-3-一定要了解的基础概念-item-spider-pipeline"><a href="#1-3-一定要了解的基础概念-item-spider-pipeline" class="headerlink" title="..1.3. 一定要了解的基础概念(item,spider,pipeline)"></a>..1.3. 一定要了解的基础概念(item,spider,pipeline)</h4><h3 id="2-快速入门，Demo示例"><a href="#2-快速入门，Demo示例" class="headerlink" title="..2. 快速入门，Demo示例"></a>..2. 快速入门，Demo示例</h3><h4 id="2-1-安装指南"><a href="#2-1-安装指南" class="headerlink" title="..2.1. 安装指南"></a>..2.1. 安装指南</h4><h4 id="2-2-通过Scrapy快速构建项目工程"><a href="#2-2-通过Scrapy快速构建项目工程" class="headerlink" title="..2.2. 通过Scrapy快速构建项目工程"></a>..2.2. 通过Scrapy快速构建项目工程</h4><h4 id="2-3-对目标数据进行建模-定义item"><a href="#2-3-对目标数据进行建模-定义item" class="headerlink" title="..2.3. 对目标数据进行建模(定义item)"></a>..2.3. 对目标数据进行建模(定义item)</h4><h4 id="2-4-分析以及编写对应的爬取策略-编写spider"><a href="#2-4-分析以及编写对应的爬取策略-编写spider" class="headerlink" title="..2.4. 分析以及编写对应的爬取策略(编写spider)"></a>..2.4. 分析以及编写对应的爬取策略(编写spider)</h4><h4 id="2-5-加工处理采集的数据-pipeline中加工采集数据"><a href="#2-5-加工处理采集的数据-pipeline中加工采集数据" class="headerlink" title="..2.5. 加工处理采集的数据(pipeline中加工采集数据)"></a>..2.5. 加工处理采集的数据(pipeline中加工采集数据)</h4><h3 id="3-其他"><a href="#3-其他" class="headerlink" title="..3. 其他"></a>..3. 其他</h3><h4 id="3-1-settings-py文件解析"><a href="#3-1-settings-py文件解析" class="headerlink" title="..3.1. settings.py文件解析"></a>..3.1. settings.py文件解析</h4><h4 id="3-2-Scrapy中如何输出日志信息"><a href="#3-2-Scrapy中如何输出日志信息" class="headerlink" title="..3.2. Scrapy中如何输出日志信息"></a>..3.2. Scrapy中如何输出日志信息</h4><h4 id="3-3-如何避免被Ban掉"><a href="#3-3-如何避免被Ban掉" class="headerlink" title="..3.3. 如何避免被Ban掉"></a>..3.3. 如何避免被Ban掉</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -197,7 +214,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么用Eureka"><span class="toc-text">为什么用Eureka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建Eureka服务"><span class="toc-text">快速搭建Eureka服务</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Scrapy框架介绍"><span class="toc-text">..1. Scrapy框架介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-什么是Scrapy框架"><span class="toc-text">..1.1. 什么是Scrapy框架</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-Scrapy的体系结构概述"><span class="toc-text">..1.2. Scrapy的体系结构概述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-一定要了解的基础概念-item-spider-pipeline"><span class="toc-text">..1.3. 一定要了解的基础概念(item,spider,pipeline)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-快速入门，Demo示例"><span class="toc-text">..2. 快速入门，Demo示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-安装指南"><span class="toc-text">..2.1. 安装指南</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-通过Scrapy快速构建项目工程"><span class="toc-text">..2.2. 通过Scrapy快速构建项目工程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-对目标数据进行建模-定义item"><span class="toc-text">..2.3. 对目标数据进行建模(定义item)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-分析以及编写对应的爬取策略-编写spider"><span class="toc-text">..2.4. 分析以及编写对应的爬取策略(编写spider)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-加工处理采集的数据-pipeline中加工采集数据"><span class="toc-text">..2.5. 加工处理采集的数据(pipeline中加工采集数据)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-其他"><span class="toc-text">..3. 其他</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-settings-py文件解析"><span class="toc-text">..3.1. settings.py文件解析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-Scrapy中如何输出日志信息"><span class="toc-text">..3.2. Scrapy中如何输出日志信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-如何避免被Ban掉"><span class="toc-text">..3.3. 如何避免被Ban掉</span></a></li></ol></li></ol>
   </div>
 </aside>
   
@@ -206,7 +223,7 @@
       
         <div>
           原文链接: 
-          <a href="" target="_blank">http://tobegeek.github.io/passages/Eureka的学习笔记/</a>
+          <a href="" target="_blank">http://tobegeek.github.io/passages/Scrapy一学就会/</a>
         </div>
       
       <div>
@@ -214,6 +231,14 @@
       </div>
     </aside>
   
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/爬虫/"><i class="fa fa-tags"></i>爬虫</a>
+     
+      <a href="/tags/Python/"><i class="fa fa-tags"></i>Python</a>
+    
+    </div>
   
 </div>
 
@@ -303,10 +328,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/Scrapy一学就会/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/LRU、LFU、W-TinyLFU浅析优劣/" data-enable="true">
+    <a href="/passages/Eureka的学习笔记/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
