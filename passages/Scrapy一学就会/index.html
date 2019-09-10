@@ -219,8 +219,8 @@
 <p>ownloader Middlewares：下载中间件，该中间件是位于引擎和下载器之间的特定钩子。主要是对Downloader的输入数据进行预处理，输出数据进行后续加工</p>
 <h4 id="1-3-一定要了解的基础概念-item-spider-pipeline"><a href="#1-3-一定要了解的基础概念-item-spider-pipeline" class="headerlink" title="..1.3. 一定要了解的基础概念(item,spider,pipeline)"></a>..1.3. 一定要了解的基础概念(item,spider,pipeline)</h4><p>通过上个小节，可以发现item，spider，pipeline是高频出现的词汇。没错，这也是想要学会使用Scrapy不可不知的玩意。</p>
 <p>Item：<br>进行爬取的行为，本质上来说就是把可见的非结构数据源(通常是网页)中提取数据并进行结构化。既然是结构化，那么必然离不开数据结构，scrapy中的item即是该场景下的数据结构（如同面向对象开发中的类），item对象是用于收集所爬取的数据的简单容器。</p>
-<p>spider：spider是定义一个特定站点（或一组站点）抓取策略的类，主要负责执行具体策略去爬取数据，以及对响应信息中的非结构化数据进行提取（即获取item）。</p>
-<p>pipeline：spider获取的每一个item都会交由管道(pipeline)进行后续加工，其主要用途有如下所述。<br>1：清理 HTML 数据<br>2：验证爬取的数据(检查 item 包含某些字段)<br>3：数据查重<br>4：对清洗完后的数据进行持久化操作</p>
+<p>spider：<br>spider是定义一个特定站点（或一组站点）抓取策略的类，主要负责执行具体策略去爬取数据，以及对响应信息中的非结构化数据进行提取（即获取item）。</p>
+<p>pipeline：<br>spider获取的每一个item都会交由管道(pipeline)进行后续加工，其主要用途有如下所述。<br>1：清理 HTML 数据<br>2：验证爬取的数据(检查 item 包含某些字段)<br>3：数据查重<br>4：对清洗完后的数据进行持久化操作</p>
 <h3 id="2-快速入门，Demo示例"><a href="#2-快速入门，Demo示例" class="headerlink" title="..2. 快速入门，Demo示例"></a>..2. 快速入门，Demo示例</h3><p>爬虫开发步骤(小白版本，前提是所有工具都安装了)<br>Step One：通过scrapy框架的脚手架，快速搭建工程结构(指令：scrapy startproject YourProjectName )<br>Step Two：分析并且定义你所需要爬取的数据结构，编写item<br>Step Three：分析抓取策略，编写spider爬取数据，提取数据为item的具体逻辑<br>Finally：编写pipeline中的后续加工逻辑</p>
 <h4 id="2-1-安装指南"><a href="#2-1-安装指南" class="headerlink" title="..2.1. 安装指南"></a>..2.1. 安装指南</h4><p>1：安装Python(Scrapy要求的Python版本&gt;=2.7)，可以参考<a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1016959856222624" target="_blank" rel="noopener">廖雪峰-Python教程</a><br>2：通过pip工具安装Scrapy框架,pip install Scrapy</p>
 <h4 id="2-2-通过Scrapy快速构建项目工程"><a href="#2-2-通过Scrapy快速构建项目工程" class="headerlink" title="..2.2. 通过Scrapy快速构建项目工程"></a>..2.2. 通过Scrapy快速构建项目工程</h4><p>打开终端，进入想要生成工程文件夹的路径，通过</p>
