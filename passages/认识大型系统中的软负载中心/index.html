@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>Eureka的学习笔记 | 道·术</title>
+  <title>认识大型系统中的软负载中心 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="SpringCloud,spring cloud,分布式,">
+    <meta name="keywords" content="分布式系统,分布式,软负载中心,">
   
 
   
@@ -160,11 +160,11 @@
   <div class="passage">
   <div class="passage-meta">
     <span>
-      <i class="fa fa-calendar"></i>2019-04-06
+      <i class="fa fa-calendar"></i>2019-10-01
     </span>
     
       <span>
-        | <a href="/categories/SpringCloud/"><i class="fa fa-bookmark"></i>SpringCloud</a>
+        | <a href="/categories/分布式系统/"><i class="fa fa-bookmark"></i>分布式系统</a>
       </span>
     
     
@@ -174,25 +174,49 @@
     
   </div>
   <h1 class="passage-title">
-    Eureka的学习笔记
+    认识大型系统中的软负载中心
   </h1>
   
   <article class="passage-article">
-    <p>“Eureka”来自古希腊词汇，意思是“发现了！”，不得不佩服老外取名字，真有趣！！</p>
-<h3 id="为什么用Eureka"><a href="#为什么用Eureka" class="headerlink" title="为什么用Eureka"></a>为什么用Eureka</h3><p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83.jpg" alt="软负载中心"></p>
-<p>Eureka的本质就是分布式系统中的软负载中心。在分布式系统中，总会存在服务提供者与服务调用者的节点。<br>服务调用者消费服务的时候，必然需要知道提供者所提供服务的IP,Port等信息。软负载中心能够将这些地址信息聚合，<br>且提供服务上下线状态感知。</p>
-<p>如果不通过软负载中心获取调用服务所需的信息，一切将变得灰常麻烦！举个例子，服务调用者1不得不在代码中写死服务提供者A的<br>信息，随着系统的演变这类信息的出现会变得越来越难维护，很可能服务迁移到其他服务器上的是时候多处代码都不得不调整！还有<br>一个诟病，就是IP是不友好的字符串，人们会记住<a href="http://www.baidu.com而不会记住百度的IP地址。" target="_blank" rel="noopener">www.baidu.com而不会记住百度的IP地址。</a></p>
-<p>因此Eureaka，能够通过服务名称来映射对应的地址集合！当服务注册到Eureka-service时，会将自己的服务名和IP地址等信息通过<br>RestFul API形式提交给服务注册中心(Eureka-service)，消费者服务在向注册中心注册的时候也会获取一份服务注册列表信息，消<br>费者通过这份信息上的服务名称既可以找到需要调用的服务地址！此外，Eureka可以和Ribbon结合使用，通过一定策略来进行负载均衡。</p>
-<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/Eureka-Service.jpg" alt="avatar"></p>
-<h3 id="快速搭建Eureka服务"><a href="#快速搭建Eureka服务" class="headerlink" title="快速搭建Eureka服务"></a>快速搭建Eureka服务</h3><p>1：引入Eureka-Server的Maven依赖</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--引入Eureka-Server的Maven依赖--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+    <p>毕业以来，有幸自己一直所在的公司都有着不错的技术栈，自己一直也在工作中，学习微服务，分布式相关的知识。用了很久的Eureka、Consul组件，越发的对这些软负载中心感到兴趣，本篇作为《逐个击破-微服务组件》系列的辅助文章，将对软负载中心进行讲解。</p>
+<!-- TOC -->
 
-<p>2：编写对应的配置文件，YAML文件</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8761</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  application:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">eurka-server</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#在默认情况下，Eureka-Server会向自己注册，将registerWithEureka、fetchRegistry设置为false防止自己注册自己</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">localhost</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    registerWithEureka:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    fetchRegistry:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://$&#123;eureka.instance.hostname&#125;:$&#123;server.port&#125;/eureka/</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><a href="#认识软负载中心">认识软负载中心</a><ul>
+<li><a href="#软负载中心的核心功能">软负载中心的核心功能</a></li>
+<li><a href="#软负载中心的结构">软负载中心的结构</a></li>
+</ul>
+</li>
+<li><a href="#软负载中心的设计思想">软负载中心的设计思想</a><ul>
+<li><a href="#如何保证并发场景下数据聚合的正确性">如何保证并发场景下数据聚合的正确性</a></li>
+<li><a href="#如何在分布式多机情况下高效聚合数据">如何在分布式多机情况下高效聚合数据</a></li>
+<li><a href="#服务上下线感知功能的设计">服务上下线感知功能的设计</a></li>
+<li><a href="#软负载中心的数据分发">软负载中心的数据分发</a><ul>
+<li><a href="#数据分发与消息订阅的区别">数据分发与消息订阅的区别</a></li>
+<li><a href="#如何提升数据分发的性能">如何提升数据分发的性能</a></li>
+</ul>
+</li>
+<li><a href="#更加友好的功能设计">更加友好的功能设计</a><ul>
+<li><a href="#支持数据分组">支持数据分组</a></li>
+<li><a href="#提供服务上下线的开关">提供服务上下线的开关</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
 
-<p>3：编写springboot工程启动的Application类@SpringBootApplication</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//没有这个注解服务无法正常使用</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EurekaServerApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run( EurekaServerApplication.class, args );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h2 id="认识软负载中心"><a href="#认识软负载中心" class="headerlink" title="认识软负载中心"></a>认识软负载中心</h2><p>this is a test</p>
+<h3 id="软负载中心的核心功能"><a href="#软负载中心的核心功能" class="headerlink" title="软负载中心的核心功能"></a>软负载中心的核心功能</h3><p>this is a test</p>
+<h3 id="软负载中心的结构"><a href="#软负载中心的结构" class="headerlink" title="软负载中心的结构"></a>软负载中心的结构</h3><p>this is a test</p>
+<h2 id="软负载中心的设计思想"><a href="#软负载中心的设计思想" class="headerlink" title="软负载中心的设计思想"></a>软负载中心的设计思想</h2><p>this is a test</p>
+<h3 id="如何保证并发场景下数据聚合的正确性"><a href="#如何保证并发场景下数据聚合的正确性" class="headerlink" title="如何保证并发场景下数据聚合的正确性"></a>如何保证并发场景下数据聚合的正确性</h3><p>this is a test</p>
+<h3 id="如何在分布式多机情况下高效聚合数据"><a href="#如何在分布式多机情况下高效聚合数据" class="headerlink" title="如何在分布式多机情况下高效聚合数据"></a>如何在分布式多机情况下高效聚合数据</h3><p>this is a test</p>
+<h3 id="服务上下线感知功能的设计"><a href="#服务上下线感知功能的设计" class="headerlink" title="服务上下线感知功能的设计"></a>服务上下线感知功能的设计</h3><p>this is a test</p>
+<h3 id="软负载中心的数据分发"><a href="#软负载中心的数据分发" class="headerlink" title="软负载中心的数据分发"></a>软负载中心的数据分发</h3><p>this is a test</p>
+<h4 id="数据分发与消息订阅的区别"><a href="#数据分发与消息订阅的区别" class="headerlink" title="数据分发与消息订阅的区别"></a>数据分发与消息订阅的区别</h4><p>this is a test</p>
+<h4 id="如何提升数据分发的性能"><a href="#如何提升数据分发的性能" class="headerlink" title="如何提升数据分发的性能"></a>如何提升数据分发的性能</h4><p>this is a test</p>
+<h3 id="更加友好的功能设计"><a href="#更加友好的功能设计" class="headerlink" title="更加友好的功能设计"></a>更加友好的功能设计</h3><h4 id="支持数据分组"><a href="#支持数据分组" class="headerlink" title="支持数据分组"></a>支持数据分组</h4><h4 id="提供服务上下线的开关"><a href="#提供服务上下线的开关" class="headerlink" title="提供服务上下线的开关"></a>提供服务上下线的开关</h4><p>this is a test</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -201,7 +225,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么用Eureka"><span class="toc-text">为什么用Eureka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建Eureka服务"><span class="toc-text">快速搭建Eureka服务</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#认识软负载中心"><span class="toc-text">认识软负载中心</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的核心功能"><span class="toc-text">软负载中心的核心功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的结构"><span class="toc-text">软负载中心的结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#软负载中心的设计思想"><span class="toc-text">软负载中心的设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何保证并发场景下数据聚合的正确性"><span class="toc-text">如何保证并发场景下数据聚合的正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在分布式多机情况下高效聚合数据"><span class="toc-text">如何在分布式多机情况下高效聚合数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务上下线感知功能的设计"><span class="toc-text">服务上下线感知功能的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的数据分发"><span class="toc-text">软负载中心的数据分发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分发与消息订阅的区别"><span class="toc-text">数据分发与消息订阅的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何提升数据分发的性能"><span class="toc-text">如何提升数据分发的性能</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更加友好的功能设计"><span class="toc-text">更加友好的功能设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#支持数据分组"><span class="toc-text">支持数据分组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提供服务上下线的开关"><span class="toc-text">提供服务上下线的开关</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
@@ -210,7 +234,7 @@
       
         <div>
           原文链接: 
-          <a href="" target="_blank">http://tobegeek.github.io/passages/Eureka的学习笔记/</a>
+          <a href="" target="_blank">http://tobegeek.github.io/passages/认识大型系统中的软负载中心/</a>
         </div>
       
       <div>
@@ -221,9 +245,9 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/spring-cloud/"><i class="fa fa-tags"></i>spring cloud</a>
-     
       <a href="/tags/分布式/"><i class="fa fa-tags"></i>分布式</a>
+     
+      <a href="/tags/软负载中心/"><i class="fa fa-tags"></i>软负载中心</a>
     
     </div>
   
@@ -315,10 +339,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/Scrapy一学就会/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/LRU、LFU、W-TinyLFU浅析优劣/" data-enable="true">
+    <a href="/passages/Scrapy一学就会/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
