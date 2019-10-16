@@ -183,7 +183,11 @@
 
 <ul>
 <li><a href="#认识软负载中心">认识软负载中心</a><ul>
-<li><a href="#软负载中心的核心功能">软负载中心的核心功能</a></li>
+<li><a href="#软负载中心的核心功能">软负载中心的核心功能</a><ul>
+<li><a href="#地址数据聚合">地址数据聚合</a></li>
+<li><a href="#生命周期感知">生命周期感知</a></li>
+</ul>
+</li>
 <li><a href="#软负载中心的结构">软负载中心的结构</a></li>
 </ul>
 </li>
@@ -206,9 +210,12 @@
 </ul>
 <!-- /TOC -->
 
-<h2 id="认识软负载中心"><a href="#认识软负载中心" class="headerlink" title="认识软负载中心"></a>认识软负载中心</h2><p>先来看看软负载中心在整个分布式系统中起了什么作用，如图所示：<br><img src="//tobegeek.github.io/passages/认识大型系统中的软负载中心/%E5%88%9D%E8%AF%86%E8%BD%AF%E8%B4%9F%E8%BD%BD01.png" alt="初识软负载中心"></p>
-<h3 id="软负载中心的核心功能"><a href="#软负载中心的核心功能" class="headerlink" title="软负载中心的核心功能"></a>软负载中心的核心功能</h3><p>this is a test</p>
-<h3 id="软负载中心的结构"><a href="#软负载中心的结构" class="headerlink" title="软负载中心的结构"></a>软负载中心的结构</h3><p>this is a test</p>
+<h2 id="认识软负载中心"><a href="#认识软负载中心" class="headerlink" title="认识软负载中心"></a>认识软负载中心</h2><p>先来看看软负载中心在整个分布式系统中起了什么作用，如图所示：<br><img src="//tobegeek.github.io/passages/认识大型系统中的软负载中心/%E5%88%9D%E8%AF%86%E8%BD%AF%E8%B4%9F%E8%BD%BD01.png" alt="初识软负载中心"><br>不难看出软负载中心具备两个最基础的职责。1：地址数据聚合 2：生命周期感知。学习过Eureka，Consul，ZooKeeper的童鞋，就会明白这样的软负载中心在实际项目开发中有多方便！</p>
+<p>我们都知道IP地址的可阅读性很差，换言之，这玩意它不友好啊！所以当我们访问网站的时候，通常都会通过域名去访问，而DNS服务会负责解析域名并转换成ip。<br>软负载中心也同样借鉴了该思想，在对数据进行聚合的时候通过唯一的dataId进行地址标识。没有这样的功能，在代码里面去维护地址信息，将变的很可怕。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//伪代码,模拟消费者向服务提供者发起post请求</span></span><br><span class="line">httpClient.post(<span class="string">'127.0.0.1:8080'</span>,requestData);</span><br></pre></td></tr></table></figure>
+
+<p>没有软负载中心，消费者服务不得不自己维护地址信息，这将是一个噩梦。<br><img src="//tobegeek.github.io/passages/认识大型系统中的软负载中心/%E6%B2%A1%E6%9C%89%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8.png" alt="初识软负载中心"><br><img src="//tobegeek.github.io/passages/认识大型系统中的软负载中心/%E5%85%B7%E6%9C%89%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8.png" alt="初识软负载中心"></p>
+<h3 id="软负载中心的核心功能"><a href="#软负载中心的核心功能" class="headerlink" title="软负载中心的核心功能"></a>软负载中心的核心功能</h3><h4 id="地址数据聚合"><a href="#地址数据聚合" class="headerlink" title="地址数据聚合"></a>地址数据聚合</h4><h4 id="生命周期感知"><a href="#生命周期感知" class="headerlink" title="生命周期感知"></a>生命周期感知</h4><h3 id="软负载中心的结构"><a href="#软负载中心的结构" class="headerlink" title="软负载中心的结构"></a>软负载中心的结构</h3><p>this is a test</p>
 <h2 id="软负载中心的设计思想"><a href="#软负载中心的设计思想" class="headerlink" title="软负载中心的设计思想"></a>软负载中心的设计思想</h2><p>this is a test</p>
 <h3 id="如何保证并发场景下数据聚合的正确性"><a href="#如何保证并发场景下数据聚合的正确性" class="headerlink" title="如何保证并发场景下数据聚合的正确性"></a>如何保证并发场景下数据聚合的正确性</h3><p>this is a test</p>
 <h3 id="如何在分布式多机情况下高效聚合数据"><a href="#如何在分布式多机情况下高效聚合数据" class="headerlink" title="如何在分布式多机情况下高效聚合数据"></a>如何在分布式多机情况下高效聚合数据</h3><p>this is a test</p>
@@ -225,7 +232,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#认识软负载中心"><span class="toc-text">认识软负载中心</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的核心功能"><span class="toc-text">软负载中心的核心功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的结构"><span class="toc-text">软负载中心的结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#软负载中心的设计思想"><span class="toc-text">软负载中心的设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何保证并发场景下数据聚合的正确性"><span class="toc-text">如何保证并发场景下数据聚合的正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在分布式多机情况下高效聚合数据"><span class="toc-text">如何在分布式多机情况下高效聚合数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务上下线感知功能的设计"><span class="toc-text">服务上下线感知功能的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的数据分发"><span class="toc-text">软负载中心的数据分发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分发与消息订阅的区别"><span class="toc-text">数据分发与消息订阅的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何提升数据分发的性能"><span class="toc-text">如何提升数据分发的性能</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更加友好的功能设计"><span class="toc-text">更加友好的功能设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#支持数据分组"><span class="toc-text">支持数据分组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提供服务上下线的开关"><span class="toc-text">提供服务上下线的开关</span></a></li></ol></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#认识软负载中心"><span class="toc-text">认识软负载中心</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的核心功能"><span class="toc-text">软负载中心的核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#地址数据聚合"><span class="toc-text">地址数据聚合</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#生命周期感知"><span class="toc-text">生命周期感知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的结构"><span class="toc-text">软负载中心的结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#软负载中心的设计思想"><span class="toc-text">软负载中心的设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何保证并发场景下数据聚合的正确性"><span class="toc-text">如何保证并发场景下数据聚合的正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在分布式多机情况下高效聚合数据"><span class="toc-text">如何在分布式多机情况下高效聚合数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务上下线感知功能的设计"><span class="toc-text">服务上下线感知功能的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的数据分发"><span class="toc-text">软负载中心的数据分发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数据分发与消息订阅的区别"><span class="toc-text">数据分发与消息订阅的区别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何提升数据分发的性能"><span class="toc-text">如何提升数据分发的性能</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更加友好的功能设计"><span class="toc-text">更加友好的功能设计</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#支持数据分组"><span class="toc-text">支持数据分组</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#提供服务上下线的开关"><span class="toc-text">提供服务上下线的开关</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
