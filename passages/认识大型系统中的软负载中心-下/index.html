@@ -191,11 +191,6 @@
 </li>
 </ul>
 </li>
-<li><a href="#更加友好的功能设计">更加友好的功能设计</a><ul>
-<li><a href="#支持数据分组">支持数据分组</a></li>
-<li><a href="#提供服务上下线的开关">提供服务上下线的开关</a></li>
-</ul>
-</li>
 </ul>
 <!-- /TOC -->
 
@@ -208,8 +203,8 @@
 <h4 id="软负载中心与消息中间件的差异"><a href="#软负载中心与消息中间件的差异" class="headerlink" title="软负载中心与消息中间件的差异"></a>软负载中心与消息中间件的差异</h4><p>从场景中思考，假设A服务需要从软负载中心获知B服务地址再进行服务调用，对于A服务来说不需要知道之前B服务的地址信息变更多少次，只要告知最终B服务地址即可完成服务调用。</p>
 <p>软负载中心的根本目的是给数据订阅者提供最新的服务地址列表信息，订阅者不需要关心软负载中心每次的数据变化，而软负载中心则要保证最新数据送到所有订阅者。消息中间件的侧重点在于消息本身，必须保证消息投递时不丢失，每条数据都要给到消息订阅者。</p>
 <p>消息中间件推送消息给其订阅者集群，只要保证至少有一个订阅者对推送的消息进行消费即可。而软负载中心推送的消息是以“多播”的形式分发数据，保证其所有订阅者都获取最新的数据。</p>
-<h4 id="如何提升数据分发的性能"><a href="#如何提升数据分发的性能" class="headerlink" title="如何提升数据分发的性能"></a>如何提升数据分发的性能</h4><p>this is a test</p>
-<h2 id="更加友好的功能设计"><a href="#更加友好的功能设计" class="headerlink" title="更加友好的功能设计"></a>更加友好的功能设计</h2><h3 id="支持数据分组"><a href="#支持数据分组" class="headerlink" title="支持数据分组"></a>支持数据分组</h3><h3 id="提供服务上下线的开关"><a href="#提供服务上下线的开关" class="headerlink" title="提供服务上下线的开关"></a>提供服务上下线的开关</h3><p>this is a test</p>
+<h4 id="如何提升数据分发的性能"><a href="#如何提升数据分发的性能" class="headerlink" title="如何提升数据分发的性能"></a>如何提升数据分发的性能</h4><p>我们以一个场景为例。比如我要给A同事发送一堆Excel文件，如何提高发送的效率。第一，我可以把所有需要的Excel文件压缩到一个zip包中发出去，通过压缩可以带来流量的下降从而提升发送效率！后面，我发现每个Excel里的表格数据都有部分需要修改。此时有两种做法，要么我改好数据重新整理一份一次性（全量）发给同事告诉他用这份为准，要么我告知同事哪些需要修改，让他自己改（增量）。</p>
+<p>同样的，为了提高软负载中心的分发性能，我们可以在发送数据包之前，对数据进行压缩。在数据发送的策略上，我们可以选择全量发送或者增量发送。全量发送的整体实现逻辑是比较简单的，但是它也带来了额外的网络开销，特别是在数据量大的时候。增量方式的实现发送数据量少，但是要保证数据的一致性则需要复杂的逻辑实现，但是能有效节省网络开销。增量or全量的选择，利弊并存，要结合实际场景考虑。场景简单，数据量不大，优先考虑全量发送。</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -218,7 +213,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#软负载中心的设计思想"><span class="toc-text">软负载中心的设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何保证并发场景下数据聚合的正确性"><span class="toc-text">如何保证并发场景下数据聚合的正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在分布式多机情况下高效聚合数据"><span class="toc-text">如何在分布式多机情况下高效聚合数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的数据分发"><span class="toc-text">软负载中心的数据分发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#软负载中心与消息中间件的差异"><span class="toc-text">软负载中心与消息中间件的差异</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何提升数据分发的性能"><span class="toc-text">如何提升数据分发的性能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更加友好的功能设计"><span class="toc-text">更加友好的功能设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#支持数据分组"><span class="toc-text">支持数据分组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提供服务上下线的开关"><span class="toc-text">提供服务上下线的开关</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#软负载中心的设计思想"><span class="toc-text">软负载中心的设计思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#如何保证并发场景下数据聚合的正确性"><span class="toc-text">如何保证并发场景下数据聚合的正确性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何在分布式多机情况下高效聚合数据"><span class="toc-text">如何在分布式多机情况下高效聚合数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#软负载中心的数据分发"><span class="toc-text">软负载中心的数据分发</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#软负载中心与消息中间件的差异"><span class="toc-text">软负载中心与消息中间件的差异</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#如何提升数据分发的性能"><span class="toc-text">如何提升数据分发的性能</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
