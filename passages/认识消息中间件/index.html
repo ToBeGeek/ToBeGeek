@@ -226,6 +226,7 @@
 </tr>
 </tbody></table>
 <p>上述的方案，都不能避免出现消息的不一致。采用JMS规范的MQ可以实现消息的一致性，但是必须使用JMS中的XA接口(基于两阶段提交的全局事务型接口)。这个方案引入了分布式事务，会带来开销的增加，并且代码复杂性。并且业务操作的资源必须支持XA协议才能完成分布式事务。为了强一致性，使得整体业务效率低下，有悖于柔性事务的初衷。</p>
+<p>我们以之前的“注册用户”为例子，来看看几个最终一致性的方案：<br>方案一：<br><img src="//tobegeek.github.io/passages/认识消息中间件/%E5%BC%BA%E4%BE%9D%E8%B5%96%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88.png" alt="强依赖的最终一致性方案.png"></p>
 <h3 id="如何降低中间件与应用的耦合"><a href="#如何降低中间件与应用的耦合" class="headerlink" title="如何降低中间件与应用的耦合"></a>如何降低中间件与应用的耦合</h3><h3 id="消息模型有哪些"><a href="#消息模型有哪些" class="headerlink" title="消息模型有哪些"></a>消息模型有哪些</h3><h3 id="消息订阅者订阅消息的方式"><a href="#消息订阅者订阅消息的方式" class="headerlink" title="消息订阅者订阅消息的方式"></a>消息订阅者订阅消息的方式</h3><h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
   </article>
   <aside class="table-content" id="site-toc">
