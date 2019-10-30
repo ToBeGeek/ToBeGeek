@@ -267,7 +267,61 @@
 <td>一对多的消息发布接收策略，监听同一个topic地址的多个订阅者都能收到发布者发布的消息，Sub接收完消息后也通知mq服务器</td>
 </tr>
 </tbody></table>
-<h3 id="消息订阅者订阅消息的方式"><a href="#消息订阅者订阅消息的方式" class="headerlink" title="消息订阅者订阅消息的方式"></a>消息订阅者订阅消息的方式</h3><h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
+<h3 id="持久订阅和非持久订阅"><a href="#持久订阅和非持久订阅" class="headerlink" title="持久订阅和非持久订阅"></a>持久订阅和非持久订阅</h3><p>消息订阅关系是指消息发送的上下游的映射关系（消息中间件中主要是指消息中间件与消息接收者的映射关系）。</p>
+<p><strong>持久订阅</strong>是指消息订阅者和消息中间件之间的消息订阅关系持久，与消息接收者是否处于运行状态没有关系，即使消息接收者宕机也不会影响订阅关系。除非消息订阅者显示取消这种订阅关系，否则只要这种订阅关系一旦建立都一直存在。</p>
+<p><strong>非持久订阅</strong>则恰恰相反，消息接收者和消息中间件的订阅关系与接收者本身的运行状态直接相关，当消息接收者正常运行则建立订阅关系并能够接收消息中间件的消息。反之，当消息接收者不在线或不正常运行时，订阅关系断开，此时无法接收消息中间件消息，仅当重启的时候重新建立订阅关系才能接收后续的消息。</p>
+<p><strong>总结：</strong>如果要做到消息的可靠保证，应该采用持久化订阅方式。</p>
+<h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><p>消息中间件的实现方式分为两种模式，推模式(push)和拉模式(pull)。推模式下，消息中间件将主动把存储在中间件服务端的数据推送给接收者。拉模式下，接收者将主动从中间件服务端获取数据。具体比较如下表格所示</p>
+<table>
+<thead>
+<tr>
+<th>模式类型</th>
+<th>推模式(PUSH)</th>
+<th>拉模式(PULL)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据流向</td>
+<td>消息中间件主动将数据推送给接收者</td>
+<td>接收者主动向消息中间件拉取消息</td>
+</tr>
+<tr>
+<td>实时性</td>
+<td>实时性高，消息中间件获取消息后，即可向接收者推送消息</td>
+<td>基于短轮询方式的实时性取决于接收者的定时拉取策略（Pull时间间隔），基于长轮询方式的实时性与push一致。</td>
+</tr>
+<tr>
+<td>服务端状态</td>
+<td>中间件服务端需要维护消息状态</td>
+<td>服务端无状态</td>
+</tr>
+<tr>
+<td>客户端状态</td>
+<td>客户端不需要保存数据</td>
+<td>客户端需要保存拉取的数据，以便于自身故障时候保证数据可用</td>
+</tr>
+<tr>
+<td>数据保存</td>
+<td>推模式下的消息数据是集中存储在消息中间件服务端的</td>
+<td>拉模式下的消息数据是保存在接收者端的</td>
+</tr>
+<tr>
+<td>可靠性保证</td>
+<td>数据传输失败的时候，中间件服务端负责重试，因此数据及其状态都在中间件服务端维护</td>
+<td>数据传输失败的时候，由客户端负责重试</td>
+</tr>
+<tr>
+<td>流量控制</td>
+<td>因为数据流是从服务端推向客户端的，因此需要中间件服务端实现可靠的流控机制</td>
+<td>接收者根据自身消费能力决定是否pull消息</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>服务端需要做好流控，以避免当消费者消费能力不足或者承压较弱的时候，一次推送的流量过大造成消费者处理不过来。另外，消息的集中存储也是一个难点</td>
+<td>pull模式下，实时性较差，对服务端的数据更新感知较差，需要依赖自身的拉取策略获取最新数据。并且当服务端无数据时，无效的请求容易使得宽带资源浪费和服务器资源浪费。</td>
+</tr>
+</tbody></table>
+<h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -275,7 +329,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是消息中间件（原文）"><span class="toc-text">什么是消息中间件（原文）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#消息中间件如何解耦服务调用"><span class="toc-text">消息中间件如何解耦服务调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性问题和解决方案"><span class="toc-text">一致性问题和解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决分布式事务的一致性"><span class="toc-text">解决分布式事务的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实现消息传递的一致性"><span class="toc-text">实现消息传递的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#最终一致性的方案"><span class="toc-text">最终一致性的方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息模型有哪些"><span class="toc-text">消息模型有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#P2P模型（Queue模型）"><span class="toc-text">P2P模型（Queue模型）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pub-Sub模型-Topic模型"><span class="toc-text">Pub/Sub模型 (Topic模型)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息订阅者订阅消息的方式"><span class="toc-text">消息订阅者订阅消息的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pull-push方式对比"><span class="toc-text">pull/push方式对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息可靠性的保证"><span class="toc-text">消息可靠性的保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息投递可靠性"><span class="toc-text">消息投递可靠性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息存储可靠性"><span class="toc-text">消息存储可靠性</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是消息中间件（原文）"><span class="toc-text">什么是消息中间件（原文）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#消息中间件如何解耦服务调用"><span class="toc-text">消息中间件如何解耦服务调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性问题和解决方案"><span class="toc-text">一致性问题和解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决分布式事务的一致性"><span class="toc-text">解决分布式事务的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实现消息传递的一致性"><span class="toc-text">实现消息传递的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#最终一致性的方案"><span class="toc-text">最终一致性的方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息模型有哪些"><span class="toc-text">消息模型有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#P2P模型（Queue模型）"><span class="toc-text">P2P模型（Queue模型）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pub-Sub模型-Topic模型"><span class="toc-text">Pub/Sub模型 (Topic模型)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#持久订阅和非持久订阅"><span class="toc-text">持久订阅和非持久订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pull-push方式对比"><span class="toc-text">pull/push方式对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息可靠性的保证"><span class="toc-text">消息可靠性的保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息投递可靠性"><span class="toc-text">消息投递可靠性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息存储可靠性"><span class="toc-text">消息存储可靠性</span></a></li></ol></li></ol>
   </div>
 </aside>
   
