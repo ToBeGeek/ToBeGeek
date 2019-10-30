@@ -252,9 +252,19 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>持久化</td>
+<td>数据持久化</td>
 <td>Queue数据默认会在mq服务器上以文件形式保存，但是也有一些MQ支持DB存储</td>
 <td>Topic的数据一般不落地，是无状态的</td>
+</tr>
+<tr>
+<td>完整性保障</td>
+<td>Queue的数据保证一定会给能给接收者接收</td>
+<td>不能保证每次发布的数据都能被订阅者接收。一般来说publisher发布消息到某一个topic时，只有正在监听该topic地址的sub能够接收到消息；如果没有sub在监听，该topic就丢失了。</td>
+</tr>
+<tr>
+<td>发布接收策略</td>
+<td>一对一的消息发布接收策略，每条信息只能给特定一个Receiver接收，Receiver接收消息后通知MQ服务器对数据进行删除或者其他操作</td>
+<td>一对多的消息发布接收策略，监听同一个topic地址的多个订阅者都能收到发布者发布的消息，Sub接收完消息后也通知mq服务器</td>
 </tr>
 </tbody></table>
 <h3 id="消息订阅者订阅消息的方式"><a href="#消息订阅者订阅消息的方式" class="headerlink" title="消息订阅者订阅消息的方式"></a>消息订阅者订阅消息的方式</h3><h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
