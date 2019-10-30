@@ -237,9 +237,27 @@
 <p>将本地磁盘作为消息存储的方式有如下两种用法：<br>1：作为一致性<strong>发送消息</strong>的解决方案的容灾手段，仅当出现异常的时候才切换到该方式上，平时不工作！<br>2：直接用于工作，这样可以控制业务操作本身调用发送消息接口的处理时间，并且使得业务应用与消息中间件之间做一些批处理工作。</p>
 <p><strong>总结：</strong><br>上述方案中有两点限制。一，所有消息发送内容都必须在业务操作之前标记成“待处理状态”，这要求先能确定消息内容。其次，引入了对业务操作的多次确认检查。</p>
 <h3 id="消息模型有哪些"><a href="#消息模型有哪些" class="headerlink" title="消息模型有哪些"></a>消息模型有哪些</h3><p>消息模型中常用的两种方式,P2P方式、Pub/Sub方式</p>
-<h4 id="P2P方式"><a href="#P2P方式" class="headerlink" title="P2P方式"></a>P2P方式</h4><p>P2P模型中有几个主要的成员:消息队列(Queue)、发送者(Sender)、接收者(Receiver)。具有如下几个特点：</p>
+<h4 id="P2P模型（Queue模型）"><a href="#P2P模型（Queue模型）" class="headerlink" title="P2P模型（Queue模型）"></a>P2P模型（Queue模型）</h4><p>P2P模型中有几个主要的成员:消息队列(Queue)、发送者(Sender)、接收者(Receiver)。具有如下几个特点：</p>
 <p>1：每个消息有且只有一个消费者(Consumer)，一旦被消费，消息不再存于消息队列(Queue)中<br>2：发送者和接收者之间依赖低，发送者一旦送出信息后，无论接收者是否正在运行，都不会影响消息发送到消息队列中<br>3：接收者在成功接收消息之后需要向消息队列(Queue)返回应答</p>
-<h4 id="Pub-Sub方式"><a href="#Pub-Sub方式" class="headerlink" title="Pub/Sub方式"></a>Pub/Sub方式</h4><h3 id="消息订阅者订阅消息的方式"><a href="#消息订阅者订阅消息的方式" class="headerlink" title="消息订阅者订阅消息的方式"></a>消息订阅者订阅消息的方式</h3><h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
+<p><img src="//tobegeek.github.io/passages/认识消息中间件/P2P%E6%A8%A1%E5%9E%8B.png" alt="P2P模型.png"></p>
+<h4 id="Pub-Sub模型-Topic模型"><a href="#Pub-Sub模型-Topic模型" class="headerlink" title="Pub/Sub模型 (Topic模型)"></a>Pub/Sub模型 (Topic模型)</h4><p>Pub/Sub模型（也叫Topic模型）中有几个主要成员：主题(Topic)、发布者(Publisher)、订阅者(Subscriber)<br>多个发布者将消息发送到主题(Topic)，系统将这些消息传递给多个订阅者，即完成发布-订阅。该模型与P2P模型最大的区别在于消息接收的部分，Pub/Sub模型允许每个消息有多个消费者。消息首先由消息生产者发布至消息服务器中特定的主题中，然后由消息服务器将消息广播给所有已订阅该主题的消费者。主题目标也支持长期订阅。长期订阅表示消费者已注册了主题目标，但在消息到达目标时该消费者可以处于非活动状态。当消费者再次处于活动状态时，将会接收该消息。一般来说Topic的数据是不落地的，</p>
+<p><img src="//tobegeek.github.io/passages/认识消息中间件/Topic%E6%A8%A1%E5%9E%8B.png" alt="Topic模型"></p>
+<p>两种模型的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>P2P模型</th>
+<th>Pub/Sub模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>持久化</td>
+<td>Queue数据默认会在mq服务器上以文件形式保存，但是也有一些MQ支持DB存储</td>
+<td>Topic的数据一般不落地，是无状态的</td>
+</tr>
+</tbody></table>
+<h3 id="消息订阅者订阅消息的方式"><a href="#消息订阅者订阅消息的方式" class="headerlink" title="消息订阅者订阅消息的方式"></a>消息订阅者订阅消息的方式</h3><h3 id="pull-push方式对比"><a href="#pull-push方式对比" class="headerlink" title="pull/push方式对比"></a>pull/push方式对比</h3><h3 id="消息可靠性的保证"><a href="#消息可靠性的保证" class="headerlink" title="消息可靠性的保证"></a>消息可靠性的保证</h3><h3 id="消息投递可靠性"><a href="#消息投递可靠性" class="headerlink" title="消息投递可靠性"></a>消息投递可靠性</h3><h3 id="消息存储可靠性"><a href="#消息存储可靠性" class="headerlink" title="消息存储可靠性"></a>消息存储可靠性</h3>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -247,7 +265,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是消息中间件（原文）"><span class="toc-text">什么是消息中间件（原文）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#消息中间件如何解耦服务调用"><span class="toc-text">消息中间件如何解耦服务调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性问题和解决方案"><span class="toc-text">一致性问题和解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决分布式事务的一致性"><span class="toc-text">解决分布式事务的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实现消息传递的一致性"><span class="toc-text">实现消息传递的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#最终一致性的方案"><span class="toc-text">最终一致性的方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息模型有哪些"><span class="toc-text">消息模型有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#P2P方式"><span class="toc-text">P2P方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pub-Sub方式"><span class="toc-text">Pub/Sub方式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息订阅者订阅消息的方式"><span class="toc-text">消息订阅者订阅消息的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pull-push方式对比"><span class="toc-text">pull/push方式对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息可靠性的保证"><span class="toc-text">消息可靠性的保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息投递可靠性"><span class="toc-text">消息投递可靠性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息存储可靠性"><span class="toc-text">消息存储可靠性</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是消息中间件（原文）"><span class="toc-text">什么是消息中间件（原文）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#消息中间件如何解耦服务调用"><span class="toc-text">消息中间件如何解耦服务调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#一致性问题和解决方案"><span class="toc-text">一致性问题和解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决分布式事务的一致性"><span class="toc-text">解决分布式事务的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实现消息传递的一致性"><span class="toc-text">实现消息传递的一致性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#最终一致性的方案"><span class="toc-text">最终一致性的方案</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息模型有哪些"><span class="toc-text">消息模型有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#P2P模型（Queue模型）"><span class="toc-text">P2P模型（Queue模型）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pub-Sub模型-Topic模型"><span class="toc-text">Pub/Sub模型 (Topic模型)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息订阅者订阅消息的方式"><span class="toc-text">消息订阅者订阅消息的方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pull-push方式对比"><span class="toc-text">pull/push方式对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息可靠性的保证"><span class="toc-text">消息可靠性的保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息投递可靠性"><span class="toc-text">消息投递可靠性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#消息存储可靠性"><span class="toc-text">消息存储可靠性</span></a></li></ol></li></ol>
   </div>
 </aside>
   
