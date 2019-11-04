@@ -178,7 +178,23 @@
   </h1>
   
   <article class="passage-article">
-    <h3 id="了解什么是死信队列"><a href="#了解什么是死信队列" class="headerlink" title="了解什么是死信队列"></a>了解什么是死信队列</h3><p>MQ中处理失败或者过期的消息即为死信，死信队列则是用来保存死信的队列（本质上来说就是普通队列）。</p>
+    <!-- TOC -->
+
+<ul>
+<li><a href="#了解什么是死信队列">了解什么是死信队列</a><ul>
+<li><a href="#死信进入死信队列的条件">死信进入死信队列的条件</a></li>
+</ul>
+</li>
+<li><a href="#基于rabbitmq的死信消息统一处理官方文档">基于RabbitMQ的死信消息统一处理（官方文档）</a><ul>
+<li><a href="#为什么需要统一的死信消息处理方案">为什么需要统一的死信消息处理方案</a></li>
+<li><a href="#demo示例讲解">DEMO示例讲解</a></li>
+<li><a href="#补充说明">补充说明</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="了解什么是死信队列"><a href="#了解什么是死信队列" class="headerlink" title="了解什么是死信队列"></a>了解什么是死信队列</h3><p>MQ中处理失败或者过期的消息即为死信，死信队列则是用来保存死信的队列（本质上来说就是普通队列）。</p>
 <h4 id="死信进入死信队列的条件"><a href="#死信进入死信队列的条件" class="headerlink" title="死信进入死信队列的条件"></a>死信进入死信队列的条件</h4><p>1：消息被拒绝（basic.reject/ basic.nack）并且requeue=false<br>2：消息TTL过期（Time To Live）<br>3：消息队列已满，消息不能进入业务消息队列</p>
 <p>如下图所示：<img src="//tobegeek.github.io/passages/RabbitMQ之死信处理方案/%E6%AD%BB%E4%BF%A1%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="死信消息的生成及其处理"></p>
 <h3 id="基于RabbitMQ的死信消息统一处理（官方文档）"><a href="#基于RabbitMQ的死信消息统一处理（官方文档）" class="headerlink" title="基于RabbitMQ的死信消息统一处理（官方文档）"></a>基于RabbitMQ的死信消息统一处理（<a href="https://www.rabbitmq.com/dlx.html" target="_blank" rel="noopener">官方文档</a>）</h3><p>DLX(Dead-Letter-Exchange)就是死信消息交换机。利用DLX, 可以使得消息在一个队列中变成死信（dead message）之后，它能被重新publish到另一个Exchange，这个Exchange就是DLX。DLX其实就是一个普通的Exchange，设置好对应的死信队列后，当业务队列中发生死信，RabbitMQ就会自动的将这个消息重新发布到设置的Exchange上去，进而被路由到另一个队列（死信队列）。我们可以在监听死信队列的消费者端，获取死信所有信息（消息体，消息业务原属的Exchange、原属的Queue、原属RoutingKeys、失败原因Type等），并把这些信息持久化到DB中，提供统一的死信消息处理方式！</p>
