@@ -188,7 +188,10 @@
 <li><a href="#基于rabbitmq的死信消息统一处理官方文档">基于RabbitMQ的死信消息统一处理（官方文档）</a><ul>
 <li><a href="#为什么需要统一的死信消息处理方案">为什么需要统一的死信消息处理方案</a></li>
 <li><a href="#demo示例讲解">DEMO示例讲解</a></li>
-<li><a href="#补充说明">补充说明</a></li>
+<li><a href="#补充说明">补充说明</a><ul>
+<li><a href="#springboot集成rabbitmq常用配置">SpringBoot集成RabbitMQ常用配置</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -235,7 +238,7 @@
 <p>==========【业务】消费者启动==========<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人1”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人2”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人3”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人4”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人5”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人6”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人7”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人8”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人9”,”phone”:”18888888888”}<br>消息获取成功，并且消费成功！MSG——&gt;{“userName”:”测试发起人10”,”phone”:”18888888888”}</p>
 </blockquote>
 <p>通过这个DEMO示例，可以看出RabbitMQ本身对死信消息的处理提供了一系列方法。利用这些方法既可以完成我们对满足可以统一化管理的死信消息处理方案的实现。</p>
-<h4 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h4><p>原本的打算是再获得死信消息后，提供指数退避方式的消息重试，但是惊喜的发现在SpringBoot中已经有很好的支持了，且消息发送本身的重试策略也应该由各个客户端自己去定义。具体SpringBoot集成RabbitMQ常用配置如下：</p>
+<h4 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h4><h5 id="SpringBoot集成RabbitMQ常用配置"><a href="#SpringBoot集成RabbitMQ常用配置" class="headerlink" title="SpringBoot集成RabbitMQ常用配置"></a>SpringBoot集成RabbitMQ常用配置</h5><p>原本的打算是再获得死信消息后，提供指数退避方式的消息重试，但是惊喜的发现在SpringBoot中已经有很好的支持了，且消息发送本身的重试策略也应该由各个客户端自己去定义。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#rabbitmq</span></span><br><span class="line"><span class="string">spring.rabbitmq.host=localhost</span></span><br><span class="line"><span class="string">spring.rabbitmq.port=5672</span></span><br><span class="line"><span class="string">spring.rabbitmq.username=guest</span></span><br><span class="line"><span class="string">spring.rabbitmq.password=guest</span></span><br><span class="line"><span class="string">spring.rabbitmq.virtual-host=v_guest</span></span><br><span class="line"><span class="comment">#消费者数量</span></span><br><span class="line"><span class="string">spring.rabbitmq.listener.simple.concurrency=10</span></span><br><span class="line"><span class="comment">#最大消费者数量</span></span><br><span class="line"><span class="string">spring.rabbitmq.listener.simple.max-concurrency=10</span></span><br><span class="line"><span class="comment">#消费者每次从队列获取的消息数量。写多了，如果长时间得不到消费，数据就一直得不到处理</span></span><br><span class="line"><span class="string">spring.rabbitmq.listener.simple.prefetch=1</span></span><br><span class="line"><span class="comment">#消费者自动启动</span></span><br><span class="line"><span class="string">spring.rabbitmq.listener.simple.auto-startup=true</span></span><br><span class="line"><span class="comment">#消费者消费失败，自动重新入队</span></span><br><span class="line"><span class="string">spring.rabbitmq.listener.simple.default-requeue-rejected=true</span></span><br><span class="line"><span class="comment">#启用发送重试 队列满了发不进去时启动重试</span></span><br><span class="line"><span class="string">spring.rabbitmq.template.retry.enabled=true</span></span><br><span class="line"><span class="comment">#1秒钟后重试一次</span></span><br><span class="line"><span class="string">spring.rabbitmq.template.retry.initial-interval=1000</span></span><br><span class="line"><span class="comment">#最大重试次数 3次</span></span><br><span class="line"><span class="string">spring.rabbitmq.template.retry.max-attempts=3</span></span><br><span class="line"><span class="comment">#最大间隔 10秒钟</span></span><br><span class="line"><span class="string">spring.rabbitmq.template.retry.max-interval=10000</span></span><br><span class="line"><span class="comment">#等待间隔 的倍数。如果为2  第一次 乘以2 等1秒， 第二次 乘以2 等2秒 ，第三次 乘以2 等4秒</span></span><br><span class="line"><span class="string">spring.rabbitmq.template.retry.multiplier=1.0</span></span><br></pre></td></tr></table></figure>
 
 <p>最后说一句，死信消息的消费建议采用集群的形式部署，并且以Work Queue模式进行数据分发，单个节点仍然不能保证死信消息的及时处理。</p>
@@ -247,7 +250,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#了解什么是死信队列"><span class="toc-text">了解什么是死信队列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#死信进入死信队列的条件"><span class="toc-text">死信进入死信队列的条件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于RabbitMQ的死信消息统一处理（官方文档）"><span class="toc-text">基于RabbitMQ的死信消息统一处理（官方文档）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要统一的死信消息处理方案"><span class="toc-text">为什么需要统一的死信消息处理方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DEMO示例讲解"><span class="toc-text">DEMO示例讲解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#补充说明"><span class="toc-text">补充说明</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#了解什么是死信队列"><span class="toc-text">了解什么是死信队列</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#死信进入死信队列的条件"><span class="toc-text">死信进入死信队列的条件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于RabbitMQ的死信消息统一处理（官方文档）"><span class="toc-text">基于RabbitMQ的死信消息统一处理（官方文档）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要统一的死信消息处理方案"><span class="toc-text">为什么需要统一的死信消息处理方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DEMO示例讲解"><span class="toc-text">DEMO示例讲解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#补充说明"><span class="toc-text">补充说明</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#SpringBoot集成RabbitMQ常用配置"><span class="toc-text">SpringBoot集成RabbitMQ常用配置</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
@@ -359,7 +362,7 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/理解设计模式的七大原则/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
     <a href="/passages/分布式事务详解/" data-enable="true">
