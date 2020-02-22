@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>归档: 2019 | 道·术</title>
+  <title>谈一谈软件开发中的单元测试 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, Theme-AD">
+    <meta name="keywords" content="软件开发,软件开发周期,软件测试,">
   
 
   
@@ -38,7 +38,7 @@
     welcome: {"enable":false,"interval":30},
     start_time: "2018-01-01",
     passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: false,
+    is_post: true,
     lock: false,
     author: "Li Haohang",
     share: {"twitter":true,"facebook":true,"weibo":true,"qq":true,"wechat":true},
@@ -156,66 +156,75 @@
 </nav>
 <div id="site-process"></div>
     <main>
-      <div class="timeline">
-  <h2 class="timeline-title">归档: 14篇</h2>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2020-02-20
+    </span>
+    
+      <span>
+        | <a href="/categories/软件开发/"><i class="fa fa-bookmark"></i>软件开发</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    谈一谈软件开发中的单元测试
+  </h1>
   
-    
-      <h3 class="timeline-subtitle">2019</h3>
-    
-    <div class="timeline-item">
-      <time>2019-11-04</time>
-      <a target="_self" href="/passages/RabbitMQ之死信处理方案/">RabbitMQ之死信处理方案</a>
-    </div>
+  <article class="passage-article">
+    <p>毕业后，有幸自己加入的公司平台，都有较为完善的一整套开发流程，对程序员写单元测试也有一定要求。最开始的时候，对这种行为感到很不理解，<br>甚至认为写单元测试简直是在浪费时间。接触的时间长了，发现单元测试可以提高代码质量，减少维护成本，降低重构难度。长远的来说，这是利大于弊的！</p>
+<h3 id="软件开发生命周期与单元测试"><a href="#软件开发生命周期与单元测试" class="headerlink" title="软件开发生命周期与单元测试"></a>软件开发生命周期与单元测试</h3><p>软件从开发到上线，至少经过<a href="https://www.mindtheproduct.com/what-the-hell-are-ci-cd-and-devops-a-cheatsheet-for-the-rest-of-us/" target="_blank" rel="noopener">“持续集成”，“持续交付”，“持续部署”</a>三个关键节点。</p>
+<h4 id="持续集成"><a href="#持续集成" class="headerlink" title="持续集成"></a>持续集成</h4><p><img src="//tobegeek.github.io/passages/谈一谈软件开发中的单元测试/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90.png" alt="持续集成"></p>
+<p>持续集成强调开发人员提交新代码之后，立刻进行构建、（单元）测试。对于Java程序员来说git commit+mvn clean install的过程！有些公司会通过一些集成平台<br>来实现【代码提交】+【单元测试】+【程序构建】。每次经由单元测试再进行代码构建以便尽早地发现开发人员提交地代码部分问题。  </p>
+<h4 id="持续交付"><a href="#持续交付" class="headerlink" title="持续交付"></a>持续交付</h4><p><img src="//tobegeek.github.io/passages/谈一谈软件开发中的单元测试/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98.png" alt="持续交付"></p>
+<p>持续交付(Conotinous Deliver)是指在持续集成的基础之上，将集成后的代码部署到一个“类生产”环境中去运行。举栗子，作为一个后端开发人员时常需要和前端人员进行联调，后端人员把代码提交之后，在到Jenkins平台上build，指定发布的环境(dev环境)。前端人员再去与dev环境运行的服务联调。（为什么不在本地联调，因为如果是单体服务的环境下本地联调自然没问题，但是如果是分布式环境的下就容易存在很多麻烦）</p>
+<p>与前端联调的时候用dev环境，转测之后用test环境，业务验收的时候用staging环境，这些都是“类生产环境”。</p>
+<h4 id="持续部署"><a href="#持续部署" class="headerlink" title="持续部署"></a>持续部署</h4><p><img src="//tobegeek.github.io/passages/谈一谈软件开发中的单元测试/%E6%8C%81%E7%BB%AD%E9%83%A8%E7%BD%B2.png" alt="持续部署"></p>
+<p>持续部署(Continuous Deploy)是在持续交付的基础上，把部署到生产环境的过程自动化。持续部署就是定时地、自动地将过去一个稳定的发布版本部署到生产环境中。</p>
+<p>不难看出来，上面的每一个阶段都离不开软件的自动化测试。<br>自动化测试是指软件测试的自动化，软件测试就算再预设条件下允许系统或应用程序，评估运行结果，预先条件应摆阔正常条件和异常条件。</p>
+<p><img src="//tobegeek.github.io/passages/谈一谈软件开发中的单元测试/%E8%BD%AF%E4%BB%B6%E6%B5%8B%E8%AF%95%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5.png" alt="软件测试基本概念"></p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#软件开发生命周期与单元测试"><span class="toc-text">软件开发生命周期与单元测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#持续集成"><span class="toc-text">持续集成</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#持续交付"><span class="toc-text">持续交付</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#持续部署"><span class="toc-text">持续部署</span></a></li></ol></li></ol>
+  </div>
+</aside>
   
-    
-    <div class="timeline-item">
-      <time>2019-10-31</time>
-      <a target="_self" href="/passages/分布式事务详解/">分布式事务详解</a>
-    </div>
+    <aside class="passage-copyright">
+      <div>本文作者: 李浩航</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://tobegeek.github.io/passages/谈一谈软件开发中的单元测试/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
   
-    
-    <div class="timeline-item">
-      <time>2019-10-23</time>
-      <a target="_self" href="/passages/脑图笔记-图解TCP-IP/">脑图笔记-图解TCP/IP</a>
-    </div>
   
+    <div class="passage-tags">
+     
+      <a href="/tags/软件开发周期/"><i class="fa fa-tags"></i>软件开发周期</a>
+     
+      <a href="/tags/软件测试/"><i class="fa fa-tags"></i>软件测试</a>
     
-    <div class="timeline-item">
-      <time>2019-10-23</time>
-      <a target="_self" href="/passages/认识消息中间件/">认识消息中间件</a>
-    </div>
-  
-    
-    <div class="timeline-item">
-      <time>2019-10-20</time>
-      <a target="_self" href="/passages/认识大型系统中的软负载中心-下/">认识大型系统中的软负载中心-下</a>
-    </div>
-  
-    
-    <div class="timeline-item">
-      <time>2019-10-01</time>
-      <a target="_self" href="/passages/认识大型系统中的软负载中心/">认识大型系统中的软负载中心</a>
-    </div>
-  
-    
-    <div class="timeline-item">
-      <time>2019-09-09</time>
-      <a target="_self" href="/passages/Scrapy一学就会/">Scrapy一学就会</a>
-    </div>
-  
-    
-    <div class="timeline-item">
-      <time>2019-04-06</time>
-      <a target="_self" href="/passages/Eureka的学习笔记/">Eureka的学习笔记</a>
-    </div>
-  
-    
-    <div class="timeline-item">
-      <time>2019-02-26</time>
-      <a target="_self" href="/passages/LRU、LFU、W-TinyLFU浅析优劣/">LRU、LFU、W-TinyLFU浅析优劣</a>
     </div>
   
 </div>
+
     </main>
     
     <div class="site-footer-wrapper">
@@ -305,12 +314,12 @@
     <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/理解设计模式的七大原则/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
   <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="false" id="site-toc-show-btn">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
       <i class="fa fa-bars"></i>
     </a>
     
