@@ -179,6 +179,34 @@
   
   <article class="passage-article">
     <p>毕业后，有幸自己加入的公司平台，都有较为完善的一整套开发流程，对程序员写单元测试也有一定要求。最开始的时候，对这种行为感到很不理解，<br>甚至认为写单元测试简直是在浪费时间。接触的时间长了，发现单元测试可以提高代码质量，减少维护成本，降低重构难度。长远的来说，这是利大于弊的！</p>
+<!-- TOC -->
+
+<ul>
+<li><a href="#软件开发生命周期与单元测试">软件开发生命周期与单元测试</a><ul>
+<li><a href="#持续集成">持续集成</a></li>
+<li><a href="#持续交付">持续交付</a></li>
+<li><a href="#持续部署">持续部署</a></li>
+<li><a href="#软件测试有哪些">软件测试有哪些</a></li>
+<li><a href="#软件测试的方法">软件测试的方法</a></li>
+</ul>
+</li>
+<li><a href="#讲讲单元测试">讲讲单元测试</a><ul>
+<li><a href="#单元测试框架">单元测试框架</a><ul>
+<li><a href="#测试工具">测试工具</a></li>
+<li><a href="#测试套件">测试套件</a></li>
+<li><a href="#测试运行器">测试运行器</a></li>
+</ul>
+</li>
+<li><a href="#什么是mock">什么是Mock</a><ul>
+<li><a href="#什么情况可以用mock">什么情况可以用mock</a></li>
+<li><a href="#mock的意义">mock的意义</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
 <h3 id="软件开发生命周期与单元测试"><a href="#软件开发生命周期与单元测试" class="headerlink" title="软件开发生命周期与单元测试"></a>软件开发生命周期与单元测试</h3><p>软件从开发到上线，至少经过<a href="https://www.mindtheproduct.com/what-the-hell-are-ci-cd-and-devops-a-cheatsheet-for-the-rest-of-us/" target="_blank" rel="noopener">“持续集成”，“持续交付”，“持续部署”</a>三个关键节点。</p>
 <h4 id="持续集成"><a href="#持续集成" class="headerlink" title="持续集成"></a>持续集成</h4><p><img src="//tobegeek.github.io/passages/谈一谈软件开发中的单元测试/%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90.png" alt="持续集成"></p>
 <p>持续集成强调开发人员提交新代码之后，立刻进行构建、（单元）测试。对于Java程序员来说git commit+mvn clean install的过程！有些公司会通过一些集成平台<br>来实现【代码提交】+【单元测试】+【程序构建】。每次经由单元测试再进行代码构建以便尽早地发现开发人员提交地代码部分问题。  </p>
