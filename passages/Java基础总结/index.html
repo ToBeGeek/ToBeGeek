@@ -181,7 +181,7 @@
     <!-- TOC -->
 
 <ul>
-<li><a href="#写下这篇总结帖的初衷">写下这篇总结帖的初衷</a><ul>
+<li><a href="#写下这篇总结帖的初衷">写下这篇总结帖的初衷</a></li>
 <li><a href="#面向过程or面向对象">面向过程or面向对象</a><ul>
 <li><a href="#面向对象的三大特性与五大基本原则">面向对象的三大特性与五大基本原则</a><ul>
 <li><a href="#三大特性封装继承多态">三大特性：封装、继承、多态</a></li>
@@ -196,24 +196,22 @@
 </ul>
 </li>
 </ul>
-</li>
-</ul>
 <!-- /TOC -->
 
 <h3 id="写下这篇总结帖的初衷"><a href="#写下这篇总结帖的初衷" class="headerlink" title="写下这篇总结帖的初衷"></a>写下这篇总结帖的初衷</h3><p>14年进入大学，就读软件工程专业。我还记得我是班上最早开始学习Java的那个人（大二才开始的课程）。有点怀念那个时候在图书馆借着一本《Java完全参考手册》一直啃的岁月。有时候经常也会关注一些博文去review一些Java基础知识的东西，零零散散也会手写下来。突然有个想法，把这些零零散散的东西用自己的思考去重温。老是羡慕别人做总结，不如自个动手搞一篇自己的长帖！再次出发！</p>
 <p><img src="//tobegeek.github.io/passages/Java基础总结/%E7%96%AF%E7%8B%82%E5%AD%A6%E4%B9%A0.jpg" alt="疯狂学习"></p>
-<h4 id="面向过程or面向对象"><a href="#面向过程or面向对象" class="headerlink" title="面向过程or面向对象"></a>面向过程or面向对象</h4><p>为什么要说这个话题呢，因为学习Java编程是离不开“面向对象”的。“面向对象”与“面向过程”其实是编程界的两种哲学思想。说到哲学，就不可避免地探讨“宏观”与“微观”。在宏观上，我们在编写Java应用地时候，更多地考虑如何用“对象”来描述复杂事务之间的关系。在微观上，我们会去思考一个“对象”具体的行为过程。<strong>“面向过程”强调的是自顶向下的解决过程，以解决事件为中心，分析问题的解决步骤并依次调用</strong>。<strong>“面向对象”强调以对象为中心，将复杂的事物高度抽象化，描述“对象”能做什么事情，具有怎么样的属性。</strong></p>
+<h3 id="面向过程or面向对象"><a href="#面向过程or面向对象" class="headerlink" title="面向过程or面向对象"></a>面向过程or面向对象</h3><p>为什么要说这个话题呢，因为学习Java编程是离不开“面向对象”的。“面向对象”与“面向过程”其实是编程界的两种哲学思想。说到哲学，就不可避免地探讨“宏观”与“微观”。在宏观上，我们在编写Java应用地时候，更多地考虑如何用“对象”来描述复杂事务之间的关系。在微观上，我们会去思考一个“对象”具体的行为过程。<strong>“面向过程”强调的是自顶向下的解决过程，以解决事件为中心，分析问题的解决步骤并依次调用</strong>。<strong>“面向对象”强调以对象为中心，将复杂的事物高度抽象化，描述“对象”能做什么事情，具有怎么样的属性。</strong></p>
 <p>借鉴网络上特别生动的一个举例。将“面向过程”与“面向对象”分别比喻成，“蛋炒饭”与“盖浇饭”。虽然蛋炒饭这道菜入味均匀，蛋与饭的耦合度极高，如果你不想吃到鸡蛋的话，你只能选择重做一道。但是盖浇饭就不同了，饭和菜是分离的，如果你不想吃菜的话，可以换菜，不想吃饭可以换面。从软件工程的角度来看，“盖浇饭”的“灵活性高”，“扩展性强”，“耦合度低”，这也是面向对象的优势所在。</p>
 <p>总结：<strong>面向对象相比面向过程开发，使得工程更易维护，易复用，易扩展，更加灵活。</strong></p>
-<h5 id="面向对象的三大特性与五大基本原则"><a href="#面向对象的三大特性与五大基本原则" class="headerlink" title="面向对象的三大特性与五大基本原则"></a>面向对象的三大特性与五大基本原则</h5><p>为什么要和你扯这“三大特性”和“五大基本原则”。因为如上所述，Java离不开面向对象。</p>
-<h6 id="三大特性：封装、继承、多态"><a href="#三大特性：封装、继承、多态" class="headerlink" title="三大特性：封装、继承、多态"></a>三大特性：封装、继承、多态</h6><p>封装：<strong>封装是对客观事物封装成抽象的类，并且类可以把自己的数据和方法只让可信的类或者对象操作，对不可信的进行信息隐藏。</strong>通过这种方式，对象内部数据提供了不同级别的保护，能够防止程序中无关的部分意外的改变或者错误的使用对象的私有部分。</p>
+<h4 id="面向对象的三大特性与五大基本原则"><a href="#面向对象的三大特性与五大基本原则" class="headerlink" title="面向对象的三大特性与五大基本原则"></a>面向对象的三大特性与五大基本原则</h4><p>为什么要和你扯这“三大特性”和“五大基本原则”。因为如上所述，Java离不开面向对象。</p>
+<h5 id="三大特性：封装、继承、多态"><a href="#三大特性：封装、继承、多态" class="headerlink" title="三大特性：封装、继承、多态"></a>三大特性：封装、继承、多态</h5><p>封装：<strong>封装是对客观事物封装成抽象的类，并且类可以把自己的数据和方法只让可信的类或者对象操作，对不可信的进行信息隐藏。</strong>通过这种方式，对象内部数据提供了不同级别的保护，能够防止程序中无关的部分意外的改变或者错误的使用对象的私有部分。</p>
 <p>继承：<strong>继承是指某个类型的对象获得另一个类型的对象的属性和方法，并且在关系上是父子关系。</strong>通过继承创建的新类称为“子类”或者“派生类”，被继承的类被称为“基类”，“父类”或者“超类”。继承的过程，就是从一般到特殊的过程（也有说是从抽象到实现）。继承的实现方式包括两类方式。继承概念的实现方式有二类：实现继承与接口继承。实现继承是指直接使用基类的属性和方法而无需额外编码的能力；接口继承是指仅使用属性和方法的名称、但是子类必须提供实现的能力。</p>
 <p>关于继承有如下3点需要注意<br>1：子类拥有父类对象所有的属性和方法（包括私有属性和私有方法），但是父类中的私有属性和方法子类无法访问，只是拥有。<br>2：子类可以对父类进行扩展<br>3：子类可以用自己的方式实现父类的方法</p>
 <p>多态：<strong>多态是指一个类的实例的相同方法在不同情形有不同的表现形式。</strong>对面向对下个来说，多态分为编译时多态和运行时多态。其中编译时多态是静态的，主要指方法的重载，它是根据参数列表的不同来区分不同的方法。运行时多态是动态的，通过动态绑定来实现。Java中有两种形式实现多态，继承（多个子类对同一方法的重写）与接口（实现接口并覆盖接口中同一方法）。<strong>Java中能够实现多态的三个必要条件是：继承、重写和向上转型。</strong></p>
-<h5 id="五大基本原则"><a href="#五大基本原则" class="headerlink" title="五大基本原则"></a>五大基本原则</h5><p>单一职责原则、开放封闭原则、里氏替换原则、依赖倒置原则、接口隔离原则<br>具体的描述，可以参考我补充的文章<a href="https://tobegeek.github.io/passages/%E7%90%86%E8%A7%A3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/">《设计模式的七大原则》</a></p>
-<h4 id="Java的平台无关性"><a href="#Java的平台无关性" class="headerlink" title="Java的平台无关性"></a>Java的平台无关性</h4><p>相信很多童鞋一定听说过一句话。Write Once,Run Anywhere!这可是Java成为巨人的根基所在啊。</p>
-<h5 id="什么是平台无关性"><a href="#什么是平台无关性" class="headerlink" title="什么是平台无关性"></a>什么是平台无关性</h5><p><strong>平台无关性就是指一种语言在计算机上的运行不受平台的约束，一次编译，到处执行</strong>。Java作为一门平台无关性语言，Java程序可以在各种各样的设备上运行，甚至是一些嵌入式设备，如打印机、扫描仪等。</p>
-<h5 id="平台无关性的实现"><a href="#平台无关性的实现" class="headerlink" title="平台无关性的实现"></a>平台无关性的实现</h5><p>在计算机世界中，计算机只认识0和1，通过编译原理我们知道程序的执行实际上是计算机对二进制文件的执行(由0和1组成)。我们日常使用的C++,Java，C，Go，Python都是高级编程语言，而非二进制语言。诸如此类的高级语言要想让计算机认识我们写出来的代码，就需要对它们进行“翻译”成二级制文件，这个过程称之为编译。负责编译的处理工具就叫做编译器。</p>
+<h4 id="五大基本原则"><a href="#五大基本原则" class="headerlink" title="五大基本原则"></a>五大基本原则</h4><p>单一职责原则、开放封闭原则、里氏替换原则、依赖倒置原则、接口隔离原则<br>具体的描述，可以参考我补充的文章<a href="https://tobegeek.github.io/passages/%E7%90%86%E8%A7%A3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/">《设计模式的七大原则》</a></p>
+<h3 id="Java的平台无关性"><a href="#Java的平台无关性" class="headerlink" title="Java的平台无关性"></a>Java的平台无关性</h3><p>相信很多童鞋一定听说过一句话。Write Once,Run Anywhere!这可是Java成为巨人的根基所在啊。</p>
+<h4 id="什么是平台无关性"><a href="#什么是平台无关性" class="headerlink" title="什么是平台无关性"></a>什么是平台无关性</h4><p><strong>平台无关性就是指一种语言在计算机上的运行不受平台的约束，一次编译，到处执行</strong>。Java作为一门平台无关性语言，Java程序可以在各种各样的设备上运行，甚至是一些嵌入式设备，如打印机、扫描仪等。</p>
+<h4 id="平台无关性的实现"><a href="#平台无关性的实现" class="headerlink" title="平台无关性的实现"></a>平台无关性的实现</h4><p>在计算机世界中，计算机只认识0和1，通过编译原理我们知道程序的执行实际上是计算机对二进制文件的执行(由0和1组成)。我们日常使用的C++,Java，C，Go，Python都是高级编程语言，而非二进制语言。诸如此类的高级语言要想让计算机认识我们写出来的代码，就需要对它们进行“翻译”成二级制文件，这个过程称之为编译。负责编译的处理工具就叫做编译器。</p>
 <p>Java文件要编译成二进制文件，编译过程分成两步骤<strong>前端编译和后端编译。前端编译主要是指与原语言(Jav)有关但与目标机无关的编译过程。后端编译是指将前端编译后生成的“中间代码”进行再次编译成机器语言的过程</strong>！我们熟悉的<strong>javac(Java Compiler)就是前端编译的编译器，主要功能是将Java代码转成class代码。</strong></p>
 <p>整个过程中有三个重要的概念。Java语法规范，Class文件，JVM。<br>没有严谨的Java语法规范，javac无法高效地将Java文件编译成class文件，Java语言规范规定了Java语言中地基本数据类型地取值范围和行为。其次，前端编译器会将所有地Java文件编译成中间文件class文件。然后JVM会加载class文件并转换成二进制文件。<br><img src="//tobegeek.github.io/passages/Java基础总结/Java%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B.png" alt="Java编译过程.png"></p>
 <p>从上面的图片简单表达了Java程序的编译过程以及如何实现平台无关性。JVM屏蔽了底层操作系统和硬件的差异，也就是说Java的平台无关性离不开JVM平台有关系基础的支持。因为JVM能够向上提供平台无关性的基础，这些年在JVM平台之上衍生了很多新语言如Scala，Groovy，Kotlin等，他们也是平台无关语言。其原理上是一样的。</p>
@@ -226,7 +224,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#写下这篇总结帖的初衷"><span class="toc-text">写下这篇总结帖的初衷</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#面向过程or面向对象"><span class="toc-text">面向过程or面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#面向对象的三大特性与五大基本原则"><span class="toc-text">面向对象的三大特性与五大基本原则</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#三大特性：封装、继承、多态"><span class="toc-text">三大特性：封装、继承、多态</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#五大基本原则"><span class="toc-text">五大基本原则</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Java的平台无关性"><span class="toc-text">Java的平台无关性</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#什么是平台无关性"><span class="toc-text">什么是平台无关性</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#平台无关性的实现"><span class="toc-text">平台无关性的实现</span></a></li></ol></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#写下这篇总结帖的初衷"><span class="toc-text">写下这篇总结帖的初衷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#面向过程or面向对象"><span class="toc-text">面向过程or面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#面向对象的三大特性与五大基本原则"><span class="toc-text">面向对象的三大特性与五大基本原则</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#三大特性：封装、继承、多态"><span class="toc-text">三大特性：封装、继承、多态</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五大基本原则"><span class="toc-text">五大基本原则</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java的平台无关性"><span class="toc-text">Java的平台无关性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是平台无关性"><span class="toc-text">什么是平台无关性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#平台无关性的实现"><span class="toc-text">平台无关性的实现</span></a></li></ol></li></ol>
   </div>
 </aside>
   
