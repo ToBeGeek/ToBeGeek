@@ -212,14 +212,14 @@
 <p>继承：<strong>继承是指某个类型的对象获得另一个类型的对象的属性和方法，并且在关系上是父子关系。</strong>通过继承创建的新类称为“子类”或者“派生类”，被继承的类被称为“基类”，“父类”或者“超类”。继承的过程，就是从一般到特殊的过程（也有说是从抽象到实现）。继承的实现方式包括两类方式。继承概念的实现方式有二类：实现继承与接口继承。实现继承是指直接使用基类的属性和方法而无需额外编码的能力；接口继承是指仅使用属性和方法的名称、但是子类必须提供实现的能力。</p>
 <p>关于继承有如下3点需要注意<br>1：子类拥有父类对象所有的属性和方法（包括私有属性和私有方法），但是父类中的私有属性和方法子类无法访问，只是拥有。<br>2：子类可以对父类进行扩展<br>3：子类可以用自己的方式实现父类的方法</p>
 <p>多态：<strong>多态是指一个类的实例的相同方法在不同情形有不同的表现形式。</strong>对面向对下个来说，多态分为编译时多态和运行时多态。其中编译时多态是静态的，主要指方法的重载，它是根据参数列表的不同来区分不同的方法。运行时多态是动态的，通过动态绑定来实现。Java中有两种形式实现多态，继承（多个子类对同一方法的重写）与接口（实现接口并覆盖接口中同一方法）。<strong>Java中能够实现多态的三个必要条件是：继承、重写和向上转型。</strong></p>
-<h4 id="五大基本原则"><a href="#五大基本原则" class="headerlink" title="五大基本原则"></a>五大基本原则</h4><p>单一职责原则、开放封闭原则、里氏替换原则、依赖倒置原则、接口隔离原则<br>具体的描述，可以参考我补充的文章<a href="https://tobegeek.github.io/passages/%E7%90%86%E8%A7%A3%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%B8%83%E5%A4%A7%E5%8E%9F%E5%88%99/">《设计模式的七大原则》</a></p>
+<h4 id="五大基本原则"><a href="#五大基本原则" class="headerlink" title="五大基本原则"></a>五大基本原则</h4><p>单一职责原则、开放封闭原则、里氏替换原则、依赖倒置原则、接口隔离原则<br>具体的描述，可以参考我补充的文章<a href="/passages/理解设计模式的七大原则">《设计模式的七大原则》</a></p>
 <h3 id="Java的平台无关性"><a href="#Java的平台无关性" class="headerlink" title="Java的平台无关性"></a>Java的平台无关性</h3><p>相信很多童鞋一定听说过一句话。Write Once,Run Anywhere!这可是Java成为巨人的根基所在啊。</p>
 <h4 id="什么是平台无关性"><a href="#什么是平台无关性" class="headerlink" title="什么是平台无关性"></a>什么是平台无关性</h4><p><strong>平台无关性就是指一种语言在计算机上的运行不受平台的约束，一次编译，到处执行</strong>。Java作为一门平台无关性语言，Java程序可以在各种各样的设备上运行，甚至是一些嵌入式设备，如打印机、扫描仪等。</p>
 <h4 id="平台无关性的实现"><a href="#平台无关性的实现" class="headerlink" title="平台无关性的实现"></a>平台无关性的实现</h4><p>在计算机世界中，计算机只认识0和1，通过编译原理我们知道程序的执行实际上是计算机对二进制文件的执行(由0和1组成)。我们日常使用的C++,Java，C，Go，Python都是高级编程语言，而非二进制语言。诸如此类的高级语言要想让计算机认识我们写出来的代码，就需要对它们进行“翻译”成二级制文件，这个过程称之为编译。负责编译的处理工具就叫做编译器。</p>
 <p>Java文件要编译成二进制文件，编译过程分成两步骤<strong>前端编译和后端编译。前端编译主要是指与原语言(Java)有关但与目标机无关的编译过程。后端编译是指将前端编译后生成的“中间代码”进行再次编译成机器语言的过程</strong>！我们熟悉的<strong>javac(Java Compiler)就是前端编译的编译器，主要功能是将Java代码转成class代码。</strong></p>
 <p>整个过程中有三个重要的概念。Java语法规范，Class文件，JVM。<br>没有严谨的Java语法规范，javac无法高效地将Java文件编译成class文件，Java语言规范规定了Java语言中地基本数据类型地取值范围和行为。其次，前端编译器会将所有地Java文件编译成中间文件class文件。然后JVM会加载class文件并转换成二进制文件。<br><img src="//tobegeek.github.io/passages/Java基础总结/Java%E7%BC%96%E8%AF%91%E8%BF%87%E7%A8%8B.png" alt="Java编译过程.png"></p>
 <p>从上面的图片简单表达了Java程序的编译过程以及如何实现平台无关性。JVM屏蔽了底层操作系统和硬件的差异，也就是说Java的平台无关性离不开JVM平台有关系基础的支持。因为JVM能够向上提供平台无关性的基础，这些年在JVM平台之上衍生了很多新语言如Scala，Groovy，Kotlin等，他们也是平台无关语言。其原理上是一样的。</p>
-<p>更多的内容推荐大家去阅读这本书《深入理解Java虚拟机》或者阅读我的这篇文章<a href="https://tobegeek.github.io/passages/Java%E6%98%AF%E5%A6%82%E4%BD%95%E7%BC%96%E8%AF%91%E7%9A%84/">《Java是如何编译的》</a></p>
+<p>更多的内容推荐大家去阅读这本书《深入理解Java虚拟机》或者阅读我的这篇文章<a href="/passages/Java是如何编译的">《Java是如何编译的》</a></p>
 <h3 id="JDK与JRE是什么玩意"><a href="#JDK与JRE是什么玩意" class="headerlink" title="JDK与JRE是什么玩意"></a>JDK与JRE是什么玩意</h3><p>JDK的全程是Java Development Kit，看名字就知道是JavaSDK。它包含了JRE和Javac和其他工具(如javadoc)。<strong>用于创建和编译程序</strong></p>
 <p>JRE是指Java Runtime Environment,即Java程序运行时环境。它具有已经编译好的Java程序所有可运行的基础内容，比如JVM和Java基础类库以及Java命令等。<strong>能够运行程序，但不能创建程序</strong></p>
 <h3 id="字符型常量和字符串常量的区别"><a href="#字符型常量和字符串常量的区别" class="headerlink" title="字符型常量和字符串常量的区别"></a>字符型常量和字符串常量的区别</h3><p>字符常量是单引号引起的一个字符，相当于一个整型值(ASCII值)，能够用于表达式运算；字符串常量是双引号引起的若干个字符，代表内存中的一个地址值（指向实际内容在内存中的位置）。字符常量没有自己的属性和方法，它是Java中定义的基本类型。字符串常量有自己的方法属性，它是一个对象。char在Java中占两个字节，16bit</p>
@@ -270,6 +270,7 @@
 <p>1.<strong>String类中定义的value属性是由final定义的</strong>，这也是为什么我们说<strong>String是不可变的</strong>。而<strong>StringBuilder和StringBuffer中的value属性从AbstractStringBuilder中继承而来，可以看到AbstractStringBuilder中的value并没有使用final修饰。因此我们说StringBuffer与StringBuilder是可变长的。</strong></p>
 <p>2.<strong>String中的对象是不可更改的，即可认为是常量，因此线程安全</strong>。仔细看看上诉代码中的StringBuilder和StringBuffer的源码片段，不难发现StringBuffer在重写append方法的时候其实对整个方法进行synchronized加锁做同步，来保证多线程的情况下方法调用的线程安全！对比StringBuilder对片段，发现<strong>StringBuilder并没有使用synchronized加锁，也就是线程不安全</strong>。（当然StringBuffer不仅仅对append方法做synchronized处理，还有别的常用方法我就不举例了）</p>
 <p>3.实际上，我们<strong>每次对String变量的重新赋值，本质上是生成一个新的String对象，然后将指针指向新的String对象</strong>。StringBuffer与StringBuilder是对其本身的value做出修改，但是由于StringBuffer的方法中采用synchronized修饰，使得StringBuffer在性能上低于StringBuilder（10%~15%）。凡是都有两面性，StringBuilder在多线程下是不安全的。</p>
+<p>未完成….会接着梳理的~</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -392,10 +393,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/Java是如何编译的/" data-enable="true">
+    <a href="/passages/Java中的IO、NIO浅析/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/在GitHub上搭建Hexo博客/" data-enable="true">
+    <a href="/passages/Java是如何编译的/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
