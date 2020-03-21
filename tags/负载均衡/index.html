@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>详解Springcloud之Ribbon组件 | 道·术</title>
+  <title>标签: 负载均衡 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="SpringCloud,SpringCloud,Ribbon,微服务,负载均衡,">
+    <meta name="keywords" content="Hexo, Theme-AD">
   
 
   
@@ -38,7 +38,7 @@
     welcome: {"enable":false,"interval":30},
     start_time: "2018-01-01",
     passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: true,
+    is_post: false,
     lock: false,
     author: "Li Haohang",
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
@@ -148,71 +148,24 @@
 </nav>
 <div id="site-process"></div>
     <main>
-      
-  <div class="passage">
-  <div class="passage-meta">
-    <span>
-      <i class="fa fa-calendar"></i>2020-03-21
-    </span>
-    
-      <span>
-        | <a href="/categories/SpringCloud/"><i class="fa fa-bookmark"></i>SpringCloud</a>
-      </span>
-    
-    
-      <span>
-        | <i class="fa fa-unlock-alt"></i>UNLOCK
-      </span>
-    
-  </div>
-  <h1 class="passage-title">
-    详解Springcloud之Ribbon组件
-  </h1>
+      <div class="timeline">
+  <h2 class="timeline-title">标签: 负载均衡</h2>
   
-  <article class="passage-article">
-    <h2 id="初识Ribbon"><a href="#初识Ribbon" class="headerlink" title="初识Ribbon"></a>初识Ribbon</h2><p>Ribbon是Netflix公司开源的一个负载均衡组件。负载均衡是指将负载按照一定的策略分发到不同的单元里。负载均衡组件，一般有两种实现方式。一种是如同Nginx网关服务，它是一种独立的进程服务，当事件进入组件的时候按照一定的策略对其进行转发到不同的其他进程上。另外一种就是将负载均衡的策略逻辑封装成SDK，并且允许集成在服务消费者的客户端上，服务消费者客户端会维护一份服务提供者的信息列表，通过这个列表信息再结合负载均衡策略将请求分发到多个服务提供者。Ribbon组件属于第二种方式的实现。</p>
-<p>在SpringCloud构建的微服务集群系统中，Ribbon作为服务消费者的负载均衡器，有两种使用方式。<br>1：结合RestTemplate使用（不推荐）<br>2：使用声明式调用Feign的时候，默认集成Ribbon（推荐使用）</p>
-<p>为什么我不推荐第一种方式呢，因为第一种方式需要我们自己去实现与RestTemplate的结合使用(虽然也不少什么麻烦事情)，但是Feign默认集成ribbon省去了这些不必要的麻烦事。更胜一筹的是，feign提供了灵活的配置，方便当rest接口调用失败的重试策略，并且可以很方便的配置熔断器的处理。Feign是一种声明式、模板化的Http-client。更多关于Feign的讲解，详见<a href="/passages/详解Springcloud之Feign组件/">详解SpringCloud之Feign组件</a></p>
-
-  </article>
-  <aside class="table-content" id="site-toc">
-  <div class="table-content-title">
-    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
-    <span>目录</span>
-  </div>
-  <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初识Ribbon"><span class="toc-text">初识Ribbon</span></a></li></ol>
-  </div>
-</aside>
-  
-    <aside class="passage-copyright">
-      <div>本文作者: 是浩航啊···</div>
-      
-        <div>
-          原文链接: 
-          <a href="" target="_blank">http://tobegeek.github.io/passages/详解Springcloud之Ribbon组件/</a>
-        </div>
-      
-      <div>
-        输出·回馈·成长
-      </div>
-    </aside>
-  
-  
-    <div class="passage-tags">
-     
-      <a href="/tags/SpringCloud/"><i class="fa fa-tags"></i>SpringCloud</a>
-     
-      <a href="/tags/Ribbon/"><i class="fa fa-tags"></i>Ribbon</a>
-     
-      <a href="/tags/微服务/"><i class="fa fa-tags"></i>微服务</a>
-     
-      <a href="/tags/负载均衡/"><i class="fa fa-tags"></i>负载均衡</a>
     
+      <h3 class="timeline-subtitle">2020</h3>
+    
+    <div class="timeline-item">
+      <time>2020-03-21</time>
+      <a target="_self" href="/passages/详解Springcloud之Feign组件/">详解Springcloud之Feign组件</a>
+    </div>
+  
+    
+    <div class="timeline-item">
+      <time>2020-03-21</time>
+      <a target="_self" href="/passages/详解Springcloud之Ribbon组件/">详解Springcloud之Ribbon组件</a>
     </div>
   
 </div>
-
     </main>
     
     <div class="site-footer-wrapper">
@@ -299,15 +252,15 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/详解Springcloud之Feign组件/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/谈一谈软件开发中的单元测试/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
   <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+    <a href="javascript:void(0);" data-enable="false" id="site-toc-show-btn">
       <i class="fa fa-bars"></i>
     </a>
     
