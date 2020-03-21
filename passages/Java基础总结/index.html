@@ -188,6 +188,20 @@
 </ul>
 </li>
 <li><a href="#jdk与jre是什么玩意">JDK与JRE是什么玩意</a></li>
+<li><a href="#字符型常量和字符串常量的区别">字符型常量和字符串常量的区别</a></li>
+<li><a href="#finalfinallyfinalize的区别">final,finally,finalize的区别</a></li>
+<li><a href="#什么是重载overload和重写override">什么是重载(overload)和重写(override)</a><ul>
+<li><a href="#override">override</a></li>
+<li><a href="#overload">overload</a></li>
+<li><a href="#重写与重载的区别">重写与重载的区别</a></li>
+</ul>
+</li>
+<li><a href="#构造器是否可以被继承">构造器是否可以被继承</a></li>
+<li><a href="#int和integer的区别">int和Integer的区别</a></li>
+<li><a href="#stringstringbufferstringbuilder">String、StringBuffer、StringBuilder</a><ul>
+<li><a href="#区别">区别</a></li>
+</ul>
+</li>
 </ul>
 <!-- /TOC -->
 
@@ -211,7 +225,48 @@
 <p>更多的内容推荐大家去阅读这本书《深入理解Java虚拟机》或者阅读我的这篇文章<a href="https://tobegeek.github.io/passages/Java%E6%98%AF%E5%A6%82%E4%BD%95%E7%BC%96%E8%AF%91%E7%9A%84/">《Java是如何编译的》</a></p>
 <h3 id="JDK与JRE是什么玩意"><a href="#JDK与JRE是什么玩意" class="headerlink" title="JDK与JRE是什么玩意"></a>JDK与JRE是什么玩意</h3><p>JDK的全程是Java Development Kit，看名字就知道是JavaSDK。它包含了JRE和Javac和其他工具(如javadoc)。<strong>用于创建和编译程序</strong></p>
 <p>JRE是指Java Runtime Environment,即Java程序运行时环境。它具有已经编译好的Java程序所有可运行的基础内容，比如JVM和Java基础类库以及Java命令等。<strong>能够运行程序，但不能创建程序</strong></p>
-
+<h3 id="字符型常量和字符串常量的区别"><a href="#字符型常量和字符串常量的区别" class="headerlink" title="字符型常量和字符串常量的区别"></a>字符型常量和字符串常量的区别</h3><p>字符常量是单引号引起的一个字符，相当于一个整型值(ASCII值)，能够用于表达式运算；字符串常量是双引号引起的若干个字符，代表内存中的一个地址值（指向实际内容在内存中的位置）。字符常量没有自己的属性和方法，它是Java中定义的基本类型。字符串常量有自己的方法属性，它是一个对象。char在Java中占两个字节，16bit</p>
+<h3 id="final-finally-finalize的区别"><a href="#final-finally-finalize的区别" class="headerlink" title="final,finally,finalize的区别"></a>final,finally,finalize的区别</h3><p>final：是用于声明属性，方法和类的关键字。分别表示属性不可改变，方法不可覆盖，类不可以继承。<a href="wwww.baidu.com">final与常量折叠</a></p>
+<p>finally：这个关键字是用于异常处理语句的组成(可选的组成)，即在异常处理后一定会执行的语句，通常用来做一些资源的closed处理。</p>
+<p>finalize：是Object类的一个方法，所有的事物都会有消亡的时候，该方法是在垃圾收集器进行GC的时确定了这个对象需要回收时候才调用finalize()</p>
+<h3 id="什么是重载-overload-和重写-override"><a href="#什么是重载-overload-和重写-override" class="headerlink" title="什么是重载(overload)和重写(override)"></a>什么是重载(overload)和重写(override)</h3><h4 id="override"><a href="#override" class="headerlink" title="override"></a>override</h4><p>重写是指子类对父类允许访问的方法的实现逻辑(方法体)进行重新编写，返回值和形参都不能改变。通过方法的重写，子类可以根据自己的需要修改从父类继承而来的方法的实现，扩展自己的行为。有如下几个注意要点：</p>
+<p>1.参数列表和函数名称必须完全与被重写的父类方法相同<br>2.<strong>返回类型与被重写的方法返回类型可以不相同，但是必须是父类返回值的派生类，JDK7版本后可以不同，JDK5及早期版本要求一致</strong><br>3.访问权限不能低于父类中被重写的方法的访问权限。例如：如果父类的一个方法被声明public，那么子类在重写这个方法的时候，权限不能&lt;=protected，也就是必须是public<br>4.<strong>重写方法不能抛出被重写方法中未申明的检查异常(也叫做强制性异常CheckedException)，也不能抛出比被重写方法申明的异常的超类。</strong>假设被重写方法申明抛出IOException，重写方法中不能抛出Exception，因为Exception是IOException的超类。<br>5.不能被继承的方法，不能被重写。例如父类中被final声明的方法就不可以被重写<br>6.被声明为static的方法不能被重写，但是能够再次声明<br>7.构造器不能被重写<br>8.重写的方法中能够抛出任何非强制性异常(Java中除了RuntimeException以外都是强制性异常)，无论被重写的方法中是否抛出异常。但是不能抛出就新的强制性异常或者更广泛的强制性异常<br>9.子类中需要调用父类中的被重写方法的时候，可以通过super关键字访问</p>
+<h4 id="overload"><a href="#overload" class="headerlink" title="overload"></a>overload</h4><p>重载是指同个类中，允许出现方法名称相同，但是参数列表不同（返回类型可以不同-非强制）。有如下几个规则</p>
+<p>1.被重载的方法必须有不同的参数列表(参数个数或者类型不同)<br>2.被重载的方法允许有不同的返回类型，但返回类型的不同并不是重载函数的区分标准<br>3.被重载的方法可以改变访问修饰符<br>4.被重载的方法允许声明新的或者更广的强制性异常(CheckedException)<br>5.方法也可以在子类中被重载</p>
+<h4 id="重写与重载的区别"><a href="#重写与重载的区别" class="headerlink" title="重写与重载的区别"></a>重写与重载的区别</h4><table>
+<thead>
+<tr>
+<th align="center">区别点</th>
+<th align="center">重载</th>
+<th align="center">重写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">参数列表</td>
+<td align="center">必须修改</td>
+<td align="center">必须一致</td>
+</tr>
+<tr>
+<td align="center">返回类型</td>
+<td align="center">可以修改-但不作为区分标准</td>
+<td align="center">必须一致</td>
+</tr>
+<tr>
+<td align="center">异常</td>
+<td align="center">可以声明新的或者更广的强制性异常</td>
+<td align="center">可以减少或删除，但是不能抛出新的或者更广的强制性异常(非强制性异常，如RuntimeException不约束)</td>
+</tr>
+<tr>
+<td align="center">访问权限</td>
+<td align="center">允许修改</td>
+<td align="center">不能比被重写的方法权限低</td>
+</tr>
+</tbody></table>
+<p>总结：不论是方法的重写还是重载，都是Java的多态性的不同表现。重写是父类与子类之间多态性的表现，重载是一个类的多态性表现</p>
+<p>借用一个趣图加深印象!<br><img src="//tobegeek.github.io/passages/Java基础总结/%E9%87%8D%E8%BD%BD%E4%B8%8E%E9%87%8D%E5%86%99.jpg" alt="重载与重写.jpg"></p>
+<h3 id="构造器是否可以被继承"><a href="#构造器是否可以被继承" class="headerlink" title="构造器是否可以被继承"></a>构造器是否可以被继承</h3><p>构造器(Constructor)是不能被继承的，因为每个类的类名称都不同，而构造器名称与类名相同，因此也不能被重写(override)，只能在同一个类中对其进行重载(overload)。</p>
+<h3 id="int和Integer的区别"><a href="#int和Integer的区别" class="headerlink" title="int和Integer的区别"></a>int和Integer的区别</h3><p>···· 等我看完《码出高效》再回来补充这个问题</p>
+<h3 id="String、StringBuffer、StringBuilder"><a href="#String、StringBuffer、StringBuilder" class="headerlink" title="String、StringBuffer、StringBuilder"></a>String、StringBuffer、StringBuilder</h3><h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -219,7 +274,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#写下这篇总结帖的初衷"><span class="toc-text">写下这篇总结帖的初衷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#面向过程or面向对象"><span class="toc-text">面向过程or面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#面向对象的三大特性与五大基本原则"><span class="toc-text">面向对象的三大特性与五大基本原则</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#三大特性：封装、继承、多态"><span class="toc-text">三大特性：封装、继承、多态</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五大基本原则"><span class="toc-text">五大基本原则</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java的平台无关性"><span class="toc-text">Java的平台无关性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是平台无关性"><span class="toc-text">什么是平台无关性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#平台无关性的实现"><span class="toc-text">平台无关性的实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK与JRE是什么玩意"><span class="toc-text">JDK与JRE是什么玩意</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#写下这篇总结帖的初衷"><span class="toc-text">写下这篇总结帖的初衷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#面向过程or面向对象"><span class="toc-text">面向过程or面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#面向对象的三大特性与五大基本原则"><span class="toc-text">面向对象的三大特性与五大基本原则</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#三大特性：封装、继承、多态"><span class="toc-text">三大特性：封装、继承、多态</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五大基本原则"><span class="toc-text">五大基本原则</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java的平台无关性"><span class="toc-text">Java的平台无关性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是平台无关性"><span class="toc-text">什么是平台无关性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#平台无关性的实现"><span class="toc-text">平台无关性的实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK与JRE是什么玩意"><span class="toc-text">JDK与JRE是什么玩意</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字符型常量和字符串常量的区别"><span class="toc-text">字符型常量和字符串常量的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#final-finally-finalize的区别"><span class="toc-text">final,finally,finalize的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是重载-overload-和重写-override"><span class="toc-text">什么是重载(overload)和重写(override)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#override"><span class="toc-text">override</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#overload"><span class="toc-text">overload</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#重写与重载的区别"><span class="toc-text">重写与重载的区别</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#构造器是否可以被继承"><span class="toc-text">构造器是否可以被继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#int和Integer的区别"><span class="toc-text">int和Integer的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String、StringBuffer、StringBuilder"><span class="toc-text">String、StringBuffer、StringBuilder</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#区别"><span class="toc-text">区别</span></a></li></ol></li></ol>
   </div>
 </aside>
   
