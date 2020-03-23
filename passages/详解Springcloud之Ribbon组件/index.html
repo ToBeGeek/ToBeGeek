@@ -170,7 +170,20 @@
   </h1>
   
   <article class="passage-article">
-    <h2 id="初识Ribbon"><a href="#初识Ribbon" class="headerlink" title="初识Ribbon"></a>初识Ribbon</h2><p>Ribbon是Netflix公司开源的一个负载均衡组件。负载均衡是指将负载按照一定的策略分发到不同的单元里。负载均衡组件，一般有两种实现方式。一种是如同Nginx网关服务，它是一种独立的进程服务，当事件进入组件的时候按照一定的策略对其进行转发到不同的其他进程上。另外一种就是将负载均衡的策略逻辑封装成SDK，并且允许集成在服务消费者的客户端上，服务消费者客户端会维护一份服务提供者的信息列表，通过这个列表信息再结合负载均衡策略将请求分发到多个服务提供者。Ribbon组件属于第二种方式的实现。</p>
+    <!-- TOC -->
+
+<ul>
+<li><a href="#%E5%88%9D%E8%AF%86ribbon">初识Ribbon</a></li>
+<li><a href="#%E7%BB%93%E5%90%88resttemplate%E4%BD%BF%E7%94%A8ribbon">结合RestTemplate使用Ribbon</a></li>
+<li><a href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8loadbalancerclient">源码解读-负载均衡器LoadBalancerClient</a></li>
+<li><a href="#%E5%88%A8%E6%A0%B9%E9%97%AE%E5%BA%95-%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3iloadbalancer">刨根问底-深入了解ILoadBalancer</a><ul>
+<li><a href="#%E5%86%B3%E5%AE%9A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5%E7%9A%84irule%E6%8E%A5%E5%8F%A3%E7%B1%BB">决定负载均衡策略的IRule接口类</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="初识Ribbon"><a href="#初识Ribbon" class="headerlink" title="初识Ribbon"></a>初识Ribbon</h3><p>Ribbon是Netflix公司开源的一个负载均衡组件。负载均衡是指将负载按照一定的策略分发到不同的单元里。负载均衡组件，一般有两种实现方式。一种是如同Nginx网关服务，它是一种独立的进程服务，当事件进入组件的时候按照一定的策略对其进行转发到不同的其他进程上。另外一种就是将负载均衡的策略逻辑封装成SDK，并且允许集成在服务消费者的客户端上，服务消费者客户端会维护一份服务提供者的信息列表，通过这个列表信息再结合负载均衡策略将请求分发到多个服务提供者。Ribbon组件属于第二种方式的实现。</p>
 <p>在SpringCloud构建的微服务集群系统中，Ribbon作为服务消费者的负载均衡器，有两种使用方式。<br>1：结合RestTemplate使用（不推荐）<br>2：使用声明式调用Feign的时候，默认集成Ribbon（推荐使用）</p>
 <p>为什么我不推荐第一种方式呢，因为第一种方式需要我们自己去实现与RestTemplate的结合使用(虽然也不少什么麻烦事情)，但是Feign默认集成ribbon省去了这些不必要的麻烦事。更胜一筹的是，feign提供了灵活的配置，方便当rest接口调用失败的重试策略，并且可以很方便的配置熔断器的处理。Feign是一种声明式、模板化的Http-client。更多关于Feign的讲解，详见<a href="/passages/详解Springcloud之Feign组件/">详解SpringCloud之Feign组件</a></p>
 <h3 id="结合RestTemplate使用Ribbon"><a href="#结合RestTemplate使用Ribbon" class="headerlink" title="结合RestTemplate使用Ribbon"></a>结合RestTemplate使用Ribbon</h3><p>1:引入Ribbon的依赖</p>
@@ -295,7 +308,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#初识Ribbon"><span class="toc-text">初识Ribbon</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#结合RestTemplate使用Ribbon"><span class="toc-text">结合RestTemplate使用Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码解读-负载均衡器LoadBalancerClient"><span class="toc-text">源码解读-负载均衡器LoadBalancerClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#刨根问底-深入了解ILoadBalancer"><span class="toc-text">刨根问底-深入了解ILoadBalancer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#决定负载均衡策略的IRule接口类"><span class="toc-text">决定负载均衡策略的IRule接口类</span></a></li></ol></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#初识Ribbon"><span class="toc-text">初识Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结合RestTemplate使用Ribbon"><span class="toc-text">结合RestTemplate使用Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码解读-负载均衡器LoadBalancerClient"><span class="toc-text">源码解读-负载均衡器LoadBalancerClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#刨根问底-深入了解ILoadBalancer"><span class="toc-text">刨根问底-深入了解ILoadBalancer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#决定负载均衡策略的IRule接口类"><span class="toc-text">决定负载均衡策略的IRule接口类</span></a></li></ol></li></ol>
   </div>
 </aside>
   
