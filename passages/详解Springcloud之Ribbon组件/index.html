@@ -180,6 +180,7 @@
 <li><a href="#%E5%86%B3%E5%AE%9A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5%E7%9A%84irule%E6%8E%A5%E5%8F%A3%E7%B1%BB">决定负载均衡策略的IRule接口类</a></li>
 </ul>
 </li>
+<li><a href="#%E5%86%B3%E5%AE%9A%E6%9C%8D%E5%8A%A1%E5%AE%9E%E4%BE%8B%E6%98%AF%E5%90%A6%E5%8F%AF%E7%94%A8%E7%9A%84iping">决定服务实例是否可用的IPing</a></li>
 </ul>
 <!-- /TOC -->
 
@@ -285,7 +286,7 @@
 </tr>
 <tr>
 <td align="center">RoundRobinRule</td>
-<td align="center">轮询选择server（Ribbon组件默认的策略）</td>
+<td align="center"><strong>轮询选择server（Ribbon组件默认的策略）</strong></td>
 </tr>
 <tr>
 <td align="center">RetryRule</td>
@@ -293,13 +294,48 @@
 </tr>
 <tr>
 <td align="center">WeightedResponseTimeRule</td>
-<td align="center">每30秒计算一次服务器响应时间，以响应时间作为权重，响应时间越短的服务器被选中的概率越大</td>
+<td align="center"><strong>每30秒计算一次服务器响应时间，以响应时间作为权重，响应时间越短的服务器被选中的概率越大</strong></td>
 </tr>
 <tr>
 <td align="center">ZoneAvoidanceRule</td>
 <td align="center">要求server所在的Zone可用的前提，进行轮询选择</td>
 </tr>
 </tbody></table>
+<h3 id="决定服务实例是否可用的IPing"><a href="#决定服务实例是否可用的IPing" class="headerlink" title="决定服务实例是否可用的IPing"></a>决定服务实例是否可用的IPing</h3><p>IPing接口，从名称上不难看出这是一个关乎“Ping”行为的接口类。每次我们都会用ping命令进行最快速的判断节点之间是否网络通路！实际上就是节点发起心跳包对另一个目标节点做echo请求报文，从而测试目的站点是否可达。IPing用于向server实例发起“ping”，来判断server是否有响应。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IPing</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Checks whether the given &lt;code&gt;Server&lt;/code&gt; is "alive" i.e. should be</span></span><br><span class="line"><span class="comment">     * considered a candidate while loadbalancing</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAlive</span><span class="params">(Server server)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的IPing也是基于策略模式的设计，衍生了很多子类(行为簇)</p>
+<table>
+<thead>
+<tr>
+<th align="center">行为簇(类名称)</th>
+<th align="center">策略描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">PingUrl</td>
+<td align="center">向真实的URL发起ping，并判断是否可用</td>
+</tr>
+<tr>
+<td align="center">PingConstant</td>
+<td align="center">固定某个服务可用，即默认该服务可用</td>
+</tr>
+<tr>
+<td align="center">NoOpPing</td>
+<td align="center">不进行ping，直接默认服务可以用，直接返回true</td>
+</tr>
+<tr>
+<td align="center">DummyPing</td>
+<td align="center">默认的简单实现类，直接返回true并实现initWithNiwsConfig方法</td>
+</tr>
+<tr>
+<td align="center">NIWSDiscoveryPing</td>
+<td align="center">不通过真正意义上的ping去判断server是否可用，而是通过DiscoveryEnabledServer的InstanceStatus.UP状态来判断是否可用</td>
+</tr>
+</tbody></table>
+<p>我们来看看NIWSDiscoveryPing的具体实现逻辑！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NIWSDiscoveryPing</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerPing</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">BaseLoadBalancer lb = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">NIWSDiscoveryPing</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> BaseLoadBalancer <span class="title">getLb</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> lb;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Non IPing interface method - only set this if you care about the "newServers Feature"</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> lb</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLb</span><span class="params">(BaseLoadBalancer lb)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.lb = lb;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAlive</span><span class="params">(Server server)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">boolean</span> isAlive = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">if</span> (server!=<span class="keyword">null</span> &amp;&amp; server <span class="keyword">instanceof</span> DiscoveryEnabledServer)&#123;</span><br><span class="line">                DiscoveryEnabledServer dServer = (DiscoveryEnabledServer)server;</span><br><span class="line">                InstanceInfo instanceInfo = dServer.getInstanceInfo();</span><br><span class="line">                <span class="keyword">if</span> (instanceInfo!=<span class="keyword">null</span>)&#123;</span><br><span class="line">                    InstanceStatus status = instanceInfo.getStatus();</span><br><span class="line">                    <span class="keyword">if</span> (status!=<span class="keyword">null</span>)&#123;</span><br><span class="line">                        <span class="comment">//根据服务实例的状态InstanceStatus.UP判断是否服务实例可用</span></span><br><span class="line">                        isAlive = status.equals(InstanceStatus.UP);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> isAlive;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                IClientConfig clientConfig)</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -308,7 +344,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#初识Ribbon"><span class="toc-text">初识Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结合RestTemplate使用Ribbon"><span class="toc-text">结合RestTemplate使用Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码解读-负载均衡器LoadBalancerClient"><span class="toc-text">源码解读-负载均衡器LoadBalancerClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#刨根问底-深入了解ILoadBalancer"><span class="toc-text">刨根问底-深入了解ILoadBalancer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#决定负载均衡策略的IRule接口类"><span class="toc-text">决定负载均衡策略的IRule接口类</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#初识Ribbon"><span class="toc-text">初识Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结合RestTemplate使用Ribbon"><span class="toc-text">结合RestTemplate使用Ribbon</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#源码解读-负载均衡器LoadBalancerClient"><span class="toc-text">源码解读-负载均衡器LoadBalancerClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#刨根问底-深入了解ILoadBalancer"><span class="toc-text">刨根问底-深入了解ILoadBalancer</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#决定负载均衡策略的IRule接口类"><span class="toc-text">决定负载均衡策略的IRule接口类</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#决定服务实例是否可用的IPing"><span class="toc-text">决定服务实例是否可用的IPing</span></a></li></ol>
   </div>
 </aside>
   
