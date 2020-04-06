@@ -195,6 +195,49 @@
 <blockquote>
 <p>nice to meet you,lihaohang</p>
 </blockquote>
+<h3 id="深入了解FeignClient"><a href="#深入了解FeignClient" class="headerlink" title="深入了解FeignClient"></a>深入了解FeignClient</h3><p>虽然从使用上来说，我们将@FeignClient用于声明一个Feign客户端。启动类XxApplication加上@EnableFeignClient注解且程序启动后，程序会通过包扫描扫描将所有被@FeignClient注解修饰的接口连同接口名和注解信息一起取出赋给BeanDefinitionBuilder，然后根据这个Builder获取BeanDefinition，最后将BeanDefinition注入IoC容器中。</p>
+<p>先来看看FeignClient的源代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ElementType.TYPE表示该注解用于目标接口上</span></span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="comment">//RetentionPolicy.RUNTIME，表示该注解会在Class字节码文件中存在，即允许运行时通过反射获取</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> FeignClient &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//name()、value()都是表示被调用的服务的ServiceId，注入到eureka上的服务名称</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor</span>(<span class="string">"name"</span>)</span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor</span>(<span class="string">"value"</span>)</span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AliasFor</span>(<span class="string">"value"</span>)</span><br><span class="line">    <span class="function">String <span class="title">name</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//url()直接填写硬编码的URL地址，就是直接写死调用地址！</span></span><br><span class="line">    <span class="function">String <span class="title">url</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//decode404()决定当接口调用地址404的时候，是解码还是抛出异常信息</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">decode404</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//configuration()指明FeignClient的配置类</span></span><br><span class="line">    Class&lt;?&gt;[] configuration() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//fallback()为当前feign客户端配置熔断器的处理类，具体的熔断处理逻辑</span></span><br><span class="line">    Class&lt;?&gt; fallback() <span class="keyword">default</span> <span class="keyword">void</span>.class;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt; fallbackFactory() <span class="keyword">default</span> <span class="keyword">void</span>.class;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">path</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">primary</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="除了Retryer还可以配置什么"><a href="#除了Retryer还可以配置什么" class="headerlink" title="除了Retryer还可以配置什么"></a>除了Retryer还可以配置什么</h3><p>Feign Client默认的配置类为FeignClientsConfiguration，分析这个类的源代码，我们可以发现feign client不仅仅只有Retryer配置这么简单.<br>它可以有FeignRetry、FeignLoggerFactory、FormattingConversionService、Decoder、Encoder、Contract。默认注入的配置以及默认实现如下</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型名称</th>
+<th align="center">beanName</th>
+<th align="center">默认实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Decoder</td>
+<td align="center">feignDecoder</td>
+<td align="center">ResponseEntityDecoder</td>
+</tr>
+<tr>
+<td align="center">Encoder</td>
+<td align="center">feignEncoder</td>
+<td align="center">SpringEncoder</td>
+</tr>
+<tr>
+<td align="center">Logger</td>
+<td align="center">feignLogger</td>
+<td align="center">Slf4jLogger</td>
+</tr>
+<tr>
+<td align="center">Contract</td>
+<td align="center">feignContract</td>
+<td align="center">SpringMvcContract</td>
+</tr>
+<tr>
+<td align="center">Feign.Builder</td>
+<td align="center">feignBuilder</td>
+<td align="center">HystrixFeignBuilder</td>
+</tr>
+</tbody></table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignClientsConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">...<span class="comment">//省略代码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Decoder <span class="title">feignDecoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntityDecoder(<span class="keyword">new</span> SpringDecoder(<span class="keyword">this</span>.messageConverters));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Encoder <span class="title">feignEncoder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringEncoder(<span class="keyword">this</span>.messageConverters);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Contract <span class="title">feignContract</span><span class="params">(ConversionService feignConversionService)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SpringMvcContract(<span class="keyword">this</span>.parameterProcessors, feignConversionService);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">...<span class="comment">//省略代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当需要更个性化的配置的时候，就需要对FeignClientsConfiguration类中的Bean进行重写，覆盖掉默认的配置Bean即可达到自定义配置的目的！</p>
+<p>如上面demo所示的FeignConfig就覆盖掉默认的Retryer的Bean，并将FeignConfig指定为FeignClient的配置类。</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -203,7 +246,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#初识声明式调用组件Feign"><span class="toc-text">初识声明式调用组件Feign</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简单示例demo"><span class="toc-text">简单示例demo</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#初识声明式调用组件Feign"><span class="toc-text">初识声明式调用组件Feign</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#简单示例demo"><span class="toc-text">简单示例demo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深入了解FeignClient"><span class="toc-text">深入了解FeignClient</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#除了Retryer还可以配置什么"><span class="toc-text">除了Retryer还可以配置什么</span></a></li></ol>
   </div>
 </aside>
   
