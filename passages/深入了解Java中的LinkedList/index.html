@@ -170,9 +170,47 @@
   </h1>
   
   <article class="passage-article">
-    <p>ArrayList和Vector在底层的实现上都是根据数组实现的，他俩的实现原理非常接近。而此次要总结的LinkedList在底层上是基于（双向）链表实现的。也就是说在内存空间的分配上，LinkedList分配的空间可以是不连续的，仅仅在逻辑意义上连续。大一的时候，用过C语言写链表结构的同学应该都知道。链表是由节点node构成的，每个node都至少包含指向下一个节点的句柄(指针，如果只有当个方向的指针则为单向链表，包含上个node以及下个node的指针则为双向链表)。</p>
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>ArrayList和Vector在底层的实现上都是根据数组实现的，他俩的实现原理非常接近。而此次要总结的LinkedList在底层上是基于（双向）链表实现的。也就是说在内存空间的分配上，LinkedList分配的空间可以是不连续的，仅仅在逻辑意义上连续。大一的时候，用过C语言写链表结构的同学应该都知道。链表是由节点node构成的，每个node都至少包含指向下一个节点的句柄(指针，如果只有当个方向的指针则为单向链表，包含上个node以及下个node的指针则为双向链表)。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//单向链表的C实现</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//双向链表的C实现</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span>&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">prior</span>;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h4 id="数组与链表的比较"><a href="#数组与链表的比较" class="headerlink" title="数组与链表的比较"></a>数组与链表的比较</h4><p>在讲解LinkedList之前，先复习复习数组与链表这两个数据结构的特性以及优缺点</p>
+<h5 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h5><ol>
+<li>在内存中，数组是一块连续的区域（物理空间是连续&amp;有序）</li>
+<li>数组在使用之前，必须进行初始化，申请内存大小（一般会有预留空间）</li>
+<li>数组在插入和删除元素的时候效率低，<strong>插入和删除元素的时间复杂度会受到目标位置的影响</strong>。（如果在数组尾部添加元素，则时间复杂度就是O(1),此时是常数级的。但是如果在指定位置i插入或删除元素的话，时间复杂度就是O(n-i),n是数组的长度，n-i的意思表示数组中的第i和第i个元素后的n-i个元素都需要进行挪移位置操作，O(n-i)其实就是线性级的复杂度了）</li>
+<li>支持快速随机访问，且访问效率极高。毕竟数组是连续的，可以根据数组的索引直接找到对应的元素位置</li>
+<li>不利于扩展，当数组长度不满足的时候，只能重新分配新内存空间（也就是重新定义数组，如ArrayList和Vector的实现原理，在每次进行扩容的时候都是调用 Arrays.copyOf(elementData, size, Object[].class)）</li>
+</ol>
+<h5 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h5><ol>
+<li>链表是逻辑意义上连续存储的一种数据结构，在物理上没有要求</li>
+<li>链表中的每个节点都至少保存了相邻节点的一个或者两个指针（即每个节点数据都保存了下一个或者上一个节点的内存地址）</li>
+<li><strong>插入和删除元素的效率高且稳定，不会受到元素位置的影响</strong>。（就像我们买了个新的手表，手表带过长的时候我们需要把第i块手表带粒拆除，只需要拆掉i块后，将i-1,i+1进行连接，也就是链表中的第i-1节点中的指针指向第i+1节点，对于其他的节点来说不需要做出改动，近似O(1)，也就是常数级的复杂度）</li>
+<li>查找效率低，因为不具有随机访问性，所以每次访问某个位置的时候就必须从链表的端开始顺序访问（还是以上面的第三点为例子，假设本人高度近视且眼镜没戴，那我只能顺着表带的端点，从第一个表带粒开始摸，一边摸一边数，直到第i个位置在进行拆表带粒，那么这个访问的算法复杂度就是O(n),也就是线性级）</li>
+<li>内存利用效率高，扩展方便。链表的内存空间不需要提前申请，数据随意增删（需要的时候再申请）</li>
+</ol>
+<h5 id="数组和链表的优缺点以及怎么使用"><a href="#数组和链表的优缺点以及怎么使用" class="headerlink" title="数组和链表的优缺点以及怎么使用"></a>数组和链表的优缺点以及怎么使用</h5><table>
+<thead>
+<tr>
+<th align="center">数据结构</th>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">数组</td>
+<td align="center">支持快速随机访问，查找速度快</td>
+<td align="center">1.插入和删除元素的效率低 2.容易造成内存浪费，申请的空间超出实际需要 3.数组大小固定，不能动态扩展</td>
+</tr>
+<tr>
+<td align="center">链表</td>
+<td align="center">1.插入和删除元素效率高 2.内存利用率高，按需分配，不会造成内存浪费 3.扩展灵活</td>
+<td align="center">不支持快速随机访问，需要从端开始遍历查找，查找效率低</td>
+</tr>
+</tbody></table>
+<p>不难看出。当我们需要对数据结构中的元素进行频繁的查找时候，我们应该采用基于数组的数据结构。而当我们需要频繁增加或删除元素的时候，我们应该采用链表。<br>在使用数组这个数据结构之前，我们要尽可能地保证申请地空间大小满足我们的实际需要，从而避免内存浪费</p>
+<h3 id="LinkedList源码解读"><a href="#LinkedList源码解读" class="headerlink" title="LinkedList源码解读"></a>LinkedList源码解读</h3><h4 id="LinkedList的继承关系和层次关系"><a href="#LinkedList的继承关系和层次关系" class="headerlink" title="LinkedList的继承关系和层次关系"></a>LinkedList的继承关系和层次关系</h4><p>照例，让我们先来看看关于LinkedList的继承关系和层次关系</p>
+<p><img src="//tobegeek.github.io/passages/深入了解Java中的LinkedList/LinkedList.png" alt="LinkedList.png"></p>
+<p>由上图可知道，LinkedList不仅实现了List接口，还实现了Deque接口。作为一个双端链表，LinkedList可以高效的插入和进行删除操作，但是它不支持快速随机访问（大白话说法，就是不能通过元素的序号快速获取元素对象，如get(int index)）。我们知道链表在存储上是不需要分配连续的空间进行元素的存放，仅仅当需要的时候进行分配。换言之，基于链表结构的LinkedList对空间利用率更高效。</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -181,7 +219,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数组与链表的比较"><span class="toc-text">数组与链表的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#数组的特点"><span class="toc-text">数组的特点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#链表的特点"><span class="toc-text">链表的特点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#数组和链表的优缺点以及怎么使用"><span class="toc-text">数组和链表的优缺点以及怎么使用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LinkedList源码解读"><span class="toc-text">LinkedList源码解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#LinkedList的继承关系和层次关系"><span class="toc-text">LinkedList的继承关系和层次关系</span></a></li></ol></li></ol>
   </div>
 </aside>
   
@@ -295,7 +333,7 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/深入了解Java中的HashMap/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
     <a href="/passages/深入了解Java中的Vector/" data-enable="true">
