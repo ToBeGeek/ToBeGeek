@@ -170,7 +170,26 @@
   </h1>
   
   <article class="passage-article">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>ArrayList和Vector在底层的实现上都是根据数组实现的，他俩的实现原理非常接近。而此次要总结的LinkedList在底层上是基于（双向）链表实现的。也就是说在内存空间的分配上，LinkedList分配的空间可以是不连续的，仅仅在逻辑意义上连续。大一的时候，用过C语言写链表结构的同学应该都知道。链表是由节点node构成的，每个node都至少包含指向下一个节点的句柄(指针，如果只有当个方向的指针则为单向链表，包含上个node以及下个node的指针则为双向链表)。</p>
+    <!-- TOC -->
+
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a><ul>
+<li><a href="#%E6%95%B0%E7%BB%84%E4%B8%8E%E9%93%BE%E8%A1%A8%E7%9A%84%E6%AF%94%E8%BE%83">数组与链表的比较</a><ul>
+<li><a href="#%E6%95%B0%E7%BB%84%E7%9A%84%E7%89%B9%E7%82%B9">数组的特点</a></li>
+<li><a href="#%E9%93%BE%E8%A1%A8%E7%9A%84%E7%89%B9%E7%82%B9">链表的特点</a></li>
+<li><a href="#%E6%95%B0%E7%BB%84%E5%92%8C%E9%93%BE%E8%A1%A8%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%E4%BB%A5%E5%8F%8A%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8">数组和链表的优缺点以及怎么使用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#linkedlist%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB">LinkedList源码解读</a><ul>
+<li><a href="#linkedlist%E7%9A%84%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB%E5%92%8C%E5%B1%82%E6%AC%A1%E5%85%B3%E7%B3%BB">LinkedList的继承关系和层次关系</a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>ArrayList和Vector在底层的实现上都是根据数组实现的，他俩的实现原理非常接近。而此次要总结的LinkedList在底层上是基于（双向）链表实现的。也就是说在内存空间的分配上，LinkedList分配的空间可以是不连续的，仅仅在逻辑意义上连续。大一的时候，用过C语言写链表结构的同学应该都知道。链表是由节点node构成的，每个node都至少包含指向下一个节点的句柄(指针，如果只有当个方向的指针则为单向链表，包含上个node以及下个node的指针则为双向链表)。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//单向链表的C实现</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//双向链表的C实现</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">node</span>&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">prior</span>;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">node</span>* <span class="title">next</span>;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="数组与链表的比较"><a href="#数组与链表的比较" class="headerlink" title="数组与链表的比较"></a>数组与链表的比较</h4><p>在讲解LinkedList之前，先复习复习数组与链表这两个数据结构的特性以及优缺点</p>
