@@ -207,7 +207,7 @@
 <td align="center">不支持快速随机访问，需要从端开始遍历查找，查找效率低</td>
 </tr>
 </tbody></table>
-<p>不难看出。当我们需要对数据结构中的元素进行频繁的查找时候，我们应该采用基于数组的数据结构。而当我们需要频繁增加或删除元素的时候，我们应该采用链表。<br>在使用数组这个数据结构之前，我们要尽可能地保证申请地空间大小满足我们的实际需要，从而避免内存浪费</p>
+<p>不难看出。当我们需要对数据结构中的元素进行频繁的查找时候，我们应该采用基于数组的数据结构。而当我们需要频繁增加或删除元素的时候，我们应该采用链表。<br>在使用数组这个数据结构之前，我们要尽可能地保证申请地空间大小满足我们的实际需要，从而避免内存浪费。</p>
 <h3 id="LinkedList源码解读"><a href="#LinkedList源码解读" class="headerlink" title="LinkedList源码解读"></a>LinkedList源码解读</h3><h4 id="LinkedList的继承关系和层次关系"><a href="#LinkedList的继承关系和层次关系" class="headerlink" title="LinkedList的继承关系和层次关系"></a>LinkedList的继承关系和层次关系</h4><p>照例，让我们先来看看关于LinkedList的继承关系和层次关系</p>
 <p><img src="//tobegeek.github.io/passages/深入了解Java中的LinkedList/LinkedList.png" alt="LinkedList.png"></p>
 <p>由上图可知道，LinkedList不仅实现了List接口，还实现了Deque接口。作为一个双端链表，LinkedList可以高效的插入和进行删除操作，但是它不支持快速随机访问（大白话说法，就是不能通过元素的序号快速获取元素对象，如get(int index)）。我们知道链表在存储上是不需要分配连续的空间进行元素的存放，仅仅当需要的时候进行分配。换言之，基于链表结构的LinkedList对空间利用率更高效。</p>
