@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="SpringCloud,spring cloud,分布式,">
+    <meta name="keywords" content="SpringCloud,分布式,spring cloud,">
   
 
   
@@ -196,6 +196,22 @@
 
 <p>启动Server端后，再启动Client端，输入 <a href="http://localhost:8761/" target="_blank" rel="noopener">http://localhost:8761/</a>,能够看到如下的一个界面</p>
 <p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E5%90%AF%E5%8A%A8%E6%95%88%E6%9E%9C.png" alt="启动效果"></p>
+<h3 id="Eurake的自我保护机制"><a href="#Eurake的自我保护机制" class="headerlink" title="Eurake的自我保护机制"></a>Eurake的自我保护机制</h3><p>从CAP理论来说，Eureka是一个AP系统，追求高可用而不是要求强一致性。这点与Zookeeper的初衷相反，zk是CP，以高一致性为主，所以如果使用ZK在服务发现和注册方面，可用服务信息虽然很及时，但是会出现不可用情形，造成无法克服的生产事故。Eureka则是在出现网络分区期间（无法通讯，出现需要重试的情况就是由于网络已经分区了），注册表中的信息在服务器之间不一致，自我保护(self-preservation)功能旨在最大限度地减少这种不一致性。</p>
+<h4 id="自我保护模式"><a href="#自我保护模式" class="headerlink" title="自我保护模式"></a>自我保护模式</h4><p>当有一个新的Eureka Server出现时，他尝试从相邻的Peer节点获取所有服务实例注册表信息。如果从相邻的Perr节点获取信息时出现了故障，Eureka Server会尝试其他Peer节点。如果EurekaServer能够成功获取所有的服务实例信息，则根据配置信息设置“服务续约”的阈值。如果EurekaServer接收到的服务续约次数低于配置的百分比（默认15分钟内，续约低于85%），则EurekaServer开启自我保护模式，即不再剔除注册列表的信息！</p>
+<p>为什么要这样设计呢？上面说过，Eureka是一个AP设计的服务。自我保护模式的功能设计就体现了它高可用性的一面！当EurekaServer本身出现问题而导致EurekaClient无法续约，EurekaClient的注册列表信息不再剔除，也就是说每一个client都可以进行服务消费。（简单地说就是，虽然服务端出现问题，但是只要客户端仍然存有服务实例名称与调用地址信息的映射关系，那么依然可以提供服务消费）。当故障恢复以后，Server节点会退出自我保护模式。</p>
+<h4 id="触发自我保护模式的过程演示"><a href="#触发自我保护模式的过程演示" class="headerlink" title="触发自我保护模式的过程演示"></a>触发自我保护模式的过程演示</h4><p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E5%81%A5%E5%BA%B7demo.png" alt="健康demo.png"></p>
+<p>以一个健康的系统为例子，假设上面的所有微服务都处于健康并且在Eureka服务器上注册成功。服务B调用了服务C和服务E。按照默认的配置来说，如果在15分钟内，存在续约服务低于85%的情况，就会触发自我保护模式。当前假设服务D与服务E所在的服务器出现网络问题，导致服务D和服务E需要off-line。那么情况如下图所示。</p>
+<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E6%9C%8D%E5%8A%A1%E5%89%94%E9%99%A4.png" alt="服务剔除.png"></p>
+<p>因为接受不到服务D,E的两个实例的心跳，这时候Eureka服务会进入观察期。如在观察期(默认十五分钟)内，Eureka-Server收到的续约仍然在配置之下（默认85%）则开启自我保护模式。因服务D，E剔除，所以服务实例B不可以再调用服务E。再次假设，服务C也出现问题了！但是由于处于自我保护模式下，Eureka-Server不会剔除服务C。</p>
+<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E5%BC%80%E5%90%AF%E4%B8%8D%E5%86%8D%E5%89%94%E9%99%A4%E5%AE%9E%E4%BE%8B.png" alt="保护模式开启不再剔除实例.png"></p>
+<p>如果此时是Eureka服务本身接受问题，导致误杀了服务D,E。但是此时已经触发自我保护模式的开启，那么这时候不会对幸存者服务进行剔除操作了。服务A，服务B，服务C是Eureka客户端，客户端本身（SDK）也保留了从Eureka同步过来的注册列表信息。也就是说此时Eureka-Server虽然出问题，但是服务B也是可以通过这份映射表信息继续调用仍然有效的服务C</p>
+<p><img src="//tobegeek.github.io/passages/Eureka的学习笔记/%E6%9C%8D%E5%8A%A1%E4%BB%8D%E7%84%B6%E5%8F%AF%E8%B0%83%E7%94%A8.png" alt="服务仍然可调用.png"></p>
+<p>自我保护背后的理由<br>注意：没有接受心跳意味着两种可能：网络故障；原实例真的下线了。如何判断这两个故障其实很难，这是分布式系统典型拜占庭将军问题，解决方式一般两个：接受现状或重试。接受现状就是允许网络故障的两端数据不一致，根据CAP定理，就是选择了AP，而如果不断重试，则是为了让两端数据尽快一致起来，实际就是选择 了CP，Dubbo的源码中使用Netty长连接以及ZoopKeeper本身的都是CA，这些都是符合人的自觉，但是Eureka选择了接受现状，选择了AP，对网络分区的容忍性提高，可用性也提高了。</p>
+<p>具体来说，由于以下两个原因，自我保护功能可以证明是合理的。</p>
+<ol>
+<li>没有接收心跳的服务器可能是由于网络分区，接受分区，保留暂时的不一致，提高可用性。</li>
+<li>即使服务器和某些客户端之间的连接丢失，客户端也可能相互连接,实例B还是具有与实例C的连接</li>
+</ol>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -204,7 +220,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么用Eureka"><span class="toc-text">为什么用Eureka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建Eureka服务"><span class="toc-text">快速搭建Eureka服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编写Eureka-Client"><span class="toc-text">编写Eureka Client</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么用Eureka"><span class="toc-text">为什么用Eureka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#快速搭建Eureka服务"><span class="toc-text">快速搭建Eureka服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编写Eureka-Client"><span class="toc-text">编写Eureka Client</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Eurake的自我保护机制"><span class="toc-text">Eurake的自我保护机制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#自我保护模式"><span class="toc-text">自我保护模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#触发自我保护模式的过程演示"><span class="toc-text">触发自我保护模式的过程演示</span></a></li></ol></li></ol>
   </div>
 </aside>
   
@@ -224,9 +240,9 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/spring-cloud/"><i class="fa fa-tags"></i>spring cloud</a>
-     
       <a href="/tags/分布式/"><i class="fa fa-tags"></i>分布式</a>
+     
+      <a href="/tags/spring-cloud/"><i class="fa fa-tags"></i>spring cloud</a>
     
     </div>
   
