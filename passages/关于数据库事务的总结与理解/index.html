@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>深入了解Java中的HashSet | 道·术</title>
+  <title>关于数据库事务的总结与理解 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Java基础,Java基础,个人总结,">
+    <meta name="keywords" content="数据库理论,数据库理论,事务特性,">
   
 
   
@@ -152,11 +152,11 @@
   <div class="passage">
   <div class="passage-meta">
     <span>
-      <i class="fa fa-calendar"></i>2020-04-29
+      <i class="fa fa-calendar"></i>2020-05-21
     </span>
     
       <span>
-        | <a href="/categories/Java基础/"><i class="fa fa-bookmark"></i>Java基础</a>
+        | <a href="/categories/数据库理论/"><i class="fa fa-bookmark"></i>数据库理论</a>
       </span>
     
     
@@ -166,11 +166,25 @@
     
   </div>
   <h1 class="passage-title">
-    深入了解Java中的HashSet
+    关于数据库事务的总结与理解
   </h1>
   
   <article class="passage-article">
-    
+    <h3 id="事务的四大特性（ACID）"><a href="#事务的四大特性（ACID）" class="headerlink" title="事务的四大特性（ACID）"></a>事务的四大特性（ACID）</h3><p>如果一个数据库软件是支持事务的操作，那么该数据库需要具备ACID四个特性。</p>
+<p>1.原子性-Atomicity：<br>原子性是指事务包含的所有操作要么全部成功，要么全部失败回滚。</p>
+<p>2.一致性-Consistency:<br>一致性是指事务执行之前和执行之后都处于一致性状态。举例：从银行卡中取1000快钱，不管你是在当前事务中一次性取1000，还是分多次取，结果都是扣减1000。</p>
+<p>3.隔离性-Isolation:<br>隔离性是当多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他用户的事务操作所干扰，简而言之，并发的事务之间各自独立。（数据库提供了多种隔离级别来保证事务的隔离性）</p>
+<p>4.持久性-Durability<br>持久性是指一个事务一旦提交了，那么对数据库的改变就是持久化的，即便在持久化的过程出现系统故障也不会丢失提交事务的操作。</p>
+<h4 id="MySQL如何保证事务的原子性"><a href="#MySQL如何保证事务的原子性" class="headerlink" title="MySQL如何保证事务的原子性"></a>MySQL如何保证事务的原子性</h4><p>MySQL中的InnoDB存储引擎是支持事务的ACID特性的，想要保证原子性，就要靠回滚机制。<strong>InnoDB实现回滚的方式，就是通过undo log（回滚日志）实现。当事务对数据库进行修改时，InnoDB就会生成对应的undo log。如果事务执行失败或者调用了rollback，需要进行事务回滚，便可以利用undo log中的信息将数据回滚到修改之前的样子。</strong></p>
+<p>undo log属于逻辑日志，当需要回滚时，innoDB会根据undo log的内容做相反的动作。如果是insert，那么回滚时候执行delete。如果是update，那么回滚的时候会把原数据update回来。</p>
+<h4 id="MySQL如何实现事务的持久性"><a href="#MySQL如何实现事务的持久性" class="headerlink" title="MySQL如何实现事务的持久性"></a>MySQL如何实现事务的持久性</h4><p>要保证事务的持久性，根本的问题在于如何解决当出现系统异常情况的时候不会导致数据的丢失。</p>
+<h5 id="数据落盘的过程"><a href="#数据落盘的过程" class="headerlink" title="数据落盘的过程"></a>数据落盘的过程</h5><p>数据在数据库中都是存储在磁盘中的，但是如果每次读写操作都需要磁盘IO，那么效率就会很低。为此，InnoDB引入的缓冲池(Buffer Pool)，当从数据库中进行读取操作的时候，优先查找缓冲层，如果没有则查DB。当从数据库中进行写操作的时候，优先将数据写入缓冲池，然后定期将数据刷入磁盘中永久存储（刷脏）。</p>
+<h5 id="为什么需要redo-log-重做日志"><a href="#为什么需要redo-log-重做日志" class="headerlink" title="为什么需要redo log(重做日志)"></a>为什么需要redo log(重做日志)</h5><p>通过上述小节，我们知道了数据是怎么在Mysql中落盘的。虽然引入了缓冲池BUffer Pool提升了读写的效率，但如果数据在刷脏过程中碰上宕机，就会导致数据丢失，无法保证持久性。所以InnoDB引入redo log来解决这个问题。</p>
+<p>redo log采用预写式日志，所有的数据修改先写入日志，然后在更新到缓冲池中。当出现宕机的时候，重启将读取redo log中的数据，对数据进行修复，从而保证了数据不会因为mysql宕机而丢失，满足了持久性的要求。当事务提交时，会调用fsync接口对redo log进行刷盘。</p>
+<h5 id="事务提交的时候为什么要读取redo-log再进行刷盘"><a href="#事务提交的时候为什么要读取redo-log再进行刷盘" class="headerlink" title="事务提交的时候为什么要读取redo log再进行刷盘"></a>事务提交的时候为什么要读取redo log再进行刷盘</h5><p>事务提交的时候将redo log日志写入磁盘速度要比缓冲池数据写入要快。原因如下：<br>1.刷脏是随机IO，每次修改的数据位置随机。而redo log写入磁盘的方式是追加操作，是顺序IO。<br>2.刷脏是批量写入的（以数据页Page为单位，整页写入），数据页上的一个小修改都需要整页写入，造成很多无效的IO；而redo log按需写入，无效IO少。</p>
+<p>ps：<br>顺序IO是指读写操作的访问地址连续。在顺序IO访问中，HDD所需的磁道搜索时间显着减少，因为读/写磁头可以以最小的移动访问下一个块。数据备份和日志记录等业务是顺序IO业务。</p>
+<p>随机IO是指读写操作时间连续，但访问地址不连续，随机分布在磁盘的地址空间中。产生随机IO的业务有OLTP服务，SQL，即时消息服务等。</p>
+<h4 id="MySQL如何实现事务的隔离性"><a href="#MySQL如何实现事务的隔离性" class="headerlink" title="MySQL如何实现事务的隔离性"></a>MySQL如何实现事务的隔离性</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -178,7 +192,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#事务的四大特性（ACID）"><span class="toc-text">事务的四大特性（ACID）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL如何保证事务的原子性"><span class="toc-text">MySQL如何保证事务的原子性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL如何实现事务的持久性"><span class="toc-text">MySQL如何实现事务的持久性</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#数据落盘的过程"><span class="toc-text">数据落盘的过程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#为什么需要redo-log-重做日志"><span class="toc-text">为什么需要redo log(重做日志)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#事务提交的时候为什么要读取redo-log再进行刷盘"><span class="toc-text">事务提交的时候为什么要读取redo log再进行刷盘</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MySQL如何实现事务的隔离性"><span class="toc-text">MySQL如何实现事务的隔离性</span></a></li></ol></li></ol>
   </div>
 </aside>
   
@@ -187,7 +201,7 @@
       
         <div>
           原文链接: 
-          <a href="" target="_blank">http://tobegeek.github.io/passages/深入了解Java中的HashSet/</a>
+          <a href="" target="_blank">http://tobegeek.github.io/passages/关于数据库事务的总结与理解/</a>
         </div>
       
       <div>
@@ -198,9 +212,9 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/Java基础/"><i class="fa fa-tags"></i>Java基础</a>
+      <a href="/tags/数据库理论/"><i class="fa fa-tags"></i>数据库理论</a>
      
-      <a href="/tags/个人总结/"><i class="fa fa-tags"></i>个人总结</a>
+      <a href="/tags/事务特性/"><i class="fa fa-tags"></i>事务特性</a>
     
     </div>
   
@@ -292,10 +306,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/关于自旋锁的总结/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/深入了解Java中的HashMap/" data-enable="true">
+    <a href="/passages/关于自旋锁的总结/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
