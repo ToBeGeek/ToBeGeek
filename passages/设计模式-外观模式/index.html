@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>Java是如何编译的 | 道·术</title>
+  <title>设计模式-外观模式 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Java基础,编译原理,Java基础,">
+    <meta name="keywords" content="设计模式,外观模式,">
   
 
   
@@ -152,12 +152,8 @@
   <div class="passage">
   <div class="passage-meta">
     <span>
-      <i class="fa fa-calendar"></i>2017-11-19
+      <i class="fa fa-calendar"></i>2020-11-15
     </span>
-    
-      <span>
-        | <a href="/categories/Java基础/"><i class="fa fa-bookmark"></i>Java基础</a>
-      </span>
     
     
       <span>
@@ -166,11 +162,27 @@
     
   </div>
   <h1 class="passage-title">
-    Java是如何编译的
+    设计模式-外观模式
   </h1>
   
   <article class="passage-article">
-    <p>博主偷懒，还没开始写呢~</p>
+    <p>一开始听到这个名词的时候，还以为外观模式一定是某种“高大上”的设计模式。后来仔细了解后，才发现这货不就是我们天天都在使用的模式吗！说白了，就是对多种客户端做层层封装。</p>
+<p>举个例子，就像我们做了一个支付接口，在这个接口中一般你要做两件事。1：调用库存服务进行商品库存扣减，2.发起一个MQ消息，做订单收益统计。那么就涉及到两个client了，前者是负责http请求库存服务进行扣减库存，使用RestTempplate(或者Feign等)，后者是负责将订单消息进行异步统计的RabbitTemplate。我们通过对一个接口，内部封装了多个client的使用，这就是一个典型的外观模式。</p>
+<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>外观模式（Facade）又叫做门面模式，是一种通过将系统的多个子部分封装成一个一致的接口。对于外部应用来说，不需要知道接口内部的实现细节，对调用方十分友好，且降低了应用复杂度，提高可维护性。</p>
+<p>我们在日常编码的时候都会不可避免地需要调用第三方服务接口，我一般会结合RestTemplate,okHttp等工具，对服务接口封装成一个XXXClient的组件。定义一个较粗粒度的业务接口，并在接口的实现逻辑中组合使用这些XxxClient，而不是将具体的调用逻辑直接暴露在接口方法中。</p>
+<h4 id="优点与缺点"><a href="#优点与缺点" class="headerlink" title="优点与缺点"></a>优点与缺点</h4><p>外观模式是“迪米特法则”的一个典型。迪米特法则也叫最小知识法则。其含义是：如果两个软件实体之间无须直接进行通信，那么就不应该直接发生调用，而是要交由中介对象进行转发调用。</p>
+<p>外观模式具有如下优点：<br>1.降低了客户端和子系统之间的耦合<br>2.对客户端来说，外观模式提供了良好的聚合接口，屏蔽了内部逻辑的实现细节，对客户端友好。<br>3.降低了系统的编译依赖性，简化系统在不同平台过程的移植过程。</p>
+<p>具有的缺点如下：<br>1.<strong>新增加的子系统，会导致外观类或客户端代码的变化，违反了开闭原则</strong>。就像我们的Service层实现类，也有可能因为需求的改动而改动一样！<br>2.不能很好地限制客户端使用子系统，容易引发风险</p>
+<h4 id="成员与类关系图"><a href="#成员与类关系图" class="headerlink" title="成员与类关系图"></a>成员与类关系图</h4><p>外观模式的成员结构十分简单。客户端，外观类，子系统。类关系图如下所示<br><img src="//tobegeek.github.io/passages/设计模式-外观模式/%E7%BB%93%E6%9E%84.jpg" alt="结构.jpg"></p>
+<p>外观（Facade）角色：为多个子系统对外提供一个共同的接口。<br>子系统（Sub System）角色：实现系统的部分功能，客户可以通过外观角色访问它。<br>客户（Client）角色：通过一个外观角色访问各个子系统的功能。</p>
+<h4 id="DEMO与示例讲解"><a href="#DEMO与示例讲解" class="headerlink" title="DEMO与示例讲解"></a>DEMO与示例讲解</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Facade类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MockService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> StockClient stockClient=<span class="keyword">new</span> StockClient();</span><br><span class="line">    <span class="keyword">private</span> StatisticsClient statisticsClient=<span class="keyword">new</span> StatisticsClient();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">takeAnOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        stockClient.method();</span><br><span class="line">        statisticsClient.method();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 子系统角色：库存服务</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StockClient</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"调用库存服务，更新库存"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 子系统角色：统计服务</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StatisticsClient</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"加入订单统计"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码运行结果如下：</p>
+<blockquote>
+<p>调用库存服务，更新库存<br>加入订单统计</p>
+<p>Process finished with exit code 0</p>
+</blockquote>
+<p>其实如果仔细观察，你会发现这和平时我们写Controller(相当于客户端),Service(相当于Facade类)，xxxClient(相当于子系统)的过程一模一样！所以别被外观模式吓到了，这玩意，你我都天天写！</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -179,7 +191,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#介绍"><span class="toc-text">介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#优点与缺点"><span class="toc-text">优点与缺点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#成员与类关系图"><span class="toc-text">成员与类关系图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DEMO与示例讲解"><span class="toc-text">DEMO与示例讲解</span></a></li></ol></li></ol>
   </div>
 </aside>
   
@@ -188,7 +200,7 @@
       
         <div>
           原文链接: 
-          <a href="" target="_blank">http://tobegeek.github.io/passages/Java是如何编译的/</a>
+          <a href="" target="_blank">http://tobegeek.github.io/passages/设计模式-外观模式/</a>
         </div>
       
       <div>
@@ -199,9 +211,9 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/编译原理/"><i class="fa fa-tags"></i>编译原理</a>
+      <a href="/tags/设计模式/"><i class="fa fa-tags"></i>设计模式</a>
      
-      <a href="/tags/Java基础/"><i class="fa fa-tags"></i>Java基础</a>
+      <a href="/tags/外观模式/"><i class="fa fa-tags"></i>外观模式</a>
     
     </div>
   
@@ -293,10 +305,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/Java中的IO、NIO浅析/" data-enable="true">
+    <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/Java基础总结/" data-enable="true">
+    <a href="/passages/设计模式-观察者模式/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
