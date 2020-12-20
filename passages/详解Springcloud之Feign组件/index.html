@@ -44,24 +44,24 @@
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
     mathjax: true,
     page_type: "",
-    root: "/"
+    root: "/tobegeek.github.io/"
   };
 </script>
 
-  <script src="/vendor/sha256.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/index.js"></script>
-<script src="/vendor/qrcode.min.js"></script>
+  <script src="/tobegeek.github.io/vendor/sha256.min.js"></script>
+<script src="/tobegeek.github.io/js/auth.js"></script>
+<script src="/tobegeek.github.io/js/index.js"></script>
+<script src="/tobegeek.github.io/vendor/qrcode.min.js"></script>
 
   
-    <link rel="icon" href="/images/favicon.ico">
-    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+    <link rel="icon" href="/tobegeek.github.io/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/tobegeek.github.io/images/touch-icon.png">
   
 
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+  <link rel="stylesheet" href="/tobegeek.github.io/css/index.css">
+<link rel="stylesheet" href="/tobegeek.github.io/styles/components/highlight/highlight.css">
 
   
 </head>
@@ -70,7 +70,7 @@
   <div class="site-header-brand">
     
       <span class="site-header-brand-title">
-        <a href="/">术·道</a>
+        <a href="/tobegeek.github.io/">术·道</a>
       </span>
     
     
@@ -80,15 +80,15 @@
   <div class="site-header-right">
     <nav class="site-header-navigation">
       
-        <a href="/" target="_self">首页</a>
+        <a href="/tobegeek.github.io/" target="_self">首页</a>
       
-        <a href="/archives/" target="_self">归档</a>
+        <a href="/tobegeek.github.io/archives/" target="_self">归档</a>
       
-        <a href="/tags/" target="_self">标签</a>
+        <a href="/tobegeek.github.io/tags/" target="_self">标签</a>
       
-        <a href="/categories/" target="_self">分类</a>
+        <a href="/tobegeek.github.io/categories/" target="_self">分类</a>
       
-        <a href="/about/" target="_self">关于</a>
+        <a href="/tobegeek.github.io/about/" target="_self">关于</a>
       
     </nav>
     <div class="site-header-btn">
@@ -114,31 +114,31 @@
     <ol class="toc">
       
         <li class="toc-item">
-          <a href="/" target="_self">
+          <a href="/tobegeek.github.io/" target="_self">
             首页
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/archives/" target="_self">
+          <a href="/tobegeek.github.io/archives/" target="_self">
             归档
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/tags/" target="_self">
+          <a href="/tobegeek.github.io/tags/" target="_self">
             标签
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/categories/" target="_self">
+          <a href="/tobegeek.github.io/categories/" target="_self">
             分类
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/about/" target="_self">
+          <a href="/tobegeek.github.io/about/" target="_self">
             关于
           </a>
         </li>
@@ -156,7 +156,7 @@
     </span>
     
       <span>
-        | <a href="/categories/SpringCloud/"><i class="fa fa-bookmark"></i>SpringCloud</a>
+        | <a href="/tobegeek.github.io/categories/SpringCloud/"><i class="fa fa-bookmark"></i>SpringCloud</a>
       </span>
     
     
@@ -189,7 +189,7 @@
 <p>编写调用的API接口,以及被调用服务实例的API接口</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//当前工程，服务消费者</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HeyController</span></span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> HeyService service;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/hey"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHey</span><span class="params">(@RequestParam String name)</span></span>&#123;</span><br><span class="line">        <span class="comment">//调用HeyService.sayHey，FeignClient将发起一个http请求给"target-service/hey"</span></span><br><span class="line">        <span class="keyword">return</span> service.sayHey(name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//以下是服务提供者，target-service的API接口</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeCalledController</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/hey"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHey</span><span class="params">(@RequestParam String name)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"nice to meet you,"</span> + name ;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="//tobegeek.github.io/passages/详解Springcloud之Feign组件/feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8%E7%A4%BA%E4%BE%8B.png" alt="feign远程调用示例.png"></p>
+<p><img src="/tobegeek.github.io//744168227.gitee.io/tobegeek.github.io/passages/详解Springcloud之Feign组件/feign%E8%BF%9C%E7%A8%8B%E8%B0%83%E7%94%A8%E7%A4%BA%E4%BE%8B.png" alt="feign远程调用示例.png"></p>
 <p>1:启动eureka服务端，再启动target-service服务，最后启动feign-client<br>2:浏览器中输入:localhost:8081/hey?name=lihaohang</p>
 <p>打印调用结果：</p>
 <blockquote>
@@ -266,13 +266,13 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/SpringCloud/"><i class="fa fa-tags"></i>SpringCloud</a>
+      <a href="/tobegeek.github.io/tags/SpringCloud/"><i class="fa fa-tags"></i>SpringCloud</a>
      
-      <a href="/tags/feign/"><i class="fa fa-tags"></i>feign</a>
+      <a href="/tobegeek.github.io/tags/feign/"><i class="fa fa-tags"></i>feign</a>
      
-      <a href="/tags/微服务/"><i class="fa fa-tags"></i>微服务</a>
+      <a href="/tobegeek.github.io/tags/微服务/"><i class="fa fa-tags"></i>微服务</a>
      
-      <a href="/tags/负载均衡/"><i class="fa fa-tags"></i>负载均衡</a>
+      <a href="/tobegeek.github.io/tags/负载均衡/"><i class="fa fa-tags"></i>负载均衡</a>
     
     </div>
   
@@ -364,10 +364,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/深入了解Java中的ArrayList/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/深入了解Java中的ArrayList/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/详解Springcloud之Ribbon组件/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/详解Springcloud之Ribbon组件/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>

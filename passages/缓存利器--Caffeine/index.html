@@ -44,24 +44,24 @@
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
     mathjax: true,
     page_type: "",
-    root: "/"
+    root: "/tobegeek.github.io/"
   };
 </script>
 
-  <script src="/vendor/sha256.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/index.js"></script>
-<script src="/vendor/qrcode.min.js"></script>
+  <script src="/tobegeek.github.io/vendor/sha256.min.js"></script>
+<script src="/tobegeek.github.io/js/auth.js"></script>
+<script src="/tobegeek.github.io/js/index.js"></script>
+<script src="/tobegeek.github.io/vendor/qrcode.min.js"></script>
 
   
-    <link rel="icon" href="/images/favicon.ico">
-    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+    <link rel="icon" href="/tobegeek.github.io/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/tobegeek.github.io/images/touch-icon.png">
   
 
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+  <link rel="stylesheet" href="/tobegeek.github.io/css/index.css">
+<link rel="stylesheet" href="/tobegeek.github.io/styles/components/highlight/highlight.css">
 
   
 </head>
@@ -70,7 +70,7 @@
   <div class="site-header-brand">
     
       <span class="site-header-brand-title">
-        <a href="/">术·道</a>
+        <a href="/tobegeek.github.io/">术·道</a>
       </span>
     
     
@@ -80,15 +80,15 @@
   <div class="site-header-right">
     <nav class="site-header-navigation">
       
-        <a href="/" target="_self">首页</a>
+        <a href="/tobegeek.github.io/" target="_self">首页</a>
       
-        <a href="/archives/" target="_self">归档</a>
+        <a href="/tobegeek.github.io/archives/" target="_self">归档</a>
       
-        <a href="/tags/" target="_self">标签</a>
+        <a href="/tobegeek.github.io/tags/" target="_self">标签</a>
       
-        <a href="/categories/" target="_self">分类</a>
+        <a href="/tobegeek.github.io/categories/" target="_self">分类</a>
       
-        <a href="/about/" target="_self">关于</a>
+        <a href="/tobegeek.github.io/about/" target="_self">关于</a>
       
     </nav>
     <div class="site-header-btn">
@@ -114,31 +114,31 @@
     <ol class="toc">
       
         <li class="toc-item">
-          <a href="/" target="_self">
+          <a href="/tobegeek.github.io/" target="_self">
             首页
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/archives/" target="_self">
+          <a href="/tobegeek.github.io/archives/" target="_self">
             归档
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/tags/" target="_self">
+          <a href="/tobegeek.github.io/tags/" target="_self">
             标签
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/categories/" target="_self">
+          <a href="/tobegeek.github.io/categories/" target="_self">
             分类
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/about/" target="_self">
+          <a href="/tobegeek.github.io/about/" target="_self">
             关于
           </a>
         </li>
@@ -156,7 +156,7 @@
     </span>
     
       <span>
-        | <a href="/categories/好用的轮子/"><i class="fa fa-bookmark"></i>好用的轮子</a>
+        | <a href="/tobegeek.github.io/categories/好用的轮子/"><i class="fa fa-bookmark"></i>好用的轮子</a>
       </span>
     
     
@@ -209,9 +209,9 @@
 </tbody></table>
 <h2 id="Guava-Cache与Caffeine-Cache"><a href="#Guava-Cache与Caffeine-Cache" class="headerlink" title="Guava Cache与Caffeine Cache"></a>Guava Cache与Caffeine Cache</h2><p>guava cache 是Google guava工具包中提供的十分强大、易用的本地化缓存实现，基于LRU算法，支持多种缓存过期策略。</p>
 <p>Caffeine是收到guava的启发而开发的缓存，它基于JDK8,基于W-TinyLFU(LFU+LRU算法的变种)，支持多种过期策略，且性能更加极致！<br>接下来请欣赏，来这官方的性能评测。</p>
-<p>场景1：八线程并发执行读操作<br><img src="//tobegeek.github.io/passages/缓存利器--Caffeine/caffeine1.jpg" alt="avatar"></p>
-<p>场景2：6条线程并发执行读操作，2条现在并发执行写操作（读多写少）<br><img src="//tobegeek.github.io/passages/缓存利器--Caffeine/caffeine2.jpg" alt="avatar">  </p>
-<p>场景3：8条线程全部并发执行写操作<br><img src="//tobegeek.github.io/passages/缓存利器--Caffeine/caffeine3.jpg" alt="avatar"></p>
+<p>场景1：八线程并发执行读操作<br><img src="/tobegeek.github.io//744168227.gitee.io/tobegeek.github.io/passages/缓存利器--Caffeine/caffeine1.jpg" alt="avatar"></p>
+<p>场景2：6条线程并发执行读操作，2条现在并发执行写操作（读多写少）<br><img src="/tobegeek.github.io//744168227.gitee.io/tobegeek.github.io/passages/缓存利器--Caffeine/caffeine2.jpg" alt="avatar">  </p>
+<p>场景3：8条线程全部并发执行写操作<br><img src="/tobegeek.github.io//744168227.gitee.io/tobegeek.github.io/passages/缓存利器--Caffeine/caffeine3.jpg" alt="avatar"></p>
 <p>由上可知，Caffeine无论是在只读操作，读写并存，只写操作上的效率都远远高于其他缓存工具！Spring5目前也已经放弃了GuavaCache转而使用Caffeine，由此可知Caffeine的强大了吧！赶紧学起来~</p>
 <h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p>1：引入依赖<br>2：使用配置<br>3：开启缓存支持</p>
 <h3 id="引入依赖"><a href="#引入依赖" class="headerlink" title="引入依赖"></a>引入依赖</h3><blockquote>
@@ -256,11 +256,11 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/分布式/"><i class="fa fa-tags"></i>分布式</a>
+      <a href="/tobegeek.github.io/tags/分布式/"><i class="fa fa-tags"></i>分布式</a>
      
-      <a href="/tags/缓存/"><i class="fa fa-tags"></i>缓存</a>
+      <a href="/tobegeek.github.io/tags/缓存/"><i class="fa fa-tags"></i>缓存</a>
      
-      <a href="/tags/工具/"><i class="fa fa-tags"></i>工具</a>
+      <a href="/tobegeek.github.io/tags/工具/"><i class="fa fa-tags"></i>工具</a>
     
     </div>
   
@@ -352,10 +352,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/LRU、LFU、W-TinyLFU浅析优劣/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/LRU、LFU、W-TinyLFU浅析优劣/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/Java中的IO、NIO浅析/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/Java中的IO、NIO浅析/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>

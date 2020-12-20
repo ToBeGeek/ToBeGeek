@@ -44,24 +44,24 @@
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
     mathjax: true,
     page_type: "",
-    root: "/"
+    root: "/tobegeek.github.io/"
   };
 </script>
 
-  <script src="/vendor/sha256.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/index.js"></script>
-<script src="/vendor/qrcode.min.js"></script>
+  <script src="/tobegeek.github.io/vendor/sha256.min.js"></script>
+<script src="/tobegeek.github.io/js/auth.js"></script>
+<script src="/tobegeek.github.io/js/index.js"></script>
+<script src="/tobegeek.github.io/vendor/qrcode.min.js"></script>
 
   
-    <link rel="icon" href="/images/favicon.ico">
-    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+    <link rel="icon" href="/tobegeek.github.io/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/tobegeek.github.io/images/touch-icon.png">
   
 
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+  <link rel="stylesheet" href="/tobegeek.github.io/css/index.css">
+<link rel="stylesheet" href="/tobegeek.github.io/styles/components/highlight/highlight.css">
 
   
 </head>
@@ -70,7 +70,7 @@
   <div class="site-header-brand">
     
       <span class="site-header-brand-title">
-        <a href="/">术·道</a>
+        <a href="/tobegeek.github.io/">术·道</a>
       </span>
     
     
@@ -80,15 +80,15 @@
   <div class="site-header-right">
     <nav class="site-header-navigation">
       
-        <a href="/" target="_self">首页</a>
+        <a href="/tobegeek.github.io/" target="_self">首页</a>
       
-        <a href="/archives/" target="_self">归档</a>
+        <a href="/tobegeek.github.io/archives/" target="_self">归档</a>
       
-        <a href="/tags/" target="_self">标签</a>
+        <a href="/tobegeek.github.io/tags/" target="_self">标签</a>
       
-        <a href="/categories/" target="_self">分类</a>
+        <a href="/tobegeek.github.io/categories/" target="_self">分类</a>
       
-        <a href="/about/" target="_self">关于</a>
+        <a href="/tobegeek.github.io/about/" target="_self">关于</a>
       
     </nav>
     <div class="site-header-btn">
@@ -114,31 +114,31 @@
     <ol class="toc">
       
         <li class="toc-item">
-          <a href="/" target="_self">
+          <a href="/tobegeek.github.io/" target="_self">
             首页
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/archives/" target="_self">
+          <a href="/tobegeek.github.io/archives/" target="_self">
             归档
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/tags/" target="_self">
+          <a href="/tobegeek.github.io/tags/" target="_self">
             标签
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/categories/" target="_self">
+          <a href="/tobegeek.github.io/categories/" target="_self">
             分类
           </a>
         </li>
       
         <li class="toc-item">
-          <a href="/about/" target="_self">
+          <a href="/tobegeek.github.io/about/" target="_self">
             关于
           </a>
         </li>
@@ -156,7 +156,7 @@
     </span>
     
       <span>
-        | <a href="/categories/分布式系统/"><i class="fa fa-bookmark"></i>分布式系统</a>
+        | <a href="/tobegeek.github.io/categories/分布式系统/"><i class="fa fa-bookmark"></i>分布式系统</a>
       </span>
     
     
@@ -191,7 +191,7 @@
 
 <h3 id="了解什么是死信队列"><a href="#了解什么是死信队列" class="headerlink" title="了解什么是死信队列"></a>了解什么是死信队列</h3><p>MQ中处理失败或者过期的消息即为死信，死信队列则是用来保存死信的队列（本质上来说就是普通队列）。</p>
 <h4 id="死信进入死信队列的条件"><a href="#死信进入死信队列的条件" class="headerlink" title="死信进入死信队列的条件"></a>死信进入死信队列的条件</h4><p>1：消息被拒绝（basic.reject/ basic.nack）并且requeue=false<br>2：消息TTL过期（Time To Live）<br>3：消息队列已满，消息不能进入业务消息队列</p>
-<p>如下图所示：<img src="//tobegeek.github.io/passages/RabbitMQ之死信处理方案/%E6%AD%BB%E4%BF%A1%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="死信消息的生成及其处理"></p>
+<p>如下图所示：<img src="/tobegeek.github.io//744168227.gitee.io/tobegeek.github.io/passages/RabbitMQ之死信处理方案/%E6%AD%BB%E4%BF%A1%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="死信消息的生成及其处理"></p>
 <h3 id="基于RabbitMQ的死信消息统一处理（官方文档）"><a href="#基于RabbitMQ的死信消息统一处理（官方文档）" class="headerlink" title="基于RabbitMQ的死信消息统一处理（官方文档）"></a>基于RabbitMQ的死信消息统一处理（<a href="https://www.rabbitmq.com/dlx.html" target="_blank" rel="noopener">官方文档</a>）</h3><p>DLX(Dead-Letter-Exchange)就是死信消息交换机。利用DLX, 可以使得消息在一个队列中变成死信（dead message）之后，它能被重新publish到另一个Exchange，这个Exchange就是DLX。DLX其实就是一个普通的Exchange，设置好对应的死信队列后，当业务队列中发生死信，RabbitMQ就会自动的将这个消息重新发布到设置的Exchange上去，进而被路由到另一个队列（死信队列）。我们可以在监听死信队列的消费者端，获取死信所有信息（消息体，消息业务原属的Exchange、原属的Queue、原属RoutingKeys、失败原因Type等），并把这些信息持久化到DB中，提供统一的死信消息处理方式！</p>
 <h4 id="为什么需要统一的死信消息处理方案"><a href="#为什么需要统一的死信消息处理方案" class="headerlink" title="为什么需要统一的死信消息处理方案"></a>为什么需要统一的死信消息处理方案</h4><p>1：死信队列的本质也是队列，它需要遵循FIFO，并且有一定的长度限制。当死信的消息过多而没有及时处理，容易导致死信队列“爆”了，占用过多的资源甚至导致MQ本身不稳定，将死信及时从死信队列中移除持久化到DB中去，也是对MQ高可用的一种保证措施。（当然也可以直接丢弃死信信息，但是这里的方案更多的是面向需要标准化处理的场景）</p>
 <p>2：如果有个性化的需求，开发人员完全可以在自己项目中定义死信的消费业务流程，但是在多数情况下，我们对死信的处理无非就是补偿或者废弃。标准化，统一的死信处理方案可以减少开发人员此需求下重复开发的工作量。</p>
@@ -262,7 +262,7 @@
   
     <div class="passage-tags">
      
-      <a href="/tags/消息中间件/"><i class="fa fa-tags"></i>消息中间件</a>
+      <a href="/tobegeek.github.io/tags/消息中间件/"><i class="fa fa-tags"></i>消息中间件</a>
     
     </div>
   
@@ -354,10 +354,10 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="/passages/详解springcloud之Eureka组件/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/详解springcloud之Eureka组件/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="/passages/分布式事务详解/" data-enable="true">
+    <a href="/tobegeek.github.io/passages/分布式事务详解/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
