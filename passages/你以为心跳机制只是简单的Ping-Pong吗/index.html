@@ -181,10 +181,16 @@
 <p>当然也可以组合起来使用，例如SpringCloud中的软负载中心Eureka，Eureka是系统中负责提供注册发现服务的注册中心。Eureka-server和Eureka-client之间也有一个心跳检查机制，默认是30s内若server没有接收阈值内的client心跳包，则启动自我保护模式。允许client在该时间内尝试重新连接，如果未能连接则server端会将client剔除下线，并将服务列表信息同步给各个client。client被告知调用的目标服务下线的时候，则会在目标服务集群的相同节点上做出选择，即选择新链路。</p>
 <h4 id="心跳检测是仅限于应用层吗"><a href="#心跳检测是仅限于应用层吗" class="headerlink" title="心跳检测是仅限于应用层吗"></a>心跳检测是仅限于应用层吗</h4><p>答案是否定的！</p>
 <p>TCP层：心跳检测可以发生在TCP层面上，即TCP的Keep-Alive机制，它的作用域是整个TCP协议栈。<br>协议层：也可以是协议层上的，比如我们常用的Http1.1及以上版本或者是SMPP协议，也有自己的Keep-Alive机制。<br>应用层：应用服务上自己通过双方约定实现的一个心跳机制</p>
-<h4 id="TCP的keep-Alive和Http1-1的Keep-Alive"><a href="#TCP的keep-Alive和Http1-1的Keep-Alive" class="headerlink" title="TCP的keep-Alive和Http1.1的Keep-Alive"></a>TCP的keep-Alive和Http1.1的Keep-Alive</h4><p>我们都知道http协议是一问一答的请求方式。早期的http协议，要为每一个http请求建立一次TCP连接，并且在http请求发送完成-接收响应之后，断开TCP连接。频繁的创建和关闭连接，不仅造成资源浪费还带来效率低下。因此，在http1.1版本中，默认使用长连接，在响应头中加入Connection:keep-alive属性。http使用长连接方式后，允许TCP连接建立之后保持一段时间不断开并且http请求将在该TCP连接中传输。http1.1的keep-alive目的是复用TCP连接，让TCP连接保活，以便于多个http请求的传输，减少频繁开闭连接的资源浪费，提高socket的效率。</p>
+<h4 id="TCP的keep-Alive和Http1-1的Keep-Alive"><a href="#TCP的keep-Alive和Http1-1的Keep-Alive" class="headerlink" title="TCP的keep-Alive和Http1.1的Keep-Alive"></a>TCP的keep-Alive和Http1.1的Keep-Alive</h4><p>我们都知道http协议是一问一答的请求方式。早期的http协议，要为每一个http请求建立一次TCP连接，并且在http请求发送完成-接收响应之后，断开TCP连接。频繁的创建和关闭连接，不仅造成资源浪费还带来效率低下的问题。因此，在http1.1版本中，默认使用长连接，在响应头中加入Connection:keep-alive属性。http使用长连接方式后，允许TCP连接建立之后保持一段时间不断开并且复用该TCP连接用于传输http请求报文。http1.1的keep-alive目的是复用TCP连接，以便于多个http请求的传输，减少频繁开闭连接的资源浪费，提高socket的效率。</p>
+<p><img src="%E4%BD%A0%E4%BB%A5%E4%B8%BA%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6%E5%8F%AA%E6%98%AF%E7%AE%80%E5%8D%95%E7%9A%84Ping-Pong%E5%90%97/http1.png" alt="http1.png"></p>
+<p><img src="%E4%BD%A0%E4%BB%A5%E4%B8%BA%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6%E5%8F%AA%E6%98%AF%E7%AE%80%E5%8D%95%E7%9A%84Ping-Pong%E5%90%97/http1.1+.png" alt="http1.1+.png"></p>
 <p>梳理完http的keep-alive机制，再说说TCP的keep-alive机制。与http的keep-alive不同，TCP的keep-alive主要是为了探测连接的对端是否存活，防止中间设备因为长时间无报文交互而删除相关连接的连接表。具体展开讲如下：</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/你以为心跳机制只是简单的Ping-Pong吗/TCP-KeepAlive.jpg" alt="TCP-KeepAlive.jpg"></p>
-<p>http的keepAlive是为了复用TCP连接，TCP的keep-Alive是为了确保连接是通路状态</p>
+<p>用我个人通俗的话来说那就是<strong>http的keepAlive是为了复用TCP连接，TCP的keep-Alive是为了确保连接是通路状态</strong></p>
+<h4 id="用什么策略？定时检查还是空闲检查"><a href="#用什么策略？定时检查还是空闲检查" class="headerlink" title="用什么策略？定时检查还是空闲检查"></a>用什么策略？定时检查还是空闲检查</h4><p>发起心跳包的检测策略可以分成两种。</p>
+<p>1：<strong>定时发起心跳检测的方式</strong>，由一端(通常是客户端)定时轮询地方式发起心跳ping，而服务端在接收后返回pong。<strong>这种方式的实现简单，但在一定程度上造成的网络资源的浪费和拥堵</strong>。比如在业务高峰期的时候，链路上已经有业务信息的传输了。业务上的正常一定是建立在连接正常的基础上，但是一端仍然在定时发起ping，而服务器端明明已知道链路正常的情况下还要回复pong，这不就是浪费带宽和无意义的处理吗。</p>
+<p>2：知道了定时发起心跳检测的弊端之后，可以采用<strong>链路空闲检测机制</strong>来保证，当业务已经有数据流通的时候，则认为这些数据等同于心跳包，可认为链路是通路。而当链路上没有业务数据的时候（即链路空闲状态），此时应该由一端主动发起ping检查链路是否仍然通路。<strong>相比定时发起心跳检测的方式，链路空闲检测机制解决了资源浪费问题，但是在实现上也要复杂一些</strong></p>
+<p>以上就是我对心跳机制的一些知识点总结，如后续有新收获，我将持续更新。</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -193,7 +199,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要心跳机制"><span class="toc-text">为什么需要心跳机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#不只是ping-pong"><span class="toc-text">不只是ping-pong</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#心跳检测是仅限于应用层吗"><span class="toc-text">心跳检测是仅限于应用层吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TCP的keep-Alive和Http1-1的Keep-Alive"><span class="toc-text">TCP的keep-Alive和Http1.1的Keep-Alive</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要心跳机制"><span class="toc-text">为什么需要心跳机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#不只是ping-pong"><span class="toc-text">不只是ping-pong</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#心跳检测是仅限于应用层吗"><span class="toc-text">心跳检测是仅限于应用层吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TCP的keep-Alive和Http1-1的Keep-Alive"><span class="toc-text">TCP的keep-Alive和Http1.1的Keep-Alive</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用什么策略？定时检查还是空闲检查"><span class="toc-text">用什么策略？定时检查还是空闲检查</span></a></li></ol>
   </div>
 </aside>
   
