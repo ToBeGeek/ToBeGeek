@@ -175,10 +175,10 @@
 <p>相信大家对心跳机制都有一定的了解。心跳机制可以说是通信链路“通路”状态的有效检查手段，通信多方之间进行发起简单心跳包，处理心跳包从而检查链路是否通畅。</p>
 <h4 id="为什么需要心跳机制"><a href="#为什么需要心跳机制" class="headerlink" title="为什么需要心跳机制"></a>为什么需要心跳机制</h4><p>网络是复杂的，啥情况都可能存在。当网络通信单通（Ping命令可以检查单通），通信服务僵死，通信线程发生非预期异常的时候，会导致通信链路不可用且不容易被及时发现。恰巧这个时候问题发生在夜深人静的时候（你可能被on call），如果问题等到业务晨高峰才发现，生产翻车的风险极高。所以，我们需要做心跳机制来保证通信链路的可靠性。</p>
 <h4 id="不只是ping-pong"><a href="#不只是ping-pong" class="headerlink" title="不只是ping-pong"></a>不只是ping-pong</h4><p>从<strong>心跳检测机制</strong>来看。我们可以把心跳检测机制粗略分成两种：</p>
-<p>1.<strong>Ping-Pong型心跳</strong>:由通信双方中的一方发起ping，接收方接收到ping包立即回复Pong。属于<strong>请求-相应型心跳</strong>，即单方向的心跳<br>2.<strong>Ping-Ping型心跳</strong>:即不区分通信双方谁是发起方，谁是接收方。不区分心跳请求和应答，而是通信双方互相发起Ping</p>
-<p>心跳机制需要做到两点基本的检查。<br>1.处理“心跳超时事件”，连续X次或者周期时间内接收到的心跳包(ping/pong)为达到预期，则可认为链路不通畅。<br>2.处理“心跳失败事件”，链路中发生的I/O异常应该被处理</p>
+<p>1.<strong>Ping-Pong型心跳</strong>:由通信双方中的一方发起ping，接收方接收到ping包立即回复Pong。属于<strong>请求-响应型心跳，即单方向的心跳</strong><br>2.<strong>Ping-Ping型心跳</strong>:即不区分通信双方谁是发起方，谁是接收方。不区分心跳请求和应答，而是通信双方互相发起Ping</p>
+<p>心跳机制需要做到两点基本的检查。<br>1.处理“<strong>心跳超时事件</strong>”，连续X次或者周期时间内接收到的心跳包(ping/pong)为达到预期，则可认为链路不通畅。<br>2.处理“<strong>心跳失败事件</strong>”，链路中发生的I/O异常应该被处理。</p>
 <p>一般解决方案：通常遇到“心跳超时”或者“心跳处理”，往往有两种方案。一是：客户端发起断线重连，针对同一链路做有限次数的重连。二是：客户端放弃当前链路重连，转而选择其他链路（有点像客户端的负载均衡策略，此路不通则换一条）。</p>
-<p>当然也可以组合起来使用，例如SpringCloud中的软负载中心Eureka，Eureka是系统中负责提供注册发现服务的注册中心。Eureka-server和Eureka-client之间也有一个心跳检查机制，默认是30s内若server没有接收阈值内的client心跳包，则启动自我保护模式。允许client在该时间内尝试重新连接，如果未能连接则server端会将client剔除下线，并将服务列表信息同步给各个client。client被告知调用的目标服务下线的时候，则会在目标服务集群的相同节点上做出选择，即选择新链路。</p>
+<p>当然也可以组合起来使用，例如SpringCloud中的软负载中心Eureka，Eureka是系统中负责提供注册发现服务的注册中心。Eureka-server和Eureka-client之间也有一个心跳检查机制，默认是30s为周期发起心跳，若server没有接收阈值内的client心跳包，则启动自我保护模式。允许client在该时间内尝试重新连接，如果未能连接则server端会将client剔除下线（90s默认），并将服务列表信息同步给各个client。client被告知调用的目标服务下线的时候，则会在目标服务集群的相同节点上做出选择，即选择新链路。</p>
 <h4 id="心跳检测是仅限于应用层吗"><a href="#心跳检测是仅限于应用层吗" class="headerlink" title="心跳检测是仅限于应用层吗"></a>心跳检测是仅限于应用层吗</h4><p>答案是否定的！</p>
 <p>TCP层：心跳检测可以发生在TCP层面上，即TCP的Keep-Alive机制，它的作用域是整个TCP协议栈。<br>协议层：也可以是协议层上的，比如我们常用的Http1.1及以上版本或者是SMPP协议，也有自己的Keep-Alive机制。<br>应用层：应用服务上自己通过双方约定实现的一个心跳机制</p>
 <h4 id="TCP的keep-Alive和Http1-1的Keep-Alive"><a href="#TCP的keep-Alive和Http1-1的Keep-Alive" class="headerlink" title="TCP的keep-Alive和Http1.1的Keep-Alive"></a>TCP的keep-Alive和Http1.1的Keep-Alive</h4><p>我们都知道http协议是一问一答的请求方式。早期的http协议，要为每一个http请求建立一次TCP连接，并且在http请求发送完成-接收响应之后，断开TCP连接。频繁的创建和关闭连接，不仅造成资源浪费还带来效率低下的问题。因此，在http1.1版本中，默认使用长连接，在响应头中加入Connection:keep-alive属性。http使用长连接方式后，允许TCP连接建立之后保持一段时间不断开并且复用该TCP连接用于传输http请求报文。http1.1的keep-alive目的是复用TCP连接，以便于多个http请求的传输，减少频繁开闭连接的资源浪费，提高socket的效率。</p>
