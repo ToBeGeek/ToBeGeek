@@ -172,7 +172,17 @@
   <article class="passage-article">
     <p>最近的工作上用到了Websocket协议做双全工通信，在设计的时候即设计了应用层的心跳机制，从而想学习一下更多关于心跳机制的知识点。于是有了这篇文章。</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/你以为心跳机制只是简单的Ping-Pong吗/ping-pong.jpg" alt="ping-pong.jpg"></p>
-<p>相信大家对心跳机制都有一定的了解。心跳机制可以说是通信链路“通路”状态的有效检查手段，通信多方之间进行发起简单心跳包，处理心跳包从而检查链路是否通畅。</p>
+<!-- TOC -->
+
+<ul>
+<li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6">为什么需要心跳机制</a></li>
+<li><a href="#%E4%B8%8D%E5%8F%AA%E6%98%AFping-pong">不只是ping-pong</a></li>
+<li><a href="#%E5%BF%83%E8%B7%B3%E6%A3%80%E6%B5%8B%E6%98%AF%E4%BB%85%E9%99%90%E4%BA%8E%E5%BA%94%E7%94%A8%E5%B1%82%E5%90%97">心跳检测是仅限于应用层吗</a></li>
+<li><a href="#tcp%E7%9A%84keep-alive%E5%92%8Chttp11%E7%9A%84keep-alive">TCP的keep-Alive和Http1.1的Keep-Alive</a></li>
+<li><a href="#%E7%94%A8%E4%BB%80%E4%B9%88%E7%AD%96%E7%95%A5%E5%AE%9A%E6%97%B6%E6%A3%80%E6%9F%A5%E8%BF%98%E6%98%AF%E7%A9%BA%E9%97%B2%E6%A3%80%E6%9F%A5">用什么策略？定时检查还是空闲检查</a></li>
+</ul>
+<!-- /TOC -->
+
 <h4 id="为什么需要心跳机制"><a href="#为什么需要心跳机制" class="headerlink" title="为什么需要心跳机制"></a>为什么需要心跳机制</h4><p>网络是复杂的，啥情况都可能存在。当网络通信单通（Ping命令可以检查单通），通信服务僵死，通信线程发生非预期异常的时候，会导致通信链路不可用且不容易被及时发现。恰巧这个时候问题发生在夜深人静的时候（你可能被on call），如果问题等到业务晨高峰才发现，生产翻车的风险极高。所以，我们需要做心跳机制来保证通信链路的可靠性。</p>
 <h4 id="不只是ping-pong"><a href="#不只是ping-pong" class="headerlink" title="不只是ping-pong"></a>不只是ping-pong</h4><p>从<strong>心跳检测机制</strong>来看。我们可以把心跳检测机制粗略分成两种：</p>
 <p>1.<strong>Ping-Pong型心跳</strong>:由通信双方中的一方发起ping，接收方接收到ping包立即回复Pong。属于<strong>请求-响应型心跳，即单方向的心跳</strong><br>2.<strong>Ping-Ping型心跳</strong>:即不区分通信双方谁是发起方，谁是接收方。不区分心跳请求和应答，而是通信双方互相发起Ping</p>
