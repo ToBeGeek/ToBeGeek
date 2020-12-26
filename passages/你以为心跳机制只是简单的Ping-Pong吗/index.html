@@ -179,7 +179,12 @@
 <p>心跳机制需要做到两点基本的检查。<br>1.处理“心跳超时事件”，连续X次或者周期时间内接收到的心跳包(ping/pong)为达到预期，则可认为链路不通畅。<br>2.处理“心跳失败事件”，链路中发生的I/O异常应该被处理</p>
 <p>一般解决方案：通常遇到“心跳超时”或者“心跳处理”，往往有两种方案。一是：客户端发起断线重连，针对同一链路做有限次数的重连。二是：客户端放弃当前链路重连，转而选择其他链路（有点像客户端的负载均衡策略，此路不通则换一条）。</p>
 <p>当然也可以组合起来使用，例如SpringCloud中的软负载中心Eureka，Eureka是系统中负责提供注册发现服务的注册中心。Eureka-server和Eureka-client之间也有一个心跳检查机制，默认是30s内若server没有接收阈值内的client心跳包，则启动自我保护模式。允许client在该时间内尝试重新连接，如果未能连接则server端会将client剔除下线，并将服务列表信息同步给各个client。client被告知调用的目标服务下线的时候，则会在目标服务集群的相同节点上做出选择，即选择新链路。</p>
-<h4 id="心跳检测是仅限于应用层吗"><a href="#心跳检测是仅限于应用层吗" class="headerlink" title="心跳检测是仅限于应用层吗"></a>心跳检测是仅限于应用层吗</h4><p>未完待续…</p>
+<h4 id="心跳检测是仅限于应用层吗"><a href="#心跳检测是仅限于应用层吗" class="headerlink" title="心跳检测是仅限于应用层吗"></a>心跳检测是仅限于应用层吗</h4><p>答案是否定的！</p>
+<p>TCP层：心跳检测可以发生在TCP层面上，即TCP的Keep-Alive机制，它的作用域是整个TCP协议栈。<br>协议层：也可以是协议层上的，比如我们常用的Http1.1及以上版本或者是SMPP协议，也有自己的Keep-Alive机制。<br>应用层：应用服务上自己通过双方约定实现的一个心跳机制</p>
+<h4 id="TCP的keep-Alive和Http1-1的Keep-Alive"><a href="#TCP的keep-Alive和Http1-1的Keep-Alive" class="headerlink" title="TCP的keep-Alive和Http1.1的Keep-Alive"></a>TCP的keep-Alive和Http1.1的Keep-Alive</h4><p>我们都知道http协议是一问一答的请求方式。早期的http协议，要为每一个http请求建立一次TCP连接，并且在http请求发送完成-接收响应之后，断开TCP连接。频繁的创建和关闭连接，不仅造成资源浪费还带来效率低下。因此，在http1.1版本中，默认使用长连接，在响应头中加入Connection:keep-alive属性。http使用长连接方式后，允许TCP连接建立之后保持一段时间不断开并且http请求将在该TCP连接中传输。http1.1的keep-alive目的是复用TCP连接，让TCP连接保活，以便于多个http请求的传输，减少频繁开闭连接的资源浪费，提高socket的效率。</p>
+<p>梳理完http的keep-alive机制，再说说TCP的keep-alive机制。与http的keep-alive不同，TCP的keep-alive主要是为了探测连接的对端是否存活，防止中间设备因为长时间无报文交互而删除相关连接的连接表。具体展开讲如下：</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/你以为心跳机制只是简单的Ping-Pong吗/TCP-KeepAlive.jpg" alt="TCP-KeepAlive.jpg"></p>
+<p>http的keepAlive是为了复用TCP连接，TCP的keep-Alive是为了确保连接是通路状态</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -188,7 +193,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要心跳机制"><span class="toc-text">为什么需要心跳机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#不只是ping-pong"><span class="toc-text">不只是ping-pong</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#心跳检测是仅限于应用层吗"><span class="toc-text">心跳检测是仅限于应用层吗</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#为什么需要心跳机制"><span class="toc-text">为什么需要心跳机制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#不只是ping-pong"><span class="toc-text">不只是ping-pong</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#心跳检测是仅限于应用层吗"><span class="toc-text">心跳检测是仅限于应用层吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TCP的keep-Alive和Http1-1的Keep-Alive"><span class="toc-text">TCP的keep-Alive和Http1.1的Keep-Alive</span></a></li></ol>
   </div>
 </aside>
   
