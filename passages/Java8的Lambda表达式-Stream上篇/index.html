@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  <meta name="author" content="Li Haohang">
+  
+  
+  <title>Java8的Lambda表达式-Stream上篇 | 道·术</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java基础,Java基础,JDK8新特性,">
+  
+
+  
+  <meta name="description" content="李浩航的Blog">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2018-01-01",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "Li Haohang",
+    share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">术·道</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 道为术之灵, 术为道之体</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/ToBeGeek" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2020-12-26
+    </span>
+    
+      <span>
+        | <a href="/categories/Java基础/"><i class="fa fa-bookmark"></i>Java基础</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Java8的Lambda表达式-Stream上篇
+  </h1>
+  
+  <article class="passage-article">
+    <h5 id="Why-Stream"><a href="#Why-Stream" class="headerlink" title="Why Stream?"></a>Why Stream?</h5><p>Java8中最让我感到喜欢的特性就是Stream，让我喜欢它的理由有：能够使得代码更加简洁易懂，能够轻易的创建一个并行流进行类Fork/join的任务处理，大数据量处理的时候更高效的性能…</p>
+<p>Stream直译过来就是流。想到“流”我的脑海中会出现两个特点：<br>1.有向，有起点和终点。<br>2.中间处理，就像生产车间的流水线处理，原材料(好比初始化的数据)在不同的部门车间(好比函数)进行加工处理，最终形成需要的产品(目标数据)</p>
+<p>先来个容易理解的demo，以下是一张订单表，让我们用JDK7的写法与JDK8写法做一个横向对比。定义一个List<orderrecord> orderRecords，记录order表的所有数据<br><img src="//lihaohanggitee.gitee.io/passages/Java8的Lambda表达式-Stream上篇/%E8%AE%A2%E5%8D%95%E8%A1%A8.jpg" alt="订单表.jpg"></orderrecord></p>
+<h6 id="找出购买牙刷的人"><a href="#找出购买牙刷的人" class="headerlink" title="找出购买牙刷的人"></a>找出购买牙刷的人</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//JDK7 写法</span></span><br><span class="line">List&lt;OrderRecord&gt; toothbrushBuyers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (OrderRecord record : orderRecords) &#123;</span><br><span class="line">     <span class="keyword">if</span> (<span class="string">"牙刷"</span>.equals(record.getGoodName())) &#123;</span><br><span class="line">        toothbrushBuyers.add(record);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//JDK8 写法</span></span><br><span class="line">List&lt;OrderRecord&gt; toothbrushBuyers2 = orderRecords.stream()</span><br><span class="line">    .filter(el -&gt; <span class="string">"牙刷"</span>.equals(el.getGoodName()))</span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+<p>如果你熟悉链式调用的风格，你会发现JDK8中stream带来了这样的一种能力。而链式编程带来最直观的感受就是代码连贯，可读性强，容易维护。看到这里，你可能会喷我。上面JDK7的示例也很容易理解啊，怎么就可读性差了？</p>
+<p>OK，you are right!现在产品大佬说要加多一个需求了，找出购买牙刷的消费者中，牙刷单价最高的消费者！</p>
+<p>如果这个时候你基于JDK7代码的前提，你会怎么做？</p>
+<p>*calculateSinglePrice是计算单价的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//假设最高单价购买人的索引值topIndex=0</span></span><br><span class="line"><span class="keyword">int</span> topIndex=<span class="number">0</span>;</span><br><span class="line">OrderRecord topNode;</span><br><span class="line">OrderRecord currentNode;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;toothbrushBuyers.size();i++)&#123;</span><br><span class="line">    topNode= toothbrushBuyers.get(topIndex);</span><br><span class="line">    currentNode= toothbrushBuyers.get(i);</span><br><span class="line">    BigDecimal topSinglePrice=calculateSinglePrice(topNode.getPayment(),topNode.getNumb());</span><br><span class="line">    BigDecimal currentSinglePrice=calculateSinglePrice(currentNode.getPayment(),currentNode.getNumb());</span><br><span class="line">    <span class="comment">//对比，找出最高单价的消费者</span></span><br><span class="line">    <span class="keyword">if</span>(topSinglePrice.compareTo(currentSinglePrice)&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        topIndex=i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码，估计还是有不少小可爱会这么干。但如果这么干了，你觉得可读性如何？<strong>定义的变量变多，意味着代码中需要维护的变量也多了，可读性自然下降</strong>。而且两次for循环（for循环是代码中的大块，toothbrushBuyers的集合如果是超大集合，过多会造成性能下降）。或许你会反驳，我才不会这么写，我会写Comparator或者我可以把for循环合并成一个。对的，你可以写comparator，一旦下次需求又又又改了，那真的是恭喜你，请好好维护你的比较器~。合并for循环，确实能使得效率更高，但这也意味着你需要很谨慎的对旧有for进行改造。来看看JDK8中stream的写法吧！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OrderRecord target=toothbrushBuyers2.stream()</span><br><span class="line">    .max(Comparator.comparing(x-&gt;calculateSinglePrice(x.getPayment(),x.getNumb())))</span><br><span class="line">    .orElse(<span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>或者更简单，合并之前的stream处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">OrderRecord target = orderRecords.stream()</span><br><span class="line">    .filter(el -&gt; <span class="string">"牙刷"</span>.equals(el.getGoodName()))</span><br><span class="line">    .max(Comparator.comparing(x-&gt;calculateSinglePrice(x.getPayment(),x.getNumb())))</span><br><span class="line">    .orElse(<span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+
+<p>对比上述，相信你已经能感受到Stream风格写法的优雅了！后续产品再来需求，我们只要在这条链上，新增“处理节点”就可以了</p>
+<h5 id="为什么要内部迭代"><a href="#为什么要内部迭代" class="headerlink" title="为什么要内部迭代"></a>为什么要内部迭代</h5><h5 id="创建一个Stream的方式"><a href="#创建一个Stream的方式" class="headerlink" title="创建一个Stream的方式"></a>创建一个Stream的方式</h5><h5 id="Stream的方法有哪些"><a href="#Stream的方法有哪些" class="headerlink" title="Stream的方法有哪些"></a>Stream的方法有哪些</h5><p>1.惰性求值（讲一下它与高阶函数的故事），及早求值</p>
+<p>2.讲一下常用的一些方法，罗列场景</p>
+<h5 id="听说Stream性能不香？是真的吗？"><a href="#听说Stream性能不香？是真的吗？" class="headerlink" title="听说Stream性能不香？是真的吗？"></a>听说Stream性能不香？是真的吗？</h5><p>其实是一个选择的问题，用对了，就是真香！</p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#Why-Stream"><span class="toc-text">Why Stream?</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#找出购买牙刷的人"><span class="toc-text">找出购买牙刷的人</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#为什么要内部迭代"><span class="toc-text">为什么要内部迭代</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#创建一个Stream的方式"><span class="toc-text">创建一个Stream的方式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Stream的方法有哪些"><span class="toc-text">Stream的方法有哪些</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#听说Stream性能不香？是真的吗？"><span class="toc-text">听说Stream性能不香？是真的吗？</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 是浩航啊···</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://lihaohanggitee.gitee.io/passages/Java8的Lambda表达式-Stream上篇/</a>
+        </div>
+      
+      <div>
+        输出·回馈·成长
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/Java基础/"><i class="fa fa-tags"></i>Java基础</a>
+     
+      <a href="/tags/JDK8新特性/"><i class="fa fa-tags"></i>JDK8新特性</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">博客推荐</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://www.martinfowler.com/" target="_blank">ThoughtWorks大神</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="http://blog.didispace.com/" target="_blank">程序猿DD</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">系列教程</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://blog.csdn.net/forezp/article/details/70148833" target="_blank">史上最简单的SpringCloud教程·方志朋</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://www.liaoxuefeng.com/wiki/1016959663602400" target="_blank">Python教程·廖雪峰</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">同志圈</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://juejin.im" target="_blank">掘金</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://stackoverflow.com/" target="_blank">stackoverflow</a>
+            </span>
+          
+        </div>
+      
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+      <div class="site-footer-info">
+        <i class="fa fa-at"></i> Email: 744168227@qq.com
+      </div>
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <div class="site-layer-input-choose">
+          <a href="javascript:void(0);" title="Change Search Engine">Google</a>
+        </div>
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/Java8的Lambda表达式-Stream中篇/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/你以为心跳机制只是简单的Ping-Pong吗/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+  
+  
+    <a id="share-btn-weibo" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-weibo"></i>
+    </a>
+  
+  
+    <a id="share-btn-qq" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-qq"></i>
+    </a>
+  
+  
+    <a id="share-btn-wechat" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-wechat"></i>
+    </a>
+  
+</div>
+    
+
+
+  <script async>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+  </script>
+
+
+
+
+    
+  </body>
+</html>
