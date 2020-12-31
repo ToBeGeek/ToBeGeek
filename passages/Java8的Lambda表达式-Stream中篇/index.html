@@ -171,7 +171,9 @@
   
   <article class="passage-article">
     <p>本篇围绕着Stream如何实现数据并行化处理的知识点梳理</p>
-<h4 id="并发和并行"><a href="#并发和并行" class="headerlink" title="并发和并行"></a>并发和并行</h4><h4 id="使用并行流的性能影响因素"><a href="#使用并行流的性能影响因素" class="headerlink" title="使用并行流的性能影响因素"></a>使用并行流的性能影响因素</h4><h4 id="并行流与Fork-join"><a href="#并行流与Fork-join" class="headerlink" title="并行流与Fork/join"></a>并行流与Fork/join</h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4>
+<h4 id="并发和并行"><a href="#并发和并行" class="headerlink" title="并发和并行"></a>并发和并行</h4><p>并行：并行是指两个或多个事件在同一个时刻可以发生<br>并发：并发指一个周期内多个事件间隔发生</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/Java8的Lambda表达式-Stream中篇/%E5%B9%B6%E5%8F%91%E4%BD%86%E4%B8%8D%E5%B9%B6%E8%A1%8C.png" alt="并发但不并行.png"></p>
+<h4 id="摩尔定律与阿姆达尔定律"><a href="#摩尔定律与阿姆达尔定律" class="headerlink" title="摩尔定律与阿姆达尔定律"></a>摩尔定律与阿姆达尔定律</h4><h4 id="使用并行流的性能影响因素"><a href="#使用并行流的性能影响因素" class="headerlink" title="使用并行流的性能影响因素"></a>使用并行流的性能影响因素</h4><h4 id="并行流与Fork-join"><a href="#并行流与Fork-join" class="headerlink" title="并行流与Fork/join"></a>并行流与Fork/join</h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -179,7 +181,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#并发和并行"><span class="toc-text">并发和并行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用并行流的性能影响因素"><span class="toc-text">使用并行流的性能影响因素</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#并行流与Fork-join"><span class="toc-text">并行流与Fork/join</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#并发和并行"><span class="toc-text">并发和并行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#摩尔定律与阿姆达尔定律"><span class="toc-text">摩尔定律与阿姆达尔定律</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用并行流的性能影响因素"><span class="toc-text">使用并行流的性能影响因素</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#并行流与Fork-join"><span class="toc-text">并行流与Fork/join</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
   </div>
 </aside>
   
