@@ -190,7 +190,6 @@
 </ul>
 <!-- /TOC -->
 
-
 <h5 id="Why-Stream"><a href="#Why-Stream" class="headerlink" title="Why Stream?"></a>Why Stream?</h5><p>Java8中最让我感到喜欢的特性就是Stream，让我喜欢它的理由有：能够使得代码更加简洁易懂，能够轻易的创建一个并行流进行类Fork/join的任务处理，大数据量处理的时候更高效的性能…</p>
 <p>Stream直译过来就是流。想到“流”我的脑海中会出现两个特点：<br>1.有向，有起点和终点。<br>2.中间处理，就像生产车间的流水线处理，原材料(好比初始化的数据)在不同的部门车间(好比函数)进行加工处理，最终形成需要的产品(目标数据)</p>
 <p>先来个容易理解的demo，以下是一张订单表，让我们用JDK7的写法与JDK8写法做一个横向对比。定义一个List<orderrecord> orderRecords，记录order表的所有数据<br><img src="//lihaohanggitee.gitee.io/passages/Java8的Lambda表达式-Stream上篇/%E8%AE%A2%E5%8D%95%E8%A1%A8.jpg" alt="订单表.jpg"></orderrecord></p>
