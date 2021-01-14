@@ -170,7 +170,26 @@
   </h1>
   
   <article class="passage-article">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>演进，意为演变发展。个人理解就是，遇到问题后解决问题，累积解决的问题多了就会到达一个层次，这样的层层递进就是演进的过程。<br><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B.png" alt="架构演进.png"></p>
+    <!-- TOC -->
+
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言</a><ul>
+<li><a href="#%E4%BC%A0%E7%BB%9F%E5%9E%82%E7%9B%B4%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84">传统垂直应用架构</a><ul>
+<li><a href="#%E5%9E%82%E7%9B%B4%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%8D%95%E8%8A%82%E7%82%B9">垂直应用架构不等于单节点</a></li>
+<li><a href="#%E5%9E%82%E7%9B%B4%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84%E9%83%A8%E7%BD%B2%E6%96%B9%E6%A1%881-%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87%E9%83%A8%E7%BD%B2">垂直应用架构部署方案1-双机热备部署</a></li>
+<li><a href="#%E5%9E%82%E7%9B%B4%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84%E9%83%A8%E7%BD%B2%E6%96%B9%E6%A1%882-%E5%A4%9A%E8%8A%82%E7%82%B9%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%B1%95%E9%83%A8%E7%BD%B2">垂直应用架构部署方案2-多节点水平扩展部署</a></li>
+<li><a href="#%E5%B0%8F%E7%BB%93">小结</a></li>
+</ul>
+</li>
+<li><a href="#"></a></li>
+<li><a href="#"></a></li>
+<li><a href="#"></a></li>
+</ul>
+</li>
+</ul>
+<!-- /TOC -->
+
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>演进，意为演变发展。个人理解就是，遇到问题后解决问题，累积解决的问题多了就会到达一个层次，这样的层层递进就是演进的过程。<br><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B.png" alt="架构演进.png"></p>
 <p>上图是我的个人见解。随着需求/功能的不断增加，系统的复杂度(熵)是越来越大的，而架构的演进的意义，就在于如何让需求增加的同时尽可能保证复杂度达到一个相对平稳的层次。</p>
 <h4 id="传统垂直应用架构"><a href="#传统垂直应用架构" class="headerlink" title="传统垂直应用架构"></a>传统垂直应用架构</h4><p>对于程序员来说无论是LAMP，还是SSM+Tomcat，还是SSH+Tomcat的MVC架构相信大家都清楚。虽然在语言的实现上差异巨大，但是他们都是垂直应用架构，技术单一，上手快，部署简单。对于小业务量的应用来说，垂直应用架构(俗称单体架构)就是一个全能的存在（啥业务都往这个单体应用里塞）。<br>比如我们常见的MVC架构：</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/MVC%E6%9E%B6%E6%9E%84.jpg" alt="MVC架构.jpg"></p>
@@ -179,10 +198,22 @@
 <p>Java语言开发的单体架构通常都会统一打成一个War包部署在Tomcat等web容器中。因为是单体架构，所以不存在一个请求链路在业务应用层上出现跨进程调用的情况，也就是说所有的业务都在本地API中完成。</p>
 <h5 id="垂直应用架构不等于单节点"><a href="#垂直应用架构不等于单节点" class="headerlink" title="垂直应用架构不等于单节点"></a>垂直应用架构不等于单节点</h5><p>我理解上来说，垂直应用架构并不是说整套系统中有且只有一个进程，而是指一个业务请求在处理中不会出现跨进程的远程服务调用(也不存在这样的能力)。如果一个系统是垂直应用架构且单机部署，那么会带来很多问题，最明显的就是可用性低（一旦服务宕机，则全部业务受到影响）。</p>
 <p>为了解决这个单机部署的问题，通常在该架构下会有两种部署方案！</p>
-<h5 id="垂直应用架构部署方案1-双机热备部署"><a href="#垂直应用架构部署方案1-双机热备部署" class="headerlink" title="垂直应用架构部署方案1-双机热备部署"></a>垂直应用架构部署方案1-双机热备部署</h5><p>双机热备部署通常需要用到的也比较简单，主要是利用了网卡对浮动IP的支持，以及通过WatchDog进程对应用进程进行监控，检测应用进程是否宕机或僵死。若发生异常情况，则通过浮动IP技术切换请求IP到另一台正常的应用进程的服务器上。(浮动IP)[<a href="https://blog.csdn.net/readiay/article/details/53538085]" target="_blank" rel="noopener">https://blog.csdn.net/readiay/article/details/53538085]</a></p>
+<h5 id="垂直应用架构部署方案1-双机热备部署"><a href="#垂直应用架构部署方案1-双机热备部署" class="headerlink" title="垂直应用架构部署方案1-双机热备部署"></a>垂直应用架构部署方案1-双机热备部署</h5><p>双机热备部署通常需要用到的也比较简单，主要是利用了网卡对浮动IP的支持，以及通过WatchDog进程对应用进程进行监控，检测应用进程是否宕机或僵死。若发生异常情况，则通过浮动IP技术切换请求IP到另一台正常的应用进程的服务器上。<a href="https://blog.csdn.net/readiay/article/details/53538085" target="_blank" rel="noopener">浮动IP</a></p>
 <p>部署如图所示：</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87%E6%96%B9%E6%A1%88.png" alt="双机热备方案.png"></p>
-<h5 id="垂直应用架构部署方案2-多节点水平扩展部署"><a href="#垂直应用架构部署方案2-多节点水平扩展部署" class="headerlink" title="垂直应用架构部署方案2-多节点水平扩展部署"></a>垂直应用架构部署方案2-多节点水平扩展部署</h5><p>####</p>
+<p>优点：结构简单，部署方便<br>缺点：非HA方案，一旦负载过大导致主进程宕机，往往备份进程所在的服务器也扛不住(一般主进程的服务器硬件配置更好)，看门狗检测应用健康，浮动IP在切换中，存在延迟，部分请求可能无法正常处理。</p>
+<h5 id="垂直应用架构部署方案2-多节点水平扩展部署"><a href="#垂直应用架构部署方案2-多节点水平扩展部署" class="headerlink" title="垂直应用架构部署方案2-多节点水平扩展部署"></a>垂直应用架构部署方案2-多节点水平扩展部署</h5><p>上述的方法存在负载过大导致主备进程宕机的风险，本质原因是所有的请求压力都打在同一个节点上。那么当前的方案通过水平扩展，即多个水平节点部署，保证流量可以负载到多个节点上。常见的方法是通过LBS/Nginx/F5，软硬件负载方式+同应用多节点部署。如下所示：</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E6%B0%B4%E5%B9%B3%E6%89%A9%E5%B1%95.jpg" alt="水平扩展.jpg"></p>
+<p>优点：结构也比较简单，水平扩展方案的整体系统负载可以随着节点数量的扩展而增加<br>缺点：需要更多的资源投入，一旦其中一个节点宕机，流量可能被分发到宕机节点导致请求处理失败，需要更改网关层的映射。</p>
+<h5 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h5><p>1.垂直应用架构中并非只有一个应用进程。主要看请求的完整过程中是否存在远程服务调用<br>2.双机热备方案与水平扩展方案是垂直应用架构常见的部署方案<br>3.垂直应用架构比较适合业务量少的初创团队，一旦业务量级上来，复杂度将会陡然上升。如第一幅图中所示。具体问题看下述</p>
+<p>垂直应用架构带来的挑战：</p>
+<p><strong>开发成本和维护成本变高</strong>：随着需求的增加，业务功能越来越多，导致了原本简单的单体应用变成了复杂的超级单体。对于开发人员来说，如果不是很熟悉业务代码，就如同牵一发而动全身。对于运维人员来说，打包和编译项目的时间也更长了，部署效率低</p>
+<p><strong>团队协作效率低，代码冲突，重复率高</strong>：开发人员在同一个工程下提交代码，容易在提交代码的时候产生冲突，在开发的时候也容易写重复代码</p>
+<p><strong>系统可靠性变差，带来更多的资源投入</strong>：业务量一旦上来了，垂直应用架构即使采用水平节点扩展的部署方案，也存在资源投入过度的问题。总不能一扛不住就加机子吧。不能从根本解决垂直应用架构的问题，这样的扩展方式就是资源投入的无底洞。负载过大的时候，还容易造成节点宕机，这意味着其他节点也有同样的风险</p>
+<p><strong>需求迭代的速度跟不上了</strong>：随着工程的代码量增加，越来越难维护。老员工可能跳槽去其他家写BUG了，新接手的员工大概率都是一脸懵逼的写代码，这样容易引入风险，也不利于正常的需求迭代。可能一个看似简单的需求，对于新人来说也是寸步难行的！</p>
+<p><strong>交付周期变长</strong>：这点和上面一点沾边。垂直应用架构无法做到按照服务或者需求粒度交付给测试和运维。意味着每次提交给测试人员的工程，都需要和老功能一起重新编译、打包、部署···，而在测试阶段，频繁的重复这样的工作会相当低效！这点对于运维人员也是一样的</p>
+<h4 id="RPC架构"><a href="#RPC架构" class="headerlink" title="RPC架构"></a>RPC架构</h4><p>垂直应用架构的问题本质，都是因为出现了超级单体。那么拆单体不就好了吗！将单体按照业务领域拆成多个服务，原本通过本地API调用的服务变成了需要远程调用的服务。问题又出现了，如何对服务的拆分引入了远程调用的问题！所以RPC架构诞生了，通过RPC框架解决多应用进程之间的远程通信问题。</p>
+<p>RPC是什么：Remote Procedure Call，直译就是远程过程调用。它是一种进程间通信通信方式，允许像调用本地服务一样调用远程服务，具体实现的细节可以不同，可以是Http Invoke，RMI Invoke等。</p>
 <p>####</p>
 <p>####</p>
 
@@ -193,7 +224,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#传统垂直应用架构"><span class="toc-text">传统垂直应用架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构不等于单节点"><span class="toc-text">垂直应用架构不等于单节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案1-双机热备部署"><span class="toc-text">垂直应用架构部署方案1-双机热备部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案2-多节点水平扩展部署"><span class="toc-text">垂直应用架构部署方案2-多节点水平扩展部署</span></a></li></ol></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#传统垂直应用架构"><span class="toc-text">传统垂直应用架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构不等于单节点"><span class="toc-text">垂直应用架构不等于单节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案1-双机热备部署"><span class="toc-text">垂直应用架构部署方案1-双机热备部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案2-多节点水平扩展部署"><span class="toc-text">垂直应用架构部署方案2-多节点水平扩展部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RPC架构"><span class="toc-text">RPC架构</span></a></li></ol></li></ol>
   </div>
 </aside>
   
