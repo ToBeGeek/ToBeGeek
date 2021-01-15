@@ -220,7 +220,7 @@
 <h4 id="RPC架构"><a href="#RPC架构" class="headerlink" title="RPC架构"></a>RPC架构</h4><p>垂直应用架构的问题本质，都是因为出现了超级单体。那么拆单体不就好了吗！将单体按照业务领域拆成多个服务，原本通过本地API调用的服务变成了需要远程调用的服务。问题又出现了，如何对服务的拆分引入了远程调用的问题！所以RPC架构诞生了，通过RPC框架解决多应用进程之间的远程通信问题。</p>
 <h5 id="RPC框架与RPC架构"><a href="#RPC框架与RPC架构" class="headerlink" title="RPC框架与RPC架构"></a>RPC框架与RPC架构</h5><p>RPC是什么：Remote Procedure Call，直译就是远程过程调用。它是一种进程间通信通信方式，允许像调用本地服务一样调用远程服务，具体实现的细节可以不同，可以是Http Invoke，RMI Invoke等。</p>
 <p>RPC框架的目的就是为了简化远程服务调用的过程，屏蔽底层的传输方式（TCP/UDP），序列化方式（文本协议或者二进制协议）和具体通信细节(客户端负载均衡器，熔断等).对于调用者来说，就像调用本地API一样简单</p>
-<p>过程原理如下：<br><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/RPC%E6%9E%B6%E6%9E%84.png" alt="RPC架构.png"></p>
+<p>过程原理如下：<br><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/RPC%E8%B0%83%E7%94%A8%E5%8E%9F%E7%90%86.jpg" alt="RPC调用原理.jpg"></p>
 <p>现在主流的RPC框架的共性包括：<br>1.<strong>Provider需要以某种形式让Consumer获知服务调用相关的信息(服务接口定义，数据结构等)</strong>。可以是通过依赖导入的服务接口interface(比如我们一般会把服务接口独立为公共依赖)，可以是IDL文件<br>2.<strong>代理对象</strong>。主要是指远程服务代理，消费者调用服务API的时候，实际上在底层是调用一个远程服务代理对象。对于Java语言，它的实现就是JDK的动态代理，通过动态代理的拦截机制，将本地调用转换成远程服务端调用<br>3.<strong>通信</strong>。RPC框架与具体的协议无关，例如Spring的远程调用支持HTTP Invoke，RMI Invoke。<br>4.<strong>序列化</strong>。一般RPC框架都会支持多种主流的序列化协议，也支持私有化定制协议。</p>
 <h5 id="RPC架构的问题"><a href="#RPC架构的问题" class="headerlink" title="RPC架构的问题"></a>RPC架构的问题</h5><p>前面说到，RPC框架主要是解决了单体架构拆分之后带来的分布式通信问题。在大规模服务化之前，应用通过RPC框架，可以高效简单的进行远程通信。随着业务发展，服务之间的依赖关系越来越复杂，就如同城中村中的网线，电线各种杂乱交织在一起，系统的复杂度又上升了，同时也意味着风险也上升！</p>
 <h4 id="SOA架构"><a href="#SOA架构" class="headerlink" title="SOA架构"></a>SOA架构</h4><h4 id="微服务架构"><a href="#微服务架构" class="headerlink" title="微服务架构"></a>微服务架构</h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4>
