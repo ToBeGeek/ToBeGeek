@@ -192,7 +192,11 @@
 <li><a href="#soa%E6%9E%B6%E6%9E%84%E7%9A%84%E9%97%AE%E9%A2%98">SOA架构的问题</a></li>
 </ul>
 </li>
-<li><a href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84">微服务架构</a></li>
+<li><a href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84">微服务架构</a><ul>
+<li><a href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%9A%84%E4%BC%98%E7%82%B9">微服务架构的优点</a></li>
+<li><a href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%9A%84%E7%BC%BA%E7%82%B9">微服务架构的缺点</a></li>
+</ul>
+</li>
 <li><a href="#serverless%E6%9E%B6%E6%9E%84%E4%BC%9A%E6%98%AF%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9C%AA%E6%9D%A5%E5%90%97">Serverless架构会是下一个未来吗</a></li>
 <li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
 </ul>
@@ -240,14 +244,26 @@
 <h5 id="SOA架构的问题"><a href="#SOA架构的问题" class="headerlink" title="SOA架构的问题"></a>SOA架构的问题</h5><p>为了复用服务，部分遗留系统出于历史技术原因无法改造，直接通过企业服务总线ESB（一种消息管道机制）进行异构协议转换，从而实现不同服务的消息打通。不同模块使用的技术不同和划分原则不同，导致SOA服务化之后良莠不齐。</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/ESB.jpg" alt="ESB.jpg"></p>
 <p>SOA架构解决了很多服务化的问题，但是随着服务化的发展，也伴随来了新的挑战。比如业界开始提倡的敏捷开发模式，CI/CD，DevOps,SOA架构就难以匹配。</p>
-<p>1.<strong>敏捷开发</strong>：强调快速迭代，快速交付可用的功能<br>2.<strong>CI/CD</strong>：简化环境的创建、编译、打包和部署。<a href="https://www.redhat.com/zh/topics/devops/what-is-ci-cd" target="_blank" rel="noopener">关于CI/CD</a><br>3.<strong>DevOps</strong>：促进小团队独立运作和交付</p>
+<p>1.<strong>敏捷开发</strong>：强调快速迭代，快速交付可用的功能<br>2.<strong>CI/CD</strong>：简化环境的创建、编译、打包和部署。<a href="https://www.redhat.com/zh/topics/devops/what-is-ci-cd" target="_blank" rel="noopener">关于CI/CD的知识可以看这</a><br>3.<strong>DevOps</strong>：促进小团队独立运作和交付</p>
 <h4 id="微服务架构"><a href="#微服务架构" class="headerlink" title="微服务架构"></a>微服务架构</h4><p>特别喜欢《分布式服务框架》书中的这句话“<strong>量变引起质变，这就是微服务架构和SOA服务化架构的最大差异</strong>”。我曾经一度以为微服务不就是比SOA架构，更加强调服务的细粒度的架构吗。现在想想真的是太片面了！</p>
-<p>说说我个人对微服务的理解：<br>微服务架构=组件化服务+敏捷开发+CI/CD+DevOps。最起码要做到这三点，才能算得上微服务架构。</p>
+<p>说说我个人对微服务的理解：<br>微服务架构=组件化服务+敏捷开发+CI/CD+DevOps。最起码要做到这四点，才能算得上微服务架构。</p>
 <p>很多公司，技术上用了SpringCloud就对外吹嘘自己是“微服务架构”，但其实可能连“组件化服务”都没做好，服务职责混乱，也没有做好对这些微服务的治理。</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E5%88%9D%E8%AF%86.jpg" alt="微服务初识.jpg"></p>
-<h4 id="Serverless架构会是下一个未来吗"><a href="#Serverless架构会是下一个未来吗" class="headerlink" title="Serverless架构会是下一个未来吗"></a>Serverless架构会是下一个未来吗</h4><p>近些年，开始不断的听到<strong>Serverless架构</strong>的声音。Serverless架构基于一些大型云服务厂商提供的环境，将服务的治理能力，计算资源完完全全交给厂商，而团队仅仅负责业务实现。该架构与容器化技术深度结合，但仍然处于早期技术阶段，拭目以待吧!</p>
+<h5 id="微服务架构的优点"><a href="#微服务架构的优点" class="headerlink" title="微服务架构的优点"></a>微服务架构的优点</h5><p>说是优点，其实都是与前者比较出来的。相对于SOA架构来说，微服务架构具有如下的优点</p>
+<p><strong>更细的服务粒度</strong>：SOA首要解决的问题是异构应用的服务化，颗粒的以模块为主；微服务则强调服务划分的粒度尽可能原子化。举个例子，同样是一个监控服务，在SOA中架构中它的实现是一个大模块（集成了收集采集与ETL，汇总与报表，监控阈值告警），而在微服务架构中，它是由采集服务,清洗服务，BI服务，阈值检查服务，告警消息服务..组成</p>
+<p><strong>更低的服务依赖</strong>：好的微服务一定单一职责的设计。因为单一职责，相对于SOA来说服务之间的耦合度更低，也就造成了更低的服务依赖，从而复用性更强了。比如我之前曾经参与过的一个消息中心服务，它既能满足于业务消息推送，也能满足监控告警的消息推送。</p>
+<p><strong>更大的服务规模</strong>：更小的颗粒度，带来更多的服务数量。这对运维和服务治理带来的新挑战，这也是为什么需要CI/CD,DevOPS的原因。若不结合这些手段，无异于自讨苦吃。</p>
+<p><strong>取待ESB的P2P虚拟总线</strong>：微服务强调“微”，轻量级。ESB在SOA架构中，好比一条“龙骨”（ESB相当于集成的服务网关和注册中心），在微服务看来实在重。因此也慢慢被P2P的虚拟消息总线代替了（Eureka注册中心，SpringCloud Bus单纯的消息通信总线）。</p>
+<p><strong>更完善的服务治理</strong>：服务运行态微治理，实时性更强，生效时延低和影响面低</p>
+<p><strong>更加高效的服务交付</strong>：小团队负责微服务的设计，开发，测试，部署和上线治理、灰度发布和下线，参与整个生命周期的各个方面。更快的迭代、构建、编译和打包部署。提高了小团队的作战能力，实现小步快跑</p>
+<p><strong>对异构的更好支持</strong>：服务的分散管理，可以使得不同技术栈的小团队有各自的实现，发挥各自团队的优势。</p>
+<h5 id="微服务架构的缺点"><a href="#微服务架构的缺点" class="headerlink" title="微服务架构的缺点"></a>微服务架构的缺点</h5><p>微服务带来了更大的服务规模和业务支撑的同时，也带来了不少的新挑战。我的总结如下：</p>
+<p>1.团队需要学习更多的技术和工具（当然对于喜欢折腾的我来说，这是挺享受的过程），否则遇到问题难快速解决<br>2.需要高水平的技术人员(架构师)进行领域划分，微服务的职责一旦模糊，长期下来容易变成“四不像”架构，出现重复开发，或者是“大颗粒”。<br>3.调用链路可能更长了，对于debug或者测试来说，有时候件头疼的事情。<br>4.服务更多了，接口文档容易管理混乱（当然这需要团队内做好规范，否则这真的是非常蛋疼的事情）</p>
+<p>再来看一个我在InfoQ某期看到的趣图吧，内容过于真实。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/架构是如何演进的/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%B6%A3%E5%9B%BE.jpg" alt="微服务趣图"></p>
+<h4 id="Serverless架构会是下一个未来吗"><a href="#Serverless架构会是下一个未来吗" class="headerlink" title="Serverless架构会是下一个未来吗"></a>Serverless架构会是下一个未来吗</h4><p>近些年，开始不断的听到<strong>Serverless架构</strong>的声音。Serverless架构基于一些大型云服务厂商提供的环境，将服务的治理能力，计算资源完完全全交给厂商，而团队仅仅负责业务实现。云服务厂商将该架构与容器化技术深度结合，目标是实现真正意义上的“一切上云”，让业务方聚焦业务，远离运维。但仍然处于早期技术阶段，拭目以待吧!</p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>垂直应用架构：当业务简单，业务量少的时候，能够极大的节约成本。但随着复杂度上升，容易形成“超级单体”</p>
-<p>RPC架构：垂直应用架构带来了“超级单体”及其相关的副作用RPC架构借助于RPC框架，对“垂直应用”进行了多维度的服务拆分，主要解决了<strong>服务间远程通信的问题</strong></p>
+<p>RPC架构：垂直应用架构带来了“超级单体”及其相关的副作用。RPC架构借助于RPC框架，对“垂直应用”进行了多维度的服务拆分，主要解决了<strong>服务间远程通信的问题</strong></p>
 <p>SOA架构：RPC架构虽然解决了服务间通信的问题，但是服务规模的增大，服务治理成为一个令人头疼的事情。SOA架构，在RPC架构的基础上，引入了一系列<strong>服务治理</strong>的解决方案，<strong>强调以服务为中心，服务可复用</strong>。</p>
 <p>微服务架构：在SOA的基础之上，<strong>强调服务的组件化（也叫原子化），结合敏捷开发，CI/CD，DevOps</strong>。实现更加高效的资源利用和服务交付</p>
 
@@ -258,7 +274,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#传统垂直应用架构"><span class="toc-text">传统垂直应用架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构不等于单节点"><span class="toc-text">垂直应用架构不等于单节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案1-双机热备部署"><span class="toc-text">垂直应用架构部署方案1-双机热备部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案2-多节点水平扩展部署"><span class="toc-text">垂直应用架构部署方案2-多节点水平扩展部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RPC架构"><span class="toc-text">RPC架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#RPC框架与RPC架构"><span class="toc-text">RPC框架与RPC架构</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#RPC架构的问题"><span class="toc-text">RPC架构的问题</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SOA架构"><span class="toc-text">SOA架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#面向服务设计的几个原则"><span class="toc-text">面向服务设计的几个原则</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SOA架构下的服务治理"><span class="toc-text">SOA架构下的服务治理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SOA架构的问题"><span class="toc-text">SOA架构的问题</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#微服务架构"><span class="toc-text">微服务架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Serverless架构会是下一个未来吗"><span class="toc-text">Serverless架构会是下一个未来吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#传统垂直应用架构"><span class="toc-text">传统垂直应用架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构不等于单节点"><span class="toc-text">垂直应用架构不等于单节点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案1-双机热备部署"><span class="toc-text">垂直应用架构部署方案1-双机热备部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#垂直应用架构部署方案2-多节点水平扩展部署"><span class="toc-text">垂直应用架构部署方案2-多节点水平扩展部署</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RPC架构"><span class="toc-text">RPC架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#RPC框架与RPC架构"><span class="toc-text">RPC框架与RPC架构</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#RPC架构的问题"><span class="toc-text">RPC架构的问题</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SOA架构"><span class="toc-text">SOA架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#面向服务设计的几个原则"><span class="toc-text">面向服务设计的几个原则</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SOA架构下的服务治理"><span class="toc-text">SOA架构下的服务治理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#SOA架构的问题"><span class="toc-text">SOA架构的问题</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#微服务架构"><span class="toc-text">微服务架构</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#微服务架构的优点"><span class="toc-text">微服务架构的优点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#微服务架构的缺点"><span class="toc-text">微服务架构的缺点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Serverless架构会是下一个未来吗"><span class="toc-text">Serverless架构会是下一个未来吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
   </div>
 </aside>
   
