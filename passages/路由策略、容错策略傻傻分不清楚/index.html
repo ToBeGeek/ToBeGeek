@@ -170,13 +170,20 @@
   </h1>
   
   <article class="passage-article">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前些天一个还在大四的师弟和我讨论问题的时候，师弟以为Failover也是一种路由策略。我问他为什么这么想，他说因为请求失败后要对失败的路由剔除，再进行路由的重新选择呗。我告诉他，两者虽然都可以在一条请求链路中出现，但是针对的场景是不同的。路由策略，是负载均衡的一种体现，有时候也被叫做“负载均衡策略”，决定请求的去向，其目的在于系统节点的负载保持稳定。容错策略决定当集群服务调用发生错误的时候，需要做什么。</p>
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前些天一个在读大四的师弟和我讨论问题的时候，师弟以为Failover也是一种路由策略。我问他为什么这么想，他说因为请求失败后要对失败的路由剔除，再进行路由的重新选择呗。我告诉他，两者虽然都可以在一条请求链路中出现，但是针对的场景是不同的。路由策略，是负载均衡的一种体现，有时候也被叫做“负载均衡策略”，决定请求的去向，其目的在于系统节点的负载保持稳定。容错策略决定当集群服务调用发生错误的时候，需要做什么。</p>
 <blockquote>
 <p>“举个例子，现在不是春节要到了吗？”<br>“路由策略就好比，你返乡的方式。你可以选择客运站、高铁站、飞机场。”<br>“你原本买了飞机票，结果你要去飞机场的时候，发现机场由于天气恶劣停掉了你的班次”<br>“就如同调用服务发生错误，这个时候你对这个班次取消事件的处理策略就好比容错策略。”<br>“你选择不返乡了，这就叫快速失败(FailFast)。你选择去高铁站，那么就是自动切换(FailOver)。你选择等天气好转再坐延班飞机，这不就是失败缓存(FailCache)吗？？”</p>
 </blockquote>
 <p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E8%B4%9F%E8%BD%BD%E4%B8%8E%E5%AE%B9%E9%94%99.png" alt="负载与容错.png"></p>
-<h3 id="路由策略"><a href="#路由策略" class="headerlink" title="路由策略"></a>路由策略</h3><p>分布式系统中的生产运行实例，往往都是集群组网，也就是说同样的服务会有多个水平节点。这意味着一次请求必须对路由做出选择，“如何选”就是路由策略。路由策略即负载均衡策略，但不完全等于负载均衡。负载均衡是一种机制，负载均衡策略是它的一部分。从软硬件来说，可以分硬件负载如F5，软负载如Nginx,LVS,Apache等。从决策的发生来说，又可以分成客户端负载均衡(如上述图中，路由选择发生在consumer中。经典如SpringCloud的Ribboon组件)，服务端负载均衡（比如网关Nginx，Zuul，GatWay等）。</p>
-
+<h3 id="负载均衡与路由策略"><a href="#负载均衡与路由策略" class="headerlink" title="负载均衡与路由策略"></a>负载均衡与路由策略</h3><p>分布式系统中的生产运行实例，往往都是集群组网，也就是说同样的服务会有多个水平节点。这意味着一次请求必须对路由做出选择，“如何选”就是路由策略。路由策略即负载均衡策略，但不完全等于负载均衡。负载均衡是一种机制，负载均衡策略是它的一部分。从软硬件来说，可以分硬件负载如F5，软负载如Nginx,LVS,Apache等。从决策的发生来说，又可以分成客户端负载均衡(如上述图中，路由选择发生在consumer中。经典如SpringCloud的Ribbon组件)，服务端负载均衡（比如网关Nginx，Zuul，GatWay等）。更多关于Ribbon的可以看我的这一篇<a href="https://lihaohanggitee.gitee.io/passages/%E8%AF%A6%E8%A7%A3Springcloud%E4%B9%8BRibbon%E7%BB%84%E4%BB%B6/">详解Springcloud之Ribbon组件</a></p>
+<h4 id="轮询策略"><a href="#轮询策略" class="headerlink" title="轮询策略"></a>轮询策略</h4><p>轮询策略RoundRobin:<br>几乎是很多负载均衡器的默认选择策略(Nginx,ribbon),<strong>实现轮询的方式比较简单，其实就是按照权重值(也可以没有权重值)，顺序循环遍历服务提供者列表，当到达边界的时候则从头结点再开始新一轮循环。</strong></p>
+<p>Weighted-RoundRobin即带权重值的轮询，每次更新权重值的时候，都需要生成一个“符合比例关系”的路由表，数组结构即可。举个例子，假设现在有一个request，调用的服务集群有两节点A，B。如果是单纯的轮询策略，则A与B之间的权重值是1：1的关系，那么这个时候数组应该是[A,B]，则每一轮轮询对于A和B节点来说，大家都依次调用且仅有一次调用。如果我们希望A接收更多的请求，我们把权重值设置比例为2:1，那么重新计算后的路由数组应该是[A,A,B]，则每一轮轮询，A节点都会被两次调用。</p>
+<p>优点：实现简单，实用性强<br>缺点：一旦出现故障节点（宕机，处理不及时），会造成部分请求的丢失或者是响应卡在问题节点处理中，时延大。</p>
+<h4 id="随机策略"><a href="#随机策略" class="headerlink" title="随机策略"></a>随机策略</h4><p>随机策略Random：<br>随机策略也是非常容易实现的一种路由选择策略，根据随机算法进行负载均衡。<strong>适用于集群中每个节点的负载能力相近，采用随机策略可以使得请求分发的比较均匀</strong></p>
+<p>优点：实现简单，请求分发比较均匀（多节点负载能力相近的前提）</p>
+<p>缺点：有一定的概率造成请求丢失或者时延过大。在一个截面上碰撞的概率也高，甚至丢失的请求比轮询策略还多。<br>其次，随机策略没有考虑到不同节点的负载能力差异，负载能力差异大的时候会导致负载不均衡</p>
+<h4 id="粘滞连接（固定直链）"><a href="#粘滞连接（固定直链）" class="headerlink" title="粘滞连接（固定直链）"></a>粘滞连接（固定直链）</h4><p>粘滞连接策略：客户端创建链路成功后，只要不出故障就一直保持连接进行通信。这种策略适用于有状态要求的请求。实现的思想也比较简单，只要首次连接成功则将目标路由打上粘滞连接的标记，仅仅当连接中断后才选择下一个路由。现在的系统往往都是被设计成无状态的服务，因此极少情况下会使用粘滞连接。</p>
+<h4 id="一致性Hash"><a href="#一致性Hash" class="headerlink" title="一致性Hash"></a>一致性Hash</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -184,7 +191,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#路由策略"><span class="toc-text">路由策略</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#负载均衡与路由策略"><span class="toc-text">负载均衡与路由策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#轮询策略"><span class="toc-text">轮询策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机策略"><span class="toc-text">随机策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#粘滞连接（固定直链）"><span class="toc-text">粘滞连接（固定直链）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a></li></ol></li></ol>
   </div>
 </aside>
   
