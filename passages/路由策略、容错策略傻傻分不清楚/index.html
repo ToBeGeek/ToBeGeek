@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>归档: 2020/3 | 道·术</title>
+  <title>路由策略、容错策略傻傻分不清楚 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, Theme-AD">
+    <meta name="keywords" content="分布式系统,容错策略,路由策略,">
   
 
   
@@ -38,7 +38,7 @@
     welcome: {"enable":false,"interval":30},
     start_time: "2018-01-01",
     passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: false,
+    is_post: true,
     lock: false,
     author: "Li Haohang",
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
@@ -148,24 +148,70 @@
 </nav>
 <div id="site-process"></div>
     <main>
-      <div class="timeline">
-  <h2 class="timeline-title">归档: 54篇</h2>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2021-01-30
+    </span>
+    
+      <span>
+        | <a href="/categories/分布式系统/"><i class="fa fa-bookmark"></i>分布式系统</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    路由策略、容错策略傻傻分不清楚
+  </h1>
   
-    
-      <h3 class="timeline-subtitle">2020</h3>
-    
-    <div class="timeline-item">
-      <time>2020-03-21</time>
-      <a target="_self" href="/passages/详解Springcloud之Feign组件/">详解Springcloud之Feign组件</a>
-    </div>
+  <article class="passage-article">
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前些天一个还在大四的师弟和我讨论问题的时候，师弟以为Failover也是一种路由策略。我问他为什么这么想，他说因为请求失败后要对失败的路由剔除，再进行路由的重新选择呗。我告诉他，两者虽然都可以在一条请求链路中出现，但是针对的场景是不同的。路由策略，是负载均衡的一种体现，有时候也被叫做“负载均衡策略”，决定请求的去向，其目的在于系统节点的负载保持稳定。容错策略决定当集群服务调用发生错误的时候，需要做什么。</p>
+<blockquote>
+<p>“举个例子，现在不是春节要到了吗？”<br>“路由策略就好比，你返乡的方式。你可以选择客运站、高铁站、飞机场。”<br>“你原本买了飞机票，结果你要去飞机场的时候，发现机场由于天气恶劣停掉了你的班次”<br>“就如同调用服务发生错误，这个时候你对这个班次取消事件的处理策略就好比容错策略。”<br>“你选择不返乡了，这就叫快速失败(FailFast)。你选择去高铁站，那么就是自动切换(FailOver)。你选择等天气好转再坐延班飞机，这不就是失败缓存(FailCache)吗？？”</p>
+</blockquote>
+<p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E8%B4%9F%E8%BD%BD%E4%B8%8E%E5%AE%B9%E9%94%99.png" alt="负载与容错.png"></p>
+<h3 id="路由策略"><a href="#路由策略" class="headerlink" title="路由策略"></a>路由策略</h3><p>分布式系统中的生产运行实例，往往都是集群组网，也就是说同样的服务会有多个水平节点。这意味着一次请求必须对路由做出选择，“如何选”就是路由策略。路由策略即负载均衡策略，但不完全等于负载均衡。负载均衡是一种机制，负载均衡策略是它的一部分。从软硬件来说，可以分硬件负载如F5，软负载如Nginx,LVS,Apache等。从决策的发生来说，又可以分成客户端负载均衡(如上述图中，路由选择发生在consumer中。经典如SpringCloud的Ribboon组件)，服务端负载均衡（比如网关Nginx，Zuul，GatWay等）。</p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#路由策略"><span class="toc-text">路由策略</span></a></li></ol>
+  </div>
+</aside>
   
+    <aside class="passage-copyright">
+      <div>本文作者: 是浩航啊···</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/</a>
+        </div>
+      
+      <div>
+        输出·回馈·成长
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/容错策略/"><i class="fa fa-tags"></i>容错策略</a>
+     
+      <a href="/tags/路由策略/"><i class="fa fa-tags"></i>路由策略</a>
     
-    <div class="timeline-item">
-      <time>2020-03-21</time>
-      <a target="_self" href="/passages/详解Springcloud之Ribbon组件/">详解Springcloud之Ribbon组件</a>
     </div>
   
 </div>
+
     </main>
     
     <div class="site-footer-wrapper">
@@ -255,12 +301,12 @@
     <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/架构是如何演进的/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
   <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="false" id="site-toc-show-btn">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
       <i class="fa fa-bars"></i>
     </a>
     
