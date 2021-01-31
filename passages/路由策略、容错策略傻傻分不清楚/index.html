@@ -58,7 +58,7 @@
     <link rel="apple-touch-icon" href="/images/touch-icon.png">
   
 
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//www.fontawesome.com.cn/wp-content/themes/deeptimes/fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 
   <link rel="stylesheet" href="/css/index.css">
 <link rel="stylesheet" href="/styles/components/highlight/highlight.css">
@@ -170,7 +170,7 @@
   </h1>
   
   <article class="passage-article">
-    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前些天一个在读大四的师弟和我讨论问题的时候，师弟以为Failover也是一种路由策略。我问他为什么这么想，他说因为请求失败后要对失败的路由剔除，再进行路由的重新选择呗。我告诉他，两者虽然都可以在一条请求链路中出现，但是针对的场景是不同的。路由策略，是负载均衡的一种体现，有时候也被叫做“负载均衡策略”，决定请求的去向，其目的在于系统节点的负载保持稳定。容错策略决定当集群服务调用发生错误的时候，需要做什么。</p>
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前些天一个在读大三的师弟和我讨论问题的时候，师弟以为Failover也是一种路由策略。我问他为什么这么想，他说因为请求失败后要对失败的路由剔除，再进行路由的重新选择呗。我告诉他，两者虽然都可以在一条请求链路中出现，但是针对的场景是不同的。路由策略，是负载均衡的一种体现，有时候也被叫做“负载均衡策略”，决定请求的去向，其目的在于系统节点的负载保持稳定。容错策略决定当集群服务调用发生错误的时候，需要做什么。</p>
 <blockquote>
 <p>“举个例子，现在不是春节要到了吗？”<br>“路由策略就好比，你返乡的方式。你可以选择客运站、高铁站、飞机场。”<br>“你原本买了飞机票，结果你要去飞机场的时候，发现机场由于天气恶劣停掉了你的班次”<br>“就如同调用服务发生错误，这个时候你对这个班次取消事件的处理策略就好比容错策略。”<br>“你选择不返乡了，这就叫快速失败(FailFast)。你选择去高铁站，那么就是自动切换(FailOver)。你选择等天气好转再坐延班飞机，这不就是失败缓存(FailCache)吗？？”</p>
 </blockquote>
