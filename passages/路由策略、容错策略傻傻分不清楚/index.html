@@ -182,8 +182,22 @@
 <h4 id="随机策略"><a href="#随机策略" class="headerlink" title="随机策略"></a>随机策略</h4><p>随机策略Random：<br>随机策略也是非常容易实现的一种路由选择策略，根据随机算法进行负载均衡。<strong>适用于集群中每个节点的负载能力相近，采用随机策略可以使得请求分发的比较均匀</strong></p>
 <p>优点：实现简单，请求分发比较均匀（多节点负载能力相近的前提）</p>
 <p>缺点：有一定的概率造成请求丢失或者时延过大。在一个截面上碰撞的概率也高，甚至丢失的请求比轮询策略还多。<br>其次，随机策略没有考虑到不同节点的负载能力差异，负载能力差异大的时候会导致负载不均衡</p>
-<h4 id="粘滞连接（固定直链）"><a href="#粘滞连接（固定直链）" class="headerlink" title="粘滞连接（固定直链）"></a>粘滞连接（固定直链）</h4><p>粘滞连接策略：客户端创建链路成功后，只要不出故障就一直保持连接进行通信。这种策略适用于有状态要求的请求。实现的思想也比较简单，只要首次连接成功则将目标路由打上粘滞连接的标记，仅仅当连接中断后才选择下一个路由。现在的系统往往都是被设计成无状态的服务，因此极少情况下会使用粘滞连接。</p>
-<h4 id="一致性Hash"><a href="#一致性Hash" class="headerlink" title="一致性Hash"></a>一致性Hash</h4>
+<h4 id="粘滞连接（固定直链）"><a href="#粘滞连接（固定直链）" class="headerlink" title="粘滞连接（固定直链）"></a>粘滞连接（固定直链）</h4><p>粘滞连接策略：客户端创建链路成功后，只要不出故障就一直保持连接进行通信。这种策略<strong>适用于有状态要求的请求</strong>。实现的思想也比较简单，只要首次连接成功则将目标路由打上粘滞连接的标记，仅仅当连接中断后才选择下一个路由。现在的系统往往都是被设计成无状态的服务，因此极少情况下会使用粘滞连接。</p>
+<h4 id="一致性Hash"><a href="#一致性Hash" class="headerlink" title="一致性Hash"></a>一致性Hash</h4><p>一致性Hash算法是一个非常有意思的算法。它解决了分布式系统中的请求热点问题，也能够保证当系统中出现节点数变化时影响面较低，使得负载更加分散。先来看下面的一张图，结合该图，尝试理解一致性Hash算法。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E4%B8%80%E8%87%B4%E6%80%A7Hash.png" alt="一致性Hash"></p>
+<p><strong>三个关键要点：环形数组，Hash计算，有向查找</strong><br>1：环形数组：如下图中的大圆环，数组的值[0,2^32-1]，收尾连接构成闭环。<br>可以抽象理解该数组上的数据，[null,…,A节点IP地址,…,B节点IP地址,…]</p>
+<p>2：Hash计算：该hash计算公式用于将Object的标志信息(ip,key等)散列在数组上的某个(也可以是多个)索引位置index上。比如上图中的A，B，C，D节点新增进来的时候，根据IP算出他们各自在环上的位置即途中黑色节点。这些节点会存在指向他们的ref。</p>
+<p>3：有向查找：当接收到request的时候，会通过上述所说的hash公式计算其在环上映射的index值（图中红点），然后根据顺时针方向查找，查找到的首个Node即为处理当前IP的节点。比如图中的requestA，顺时针方向查找到的节点是B，也就是由B节点处理requestA请求。</p>
+<h5 id="节点数变更的时候会发生什么"><a href="#节点数变更的时候会发生什么" class="headerlink" title="节点数变更的时候会发生什么"></a>节点数变更的时候会发生什么</h5><p>上面说到的策略，当节点数发生边动的时候，对所有的节点的负载都会造成影响。没错，是对所有节点。而一致性Hash算法可以将节点变更的影响降到最低。</p>
+<p>比如当前我们移除了节点C。<br><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E7%A7%BB%E9%99%A4%E8%8A%82%E7%82%B9C.png" alt="移除节点C.png"></p>
+<p>图中红色表示该节点已经不存在，那么原来映射到C上的请求requestB则按照顺序查找到的节点是D。也就是说C节点的移除，造成了D节点负载增加，但是其他节点的负载不受影响。同样的，如果我们在B节点与C节点中间，插入新节点E，那么也仅仅影响了C节点的负载（C节点负载减少）。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E6%96%B0%E5%A2%9EE%E8%8A%82%E7%82%B9.png" alt="新增E节点.png"></p>
+<h5 id="数据倾斜与虚拟节点"><a href="#数据倾斜与虚拟节点" class="headerlink" title="数据倾斜与虚拟节点"></a>数据倾斜与虚拟节点</h5><p>什么是数据倾斜？<strong>在分布式系统集群中，不同节点会负责不同范围的缓存数据。如果缓存的分散度不足，就会出现大量的数据集中在部分或者个别服务节点上，这样的现象被称为数据倾斜。</strong>前面说到一致性Hash能够保证数据分散，这看起来好像没它啥事情啊？别急，展开来说。</p>
+<p>对于一致性Hash来说，什么时候可能造成数据倾斜呢？答案是，节点数量少的时候。还是以上面的图为例，我们将节点数移除，仅仅保留A节点和D节点。由下图，可以看出来。顺时针方向上看，A-&gt;D的范围明显要大于D-&gt;A的范围，也意味着更多的请求将分发到D节点上，这样就出现了数据倾斜了！</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C.png" alt="数据倾斜.png"></p>
+<p>如果我们希望当节点少的时候，也能保证数据的分散程度尽量均匀怎么办？引入虚拟节点的概念。虚拟节点本质就是对同个节点在环上的多个副本。当实际节点数量不足的时候，我们可以将这些实际节点copy成多个副本节点并插入在环中，这样的一些节点就叫虚拟节点。虚拟节点和实际节点的效果是相同的，它们将请求的归属范围分成更多片区域，从而使得实际节点数量少的时候，数据分散的更均匀。如下图中，#号后数字表示当前节点是虚拟节点，用灰点表示。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/路由策略、容错策略傻傻分不清楚/%E8%99%9A%E6%8B%9F%E8%8A%82%E7%82%B9.png" alt="虚拟节点.png"></p>
+
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -191,7 +205,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#负载均衡与路由策略"><span class="toc-text">负载均衡与路由策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#轮询策略"><span class="toc-text">轮询策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机策略"><span class="toc-text">随机策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#粘滞连接（固定直链）"><span class="toc-text">粘滞连接（固定直链）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#负载均衡与路由策略"><span class="toc-text">负载均衡与路由策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#轮询策略"><span class="toc-text">轮询策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机策略"><span class="toc-text">随机策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#粘滞连接（固定直链）"><span class="toc-text">粘滞连接（固定直链）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#节点数变更的时候会发生什么"><span class="toc-text">节点数变更的时候会发生什么</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#数据倾斜与虚拟节点"><span class="toc-text">数据倾斜与虚拟节点</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
