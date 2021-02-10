@@ -6,12 +6,12 @@
   <meta name="author" content="Li Haohang">
   
   
-  <title>归档: 2018/1 | 道·术</title>
+  <title>深入理解Linux内核-内存寻址篇 | 道·术</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, Theme-AD">
+    <meta name="keywords" content="Linux,操作系统,计算机基础,内存寻址,">
   
 
   
@@ -38,7 +38,7 @@
     welcome: {"enable":false,"interval":30},
     start_time: "2018-01-01",
     passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: false,
+    is_post: true,
     lock: false,
     author: "Li Haohang",
     share: {"twitter":false,"facebook":false,"weibo":true,"qq":true,"wechat":true},
@@ -148,18 +148,82 @@
 </nav>
 <div id="site-process"></div>
     <main>
-      <div class="timeline">
-  <h2 class="timeline-title">归档: 55篇</h2>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2021-02-10
+    </span>
+    
+      <span>
+        | <a href="/categories/Linux/"><i class="fa fa-bookmark"></i>Linux</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    深入理解Linux内核-内存寻址篇
+  </h1>
   
+  <article class="passage-article">
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近在啃O’REILLY系列的《深入理解Linux内核-第三版》这本书，全书一共897页。真的是一本砖头书啊···虽然我以前也啃过不少砖头书，但这本绝对算得上那种“难以下咽”的砖头。故此，一边啃一边细嚼慢咽。</p>
+<h3 id="相关常见的字词解读"><a href="#相关常见的字词解读" class="headerlink" title="相关常见的字词解读"></a>相关常见的字词解读</h3><p>内存寻址是内存管理的一部分，而内存管理可以说是Linux内核中最为复杂的活动。本篇解读Linux是如何做到内存寻址，如果不提前了解一些概念，会让人一头雾水。（劝退警告）</p>
+<h4 id="什么是虚拟内存"><a href="#什么是虚拟内存" class="headerlink" title="什么是虚拟内存?"></a>什么是虚拟内存?</h4><p>虚拟内存是Unix系统(包含类Unix系统)对底层内存硬件资源的一种抽象。虚拟内存系统可看作是一层逻辑层，位于应用层与硬件内存管理单元(MMU,Management Unit)之间，主要负责满足应用层对底层的内存请求。</p>
+<p>MMU：是一种硬件，负责CPU内存的访问请求，它的功能包括：虚拟地址到物理地址的转换、内存保护，CPU告诉缓存的控制，内存管理。</p>
+<h4 id="随机访问存储器-RAM"><a href="#随机访问存储器-RAM" class="headerlink" title="随机访问存储器(RAM)"></a>随机访问存储器(RAM)</h4><p>也就是我们常常说到的内存条，它是一种硬件资源，具有断电易失性。Unix系统将RAM的使用可以划分成两个部分。一部分用于专门存放内核映像(内核的静态数据结构与内核代码)，这部分通常占比不大。另一部分主要由虚拟内存系统处理，主要有如下的场景：</p>
+<p>1：满足内核对缓冲区、描述符及其他动态内核数据结构的请求。<br>2：满足进程对一般内存区的请求以对及文件内存映射的请求。<br>3：借助于高速缓存从磁盘及其他缓冲设备获得较好的性能。</p>
+<h3 id="内存寻址"><a href="#内存寻址" class="headerlink" title="内存寻址"></a>内存寻址</h3><p>接下来逐步展开关于内存寻址的知识讲解，硬件底层的做了哪些支持，以及软件层面来看Linux内核与之呼应的支持。</p>
+<p>当我们使用x86处理器(8086)，我们必须将区分三种地址的概念。</p>
+<p><strong>逻辑地址</strong><br>包含在机器语言指令中用来指定一个操作数或一条指令的地址。其实就是一种相对地址，它的意义是简化操作系统之上的应用对地址的使用。每一个逻辑地址都由一个<strong>段(segment)</strong>和<strong>偏移量(offset)</strong>组成。</p>
+<p><strong>线性地址</strong><br>线性地址也被成为“虚拟地址”，它是一个用32位表示的无符号整数，可以用来表达高达4GB的地址(0-2^32)。为了直观紧凑，通常会用将线性地址用16进制的数字表示，值的范围[0x00000000,0xFFFFFFFF]</p>
+<p><strong>物理地址</strong><br>与CPU寻址直接关联，用于芯片级内存单元寻址。物理地址由32位或36位无符号整数表示。</p>
+<p>为什么要说到上述的三种地址，因为内存寻址的过程，其实就是上述三者之间计算转换的过程。而这些转换的计算，离不开前面说到的MMU单元(一种硬件)，大体的转换过程如下所示。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/MMU%E7%9A%84%E5%8A%9F%E8%83%BD.png" alt="MMU的功能.png"></p>
+<p>可以注意到图中的两个硬件单元：分段单元与分页单元，前者负责将接收到的逻辑地址转换成“线性地址”，后者负责将“线性地址”转换成物理地址。</p>
+<p>看到这里，相信大多数人都有有一个疑惑？<strong>为什么要分段和分页呢，直接操作物理地址不香吗？省去中间环节，岂不是更加高效么？</strong></p>
+<h4 id="如果没有分段和分页-或者说没有虚拟内存机制"><a href="#如果没有分段和分页-或者说没有虚拟内存机制" class="headerlink" title="如果没有分段和分页(或者说没有虚拟内存机制)"></a>如果没有分段和分页(或者说没有虚拟内存机制)</h4><p>没有中间环节，直接对物理地址使用，使用效率上当然更高！但是会存在很多问题，比如不同的进程对同一个物理空间的写入操作，会造成数据覆盖。想象一下，如果没有分段、分页机制，程序员需要编写大量与机器相关的代码，繁杂且极其容易出错，某个普通进程不小心把内核占用的一些地址给破坏了，整体将会非常不安全！</p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关常见的字词解读"><span class="toc-text">相关常见的字词解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是虚拟内存"><span class="toc-text">什么是虚拟内存?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机访问存储器-RAM"><span class="toc-text">随机访问存储器(RAM)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存寻址"><span class="toc-text">内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如果没有分段和分页-或者说没有虚拟内存机制"><span class="toc-text">如果没有分段和分页(或者说没有虚拟内存机制)</span></a></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 是浩航啊···</div>
+      
+        <div>
+          原文链接: 
+          <a href="" target="_blank">http://lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/</a>
+        </div>
+      
+      <div>
+        输出·回馈·成长
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/操作系统/"><i class="fa fa-tags"></i>操作系统</a>
+     
+      <a href="/tags/计算机基础/"><i class="fa fa-tags"></i>计算机基础</a>
+     
+      <a href="/tags/内存寻址/"><i class="fa fa-tags"></i>内存寻址</a>
     
-      <h3 class="timeline-subtitle">2018</h3>
-    
-    <div class="timeline-item">
-      <time>2018-01-21</time>
-      <a target="_self" href="/passages/Java中的IO、NIO浅析/">Java中的IO、NIO浅析</a>
     </div>
   
 </div>
+
     </main>
     
     <div class="site-footer-wrapper">
@@ -249,12 +313,12 @@
     <a href="javascript:void(0);" data-enable="false">
       <i class="fa fa-arrow-left"></i>
     </a>
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/路由策略、容错策略傻傻分不清楚/" data-enable="true">
       <i class="fa fa-arrow-right"></i>
     </a>
   </div>
   <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="false" id="site-toc-show-btn">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
       <i class="fa fa-bars"></i>
     </a>
     

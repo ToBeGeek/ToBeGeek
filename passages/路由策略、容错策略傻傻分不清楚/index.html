@@ -187,6 +187,7 @@
 <li><a href="#%E5%B0%8F%E8%8A%82">小节</a></li>
 </ul>
 </li>
+<li><a href="#%E5%AE%B9%E9%94%99%E7%AD%96%E7%95%A5">容错策略</a></li>
 </ul>
 <!-- /TOC -->
 
@@ -225,6 +226,8 @@
 <p>服务调用时延策略的不足之处：<br>1.<strong>性能损耗</strong>：计算是需要资源的，一旦参与计算的指标、节点数多，则意味着每次计算都需要付出代价。<br>2.<strong>周期过长，计划赶不上变化</strong>：如果每次计算的间隔周期过长，则不能很好的反应各个节点的负载能力变化，容易出现误差<br>3.<strong>周期过短，计算频率增大</strong>：带来额外的开销</p>
 <p>当然对于上述缺点也不用过于担心，开发人员凭借着经验和KPI数据可以估算一个适当的周期。只是该策略实现起来麻烦些是了。</p>
 <h4 id="小节"><a href="#小节" class="headerlink" title="小节"></a>小节</h4><p>上面说到的几种策略，都是路由策略中非常经典的策略。当然其实还有一种<strong>自定义策略</strong>，其实在很多组件中多数都会支持自定义的策略实现。但往往都可以在上述的几种策略中找到它们的“影子”。</p>
+<p>头都晕了，总结了大半天，才写了一半…休息以下，接下来准备讲讲关于容错策略的那亿点点事情。</p>
+<h3 id="容错策略"><a href="#容错策略" class="headerlink" title="容错策略"></a>容错策略</h3><p>当消费发起服务调用，此期间发生了远程服务调用异常，RPC框架往往会对该异常事件按照缺省（或者用户指定）的集群容错策略进行处理。整个过程是底层屏蔽的，上层调用者并不能感知。就以Dubbo框架为例子，展开讲讲它的容错策略。</p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -233,7 +236,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#负载均衡与路由策略"><span class="toc-text">负载均衡与路由策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#轮询策略"><span class="toc-text">轮询策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机策略"><span class="toc-text">随机策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#粘滞连接（固定直链）"><span class="toc-text">粘滞连接（固定直链）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#节点数变更的时候会发生什么"><span class="toc-text">节点数变更的时候会发生什么</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#数据倾斜与虚拟节点"><span class="toc-text">数据倾斜与虚拟节点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务调用时延策略"><span class="toc-text">服务调用时延策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小节"><span class="toc-text">小节</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#负载均衡与路由策略"><span class="toc-text">负载均衡与路由策略</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#轮询策略"><span class="toc-text">轮询策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机策略"><span class="toc-text">随机策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#粘滞连接（固定直链）"><span class="toc-text">粘滞连接（固定直链）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#一致性Hash"><span class="toc-text">一致性Hash</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#节点数变更的时候会发生什么"><span class="toc-text">节点数变更的时候会发生什么</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#数据倾斜与虚拟节点"><span class="toc-text">数据倾斜与虚拟节点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务调用时延策略"><span class="toc-text">服务调用时延策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小节"><span class="toc-text">小节</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#容错策略"><span class="toc-text">容错策略</span></a></li></ol>
   </div>
 </aside>
   
@@ -347,7 +350,7 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/深入理解Linux内核-内存寻址篇/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
     <a href="/passages/架构是如何演进的/" data-enable="true">
