@@ -242,16 +242,16 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="center"><strong>CS寄存器</strong></td>
-<td align="center">(Code Segment)代码段寄存器,指向包含程序指令的段（基地址），还有一个作用就是它有两个位用于表明当前CPU的特权级，我们称它为CPL。0值(00)表示最高级，而3值(11)则表示最低优先级。<strong>在Linux系统中仅仅用到了最高级和最低级来做内核态和用户态的判断</strong></td>
+<td align="center"><img width="200/"><strong>CS寄存器</strong></td>
+<td align="center">(Code Segment)代码段寄存器,指向包含程序指令的段，还有一个作用就是它有两个位用于表明当前CPU的特权级，我们称它为CPL。0值(00)表示最高级，而3值(11)则表示最低优先级。<strong>在Linux系统中仅仅用到了最高级和最低级来做内核态和用户态的判断</strong></td>
 </tr>
 <tr>
 <td align="center"><strong>SS寄存器</strong></td>
-<td align="center">（Stack Segment）栈段寄存器，指向包含当前程序栈的段(基地址)</td>
+<td align="center">（Stack Segment）栈段寄存器，指向包含当前程序栈的段</td>
 </tr>
 <tr>
 <td align="center"><strong>DS寄存器</strong></td>
-<td align="center">（Date Segment）数据段寄存器，包含静态数据或者全局数据段（基地址）</td>
+<td align="center">（Date Segment）数据段寄存器，包含静态数据或者全局数据段</td>
 </tr>
 <tr>
 <td align="center">ES寄存器</td>
@@ -266,7 +266,60 @@
 <td align="center">一般用途，可指向任意的数据段</td>
 </tr>
 </tbody></table>
-<h5 id="段描述符、GDT、LDT"><a href="#段描述符、GDT、LDT" class="headerlink" title="段描述符、GDT、LDT"></a>段描述符、GDT、LDT</h5><h4 id="硬件中的分页"><a href="#硬件中的分页" class="headerlink" title="硬件中的分页"></a>硬件中的分页</h4>
+<h5 id="段描述符、GDT、LDT"><a href="#段描述符、GDT、LDT" class="headerlink" title="段描述符、GDT、LDT"></a>段描述符、GDT、LDT</h5><p>首先来说说个人对“段”的理解，<strong>段是信息的一种逻辑单位，它包含了一组相对完整的信息</strong>。</p>
+<p>段描述符：用一个8字节的段描述符来描述一个段的特征，它描述了段的特征。段描述符存放在GDT或者LDT中</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF.jpg" alt="段描述符基本信息.jpg"></p>
+<table>
+<thead>
+<tr>
+<th align="center">字段</th>
+<th align="center">作用描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img width="200/">Base</td>
+<td align="center">包含段的首字节的线性地址，基地址字段。</td>
+</tr>
+<tr>
+<td align="center">G</td>
+<td align="center">粒度标志：如果该位置为0，则段大小以字节为单位。否则以4096字节的倍数计</td>
+</tr>
+<tr>
+<td align="center">Limit</td>
+<td align="center">相对偏移量，存放当前段中最后一个内存单元的偏移量，从而可以获知段的长度</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="center">系统标志位：如果为0则表示这是一个系统段，存储诸如LDT这种关键的数据结构。不等于0则表示当前为普通的代码段或者数据段</td>
+</tr>
+<tr>
+<td align="center">Type</td>
+<td align="center">描述段的特征和它存取权限</td>
+</tr>
+<tr>
+<td align="center">DPL</td>
+<td align="center">描述符特权级：用于限制对这个段的存取。它表示为当前访问这个段的时候，CPU需要什么样的CPL。比如当DPL=0的时候，要求，CPU必须是内核态才可以访问，即CPL=0。而当DPL=3的时候，CPU在用户态(CPL=3)、内核态(CPL=0)都可以访问</td>
+</tr>
+<tr>
+<td align="center">P</td>
+<td align="center">Segment-Present标志：表示当前段存放在什么硬件中。等于0表示当前段不在主存中。在Linux系统中总是设置为1，因Linux不允许把段存在磁盘中</td>
+</tr>
+<tr>
+<td align="center">D或B</td>
+<td align="center">根据段描述符描述的是一个可执行代码段、下扩数据段还是一个堆栈段，这个标志具有不同的功能。（对于32位代码和数据段，这个标志应该总是设置为1；对于16位代码和数据段，这个标志被设置为0。）</td>
+</tr>
+<tr>
+<td align="center">AVL标志</td>
+<td align="center">Avaliable标志位，可由操作系统任意扩展使用，但是Linux没用到</td>
+</tr>
+</tbody></table>
+<p>以上的是段描述符的具体字段，结合下图对段描述符的格式加深映像，段描述符前面说到是8字节的，它是64位长度的（分成高32位和低32位）</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E6%A0%BC%E5%BC%8F.jpg" alt="段描述符格式.jpg"></p>
+<p>GDT：全局描述符表，是主存中用来存放段描述符一块区域。GDT在主存中的地址和大小存放在gdtr寄存器中</p>
+<p>LDT：局部描述符表，是主存中用来存放段描述符一块区域。LTD地址和大小存放在ldtr寄存器中</p>
+<p>值得注意的是。在整个系统中，全局描述符表GDT只有一张(一个CPU对应一个GDT)，GDT可以存在在主存的任意一个位置，但是CPU必须要能够知道它的入口在哪。所以后来Intel引入了gdtr寄存器用来存放GDT的入口地址和大小信息。</p>
+<p><strong>GDT初始化</strong>过程如下：<br>程序将GDT在内存某个位置设定好之后，再通过LGDT指令将GDT的入口地址写入gdtr寄存器中，此后每当CPU需要从GDT中获取信息，都通过gdtr寄存器查询。（ldtr也是相似的过程原理）</p>
+<h4 id="硬件中的分页"><a href="#硬件中的分页" class="headerlink" title="硬件中的分页"></a>硬件中的分页</h4>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
