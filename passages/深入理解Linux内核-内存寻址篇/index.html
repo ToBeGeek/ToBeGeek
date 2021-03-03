@@ -197,6 +197,7 @@
 <li><a href="#%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6gdtldt">段描述符、GDT、LDT</a></li>
 </ul>
 </li>
+<li><a href="#%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E6%98%AF%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E5%BE%97%E5%88%B0%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80%E7%9A%84">虚拟地址是如何计算得到线性地址的</a></li>
 <li><a href="#%E7%A1%AC%E4%BB%B6%E4%B8%AD%E7%9A%84%E5%88%86%E9%A1%B5">硬件中的分页</a></li>
 </ul>
 </li>
@@ -269,7 +270,7 @@
 </tr>
 </tbody></table>
 <h5 id="段描述符、GDT、LDT"><a href="#段描述符、GDT、LDT" class="headerlink" title="段描述符、GDT、LDT"></a>段描述符、GDT、LDT</h5><p>首先来说说个人对“段”的理解，<strong>段是信息的一种逻辑单位，它包含了一组相对完整的信息</strong>。</p>
-<p>段描述符：用一个8字节的段描述符来描述一个段的特征，它描述了段的特征。段描述符存放在GDT或者LDT中</p>
+<p>段描述符：用一个8字节的段描述符来描述一个段的特征，它描述了段的特征。<strong>段描述符存放在GDT或者LDT中</strong></p>
 <p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF.jpg" alt="段描述符基本信息.jpg"></p>
 <table>
 <thead>
@@ -315,12 +316,12 @@
 <td align="center">Avaliable标志位，可由操作系统任意扩展使用，但是Linux没用到</td>
 </tr>
 </tbody></table>
-<p>以上的是段描述符的具体字段，结合下图对段描述符的格式加深映像，段描述符前面说到是8字节的，它是64位长度的（分成高32位和低32位）</p>
-<p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6%E6%A0%BC%E5%BC%8F.jpg" alt="段描述符格式.jpg"></p>
 <p>GDT：全局描述符表，是主存中用来存放段描述符一块区域。GDT在主存中的地址和大小存放在gdtr寄存器中</p>
 <p>LDT：局部描述符表，是主存中用来存放段描述符一块区域。LTD地址和大小存放在ldtr寄存器中</p>
 <p>值得注意的是。在整个系统中，全局描述符表GDT只有一张(一个CPU对应一个GDT)，GDT可以存在在主存的任意一个位置，但是CPU必须要能够知道它的入口在哪。所以后来Intel引入了gdtr寄存器用来存放GDT的入口地址和大小信息。</p>
-<p><strong>GDT初始化</strong>过程如下：<br>程序将GDT在内存某个位置设定好之后，再通过LGDT指令将GDT的入口地址写入gdtr寄存器中，此后每当CPU需要从GDT中获取信息，都通过gdtr寄存器查询。（ldtr也是相似的过程原理）</p>
+<p><strong>GDT初始化</strong>过程如下：<br>程序将GDT在内存某个位置设定好之后，再通过LGDT指令将GDT的入口地址写入gdtr寄存器中，此后每当CPU需要从GDT中获取信息，都通过gdtr寄存器查询。</p>
+<h4 id="虚拟地址是如何计算得到线性地址的"><a href="#虚拟地址是如何计算得到线性地址的" class="headerlink" title="虚拟地址是如何计算得到线性地址的"></a>虚拟地址是如何计算得到线性地址的</h4><p>红黄蓝的过程排序，分别对应第一步，第二步骤，第三步骤。</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址篇/%E7%A1%AC%E4%BB%B6%E5%88%86%E6%AE%B5.jpg" alt="硬件分段.jpg"></p>
 <h4 id="硬件中的分页"><a href="#硬件中的分页" class="headerlink" title="硬件中的分页"></a>硬件中的分页</h4>
   </article>
   <aside class="table-content" id="site-toc">
@@ -329,7 +330,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关常见的字词解读"><span class="toc-text">相关常见的字词解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作系统的基本概念"><span class="toc-text">操作系统的基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#内核"><span class="toc-text">内核</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用户态和内核态"><span class="toc-text">用户态和内核态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是虚拟内存"><span class="toc-text">什么是虚拟内存?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机访问存储器-RAM"><span class="toc-text">随机访问存储器(RAM)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是寄存器"><span class="toc-text">什么是寄存器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存寻址"><span class="toc-text">内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两种不同的地址转换方式-实模式和保护模式"><span class="toc-text">两种不同的地址转换方式(实模式和保护模式)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实模式下的内存寻址"><span class="toc-text">实模式下的内存寻址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三种地址"><span class="toc-text">三种地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为啥需要保护模式"><span class="toc-text">为啥需要保护模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#保护模式下的内存寻址"><span class="toc-text">保护模式下的内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分段"><span class="toc-text">硬件中的分段</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#保护模式下的逻辑地址"><span class="toc-text">保护模式下的逻辑地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#段描述符、GDT、LDT"><span class="toc-text">段描述符、GDT、LDT</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分页"><span class="toc-text">硬件中的分页</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关常见的字词解读"><span class="toc-text">相关常见的字词解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作系统的基本概念"><span class="toc-text">操作系统的基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#内核"><span class="toc-text">内核</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用户态和内核态"><span class="toc-text">用户态和内核态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是虚拟内存"><span class="toc-text">什么是虚拟内存?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机访问存储器-RAM"><span class="toc-text">随机访问存储器(RAM)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是寄存器"><span class="toc-text">什么是寄存器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存寻址"><span class="toc-text">内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两种不同的地址转换方式-实模式和保护模式"><span class="toc-text">两种不同的地址转换方式(实模式和保护模式)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实模式下的内存寻址"><span class="toc-text">实模式下的内存寻址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三种地址"><span class="toc-text">三种地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为啥需要保护模式"><span class="toc-text">为啥需要保护模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#保护模式下的内存寻址"><span class="toc-text">保护模式下的内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分段"><span class="toc-text">硬件中的分段</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#保护模式下的逻辑地址"><span class="toc-text">保护模式下的逻辑地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#段描述符、GDT、LDT"><span class="toc-text">段描述符、GDT、LDT</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#虚拟地址是如何计算得到线性地址的"><span class="toc-text">虚拟地址是如何计算得到线性地址的</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分页"><span class="toc-text">硬件中的分页</span></a></li></ol></li></ol>
   </div>
 </aside>
   
