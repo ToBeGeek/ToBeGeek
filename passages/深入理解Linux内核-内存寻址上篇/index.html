@@ -199,7 +199,11 @@
 <li><a href="#%E5%BF%AB%E9%80%9F%E8%AE%BF%E9%97%AE%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6">快速访问段描述符</a></li>
 </ul>
 </li>
-<li><a href="#%E7%A1%AC%E4%BB%B6%E4%B8%AD%E7%9A%84%E5%88%86%E9%A1%B5">硬件中的分页</a></li>
+<li><a href="#%E7%A1%AC%E4%BB%B6%E4%B8%AD%E7%9A%84%E5%88%86%E9%A1%B5">硬件中的分页</a><ul>
+<li><a href="#%E6%9C%89%E4%BA%86%E5%88%86%E6%AE%B5%E4%B8%BA%E5%95%A5%E8%BF%98%E8%A6%81%E5%88%86%E9%A1%B5">有了分段为啥还要分页</a></li>
+<li><a href="#%E9%A1%B5%E6%A1%86page-frame%E4%B8%8E%E9%A1%B5page">页框page frame与页page</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -323,13 +327,36 @@
 <p><strong>GDT初始化</strong>过程如下：<br>程序将GDT在内存某个位置设定好之后，再通过LGDT指令将GDT的入口地址写入gdtr寄存器中，此后每当CPU需要从GDT中获取信息，都通过gdtr寄存器查询。</p>
 <h5 id="逻辑地址是如何计算得到线性地址的"><a href="#逻辑地址是如何计算得到线性地址的" class="headerlink" title="逻辑地址是如何计算得到线性地址的"></a>逻辑地址是如何计算得到线性地址的</h5><p>前面说到MMU中的分段单元负责把逻辑地址转换成线性地址，现在具体来讲讲这个分段单元的执行原理。<br>红黄蓝的过程排序，分别对应第一步，第二步骤，第三步骤。</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/深入理解Linux内核-内存寻址上篇/%E7%A1%AC%E4%BB%B6%E5%88%86%E6%AE%B5.jpg" alt="硬件分段.jpg"></p>
-<p>第一步骤：<strong>分段单元先检查段选择符中的TI标识，根据TI标识获取对应的线性基址。</strong>如果TI=0则表明当前的段描述符处于GDT中，否则则处于LDT中。图示中TI=0，则从gdtr寄存器中获取线性基址，假设为0x00020000。</p>
+<p>第一步骤：<strong>分段单元先检查段选择符中的TI标识，根据TI标识去对应的gdtr\ldtr寄存器中获取线性基址。</strong>如果TI=0则表明当前的段描述符处于GDT中，否则则处于LDT中。图示中TI=0，则从gdtr寄存器中获取线性基址，假设为0x00020000。</p>
 <p>第二步骤：<strong>从段选择符的index字段值乘以8（2x8），再与第一步骤中的线性基址值相加,得到描述符表(当前是GDT)中的相应的段描述符地址。</strong>从而可以访问获取段描述符。</p>
 <p>第三步骤：<strong>从段描述符中获取Base字段值，与逻辑地址的段偏移量相加，得到线性地址。分段转换完成，即由逻辑地址计算得出线性地址。</strong></p>
 <p>知道了分段单元是分成三步把逻辑地址转换成线性地址了，相信有的童鞋可能会有疑惑。光一个逻辑地址转换成线性地址就要这么多步骤了啊，难怪搞硬件的人经常diss搞软件的。Don’t worry，因为“CPU一秒钟，人间已万年”，其次<strong>硬件层面其实提供了优化机制快速访问段描述符，也就是说不需要经过前面两个步骤来获取段描述符信息。</strong></p>
-<h5 id="快速访问段描述符"><a href="#快速访问段描述符" class="headerlink" title="快速访问段描述符"></a>快速访问段描述符</h5><p>为了避免每次都去描述符表（GDT or LDT）中获取段描述符信息，硬件给六种段寄存器(前面说到的那6种)都配有一个非编程寄存器，简单的说就是这些非编程寄存器对于开发人员是不可见的，无感知的。每次段寄存器装载段选择符的时候，自动将对应的段描述符从内存装载到该段寄存器配有的非编程寄存器（也叫高速缓存寄存器）中。既然非编程寄存器中已经有需要获取的段描述符了，CPU就可以跳过前面说到的前两个步骤，直接获取段描述符。</p>
+<h5 id="快速访问段描述符"><a href="#快速访问段描述符" class="headerlink" title="快速访问段描述符"></a>快速访问段描述符</h5><p>为了避免每次都去描述符表（GDT or LDT）中获取段描述符信息，硬件给六种段寄存器(前面说到的那6种)都配有一个非编程寄存器。这些非编程寄存器对于开发人员是不可见的，无感知的。每次段寄存器装载段选择符的时候，自动将对应的段描述符从内存装载到该段寄存器配有的非编程寄存器（也叫高速缓存寄存器）中。既然非编程寄存器中已经有需要获取的段描述符了，CPU就可以跳过前面说到的前两个步骤，直接获取段描述符。</p>
 <p>这样一个优化过程，其实就是我们软件开发上常常接触到的“缓存”嘛！所以缓存的思想，早早就存在了，这就是为啥要学习底层原理的原因了！既然说是缓存，那么就涉及到一个问题了，“缓存更新问题”。当我们更新了描述符表中的段描述符信息的时候，此时非编程寄存器中的数据就存在不一致了，所以这个时候我们需要通过上述的前两个步骤来获取最新的段描述符，并进行重新的装载。</p>
-<h4 id="硬件中的分页"><a href="#硬件中的分页" class="headerlink" title="硬件中的分页"></a>硬件中的分页</h4>
+<h4 id="硬件中的分页"><a href="#硬件中的分页" class="headerlink" title="硬件中的分页"></a>硬件中的分页</h4><h5 id="有了分段为啥还要分页"><a href="#有了分段为啥还要分页" class="headerlink" title="有了分段为啥还要分页"></a>有了分段为啥还要分页</h5><p>80286虽然最早提出了保护模式，但是由于当时的硬件水平所限，最大段大小依旧是64K。这也就是意味着大数组分配可能出现问题，所以很快也被淘汰了。286的保护模式也被称作16位保护模式。它后续的80386(80X86)时代，段寄存器的位数基本与寻址总线位数保持一致，寄存器和地址总线都是32位了，这就意味着以前16位下的分段机制其实没啥用武之地了（以前是位数不够，分段机制就好比一个“映射”的寻址过程）。<strong>因此在386及以后的处理器都支持分页，但是为了前向兼容性，所以还是将分段保留了下来。</strong>32位保护模式保留下来的分段，“名存实亡”。为什么这么说呢，因为后来的操作系统（Linux就是这么干的）干脆把分段的段基址设置成0，段内偏移量32位，也就是说所有的逻辑地址都共享同一个分段，等于没有分段。</p>
+<p>32位保护模式与16位保护模式的区别如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">差异点</th>
+<th align="center">16位保护模式</th>
+<th align="center">32位保护模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">偏移地址</td>
+<td align="center">16位，段的大小限制为64K</td>
+<td align="center">扩展至32位，段的大小最大4G</td>
+</tr>
+<tr>
+<td align="center">寻址处理</td>
+<td align="center">分段</td>
+<td align="center">兼容分段，支持分页</td>
+</tr>
+</tbody></table>
+<h5 id="页框-page-frame-与页-page"><a href="#页框-page-frame-与页-page" class="headerlink" title="页框(page frame)与页(page)"></a>页框(page frame)与页(page)</h5><p>分页单元的职责是将线性地址转成相应的物理地址。<strong>分页单元把所有RAM资源划分成固定长度的页框，也叫物理页。</strong>那什么是页呢，我们把线性地址划分到不同的集合中，每一个集合的长度都是固定的，我们称这样的集合为页。<strong>页内部连续的线性地址被映射到物理地址上也是连续的。</strong></p>
+<p>那么这两者有啥关系呢？有关系，一个页框包含一个页，两者长度相同。但是页是一个数据块，它可以在不同的介者中存储(磁盘或者主存)，而页框是主存的一部分，是存储区域。两者的关系，就好比大小相同相框与相片。相片(页)可以夹在相框(页框)中，也可以夹到某本书中。</p>
+
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -337,7 +364,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关常见的字词解读"><span class="toc-text">相关常见的字词解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作系统的基本概念"><span class="toc-text">操作系统的基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#内核"><span class="toc-text">内核</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用户态和内核态"><span class="toc-text">用户态和内核态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是虚拟内存"><span class="toc-text">什么是虚拟内存?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机访问存储器-RAM"><span class="toc-text">随机访问存储器(RAM)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是寄存器"><span class="toc-text">什么是寄存器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存寻址"><span class="toc-text">内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两种不同的地址转换方式-实模式和保护模式"><span class="toc-text">两种不同的地址转换方式(实模式和保护模式)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实模式下的内存寻址"><span class="toc-text">实模式下的内存寻址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三种地址"><span class="toc-text">三种地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为啥需要保护模式"><span class="toc-text">为啥需要保护模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#保护模式下的内存寻址"><span class="toc-text">保护模式下的内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分段"><span class="toc-text">硬件中的分段</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#保护模式下的逻辑地址"><span class="toc-text">保护模式下的逻辑地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#段描述符、GDT、LDT"><span class="toc-text">段描述符、GDT、LDT</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#逻辑地址是如何计算得到线性地址的"><span class="toc-text">逻辑地址是如何计算得到线性地址的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#快速访问段描述符"><span class="toc-text">快速访问段描述符</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分页"><span class="toc-text">硬件中的分页</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关常见的字词解读"><span class="toc-text">相关常见的字词解读</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#操作系统的基本概念"><span class="toc-text">操作系统的基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#内核"><span class="toc-text">内核</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#用户态和内核态"><span class="toc-text">用户态和内核态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是虚拟内存"><span class="toc-text">什么是虚拟内存?</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#随机访问存储器-RAM"><span class="toc-text">随机访问存储器(RAM)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#什么是寄存器"><span class="toc-text">什么是寄存器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内存寻址"><span class="toc-text">内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#两种不同的地址转换方式-实模式和保护模式"><span class="toc-text">两种不同的地址转换方式(实模式和保护模式)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#实模式下的内存寻址"><span class="toc-text">实模式下的内存寻址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三种地址"><span class="toc-text">三种地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#为啥需要保护模式"><span class="toc-text">为啥需要保护模式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#保护模式下的内存寻址"><span class="toc-text">保护模式下的内存寻址</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分段"><span class="toc-text">硬件中的分段</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#保护模式下的逻辑地址"><span class="toc-text">保护模式下的逻辑地址</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#段描述符、GDT、LDT"><span class="toc-text">段描述符、GDT、LDT</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#逻辑地址是如何计算得到线性地址的"><span class="toc-text">逻辑地址是如何计算得到线性地址的</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#快速访问段描述符"><span class="toc-text">快速访问段描述符</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件中的分页"><span class="toc-text">硬件中的分页</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#有了分段为啥还要分页"><span class="toc-text">有了分段为啥还要分页</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#页框-page-frame-与页-page"><span class="toc-text">页框(page frame)与页(page)</span></a></li></ol></li></ol></li></ol>
   </div>
 </aside>
   
