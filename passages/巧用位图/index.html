@@ -193,8 +193,16 @@
 
 <p>位图排序的优点：<br>运算效率还行，时间复杂度o(N)，不需要比较和交换顺序，对内存的占用少。</p>
 <p>位图排序的缺点：<br>数据不能出现重复，且数据必须在bitMap的长度范围中</p>
-<h4 id="查询小能手"><a href="#查询小能手" class="headerlink" title="查询小能手"></a><strong>查询小能手</strong></h4><p>位图的本质是一种数组，所以通过index的查询，性能杠杠滴！基于bitMap衍生的布隆过滤器BloomFilter，为什么能够即节省空间也能高效判断重复。就依赖于这种能力。更多我就不展开叙述了。可以看看我的这篇文章<a href="https://lihaohanggitee.gitee.io/passages/%E8%AE%A4%E8%AF%86%E5%A4%A7%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83/">《寻找最长的元音字母字符串》</a></p>
-<h3 id="怎么使用位图？"><a href="#怎么使用位图？" class="headerlink" title="怎么使用位图？"></a>怎么使用位图？</h3><h3 id="场景二的解决方案"><a href="#场景二的解决方案" class="headerlink" title="场景二的解决方案"></a>场景二的解决方案</h3>
+<h4 id="查询小能手"><a href="#查询小能手" class="headerlink" title="查询小能手"></a><strong>查询小能手</strong></h4><p>位图的本质是一种数组，所以通过index的查询，性能杠杠滴！比如前面说到的场景，查找某个用户在某一天的登陆情况就非常适合。更多我就不展开叙述了。可以看看我的这篇文章<a href="https://lihaohanggitee.gitee.io/passages/%E8%AE%A4%E8%AF%86%E5%A4%A7%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83/">《寻找最长的元音字母字符串》</a></p>
+<h4 id="布隆过滤器-Bloom-Filter"><a href="#布隆过滤器-Bloom-Filter" class="headerlink" title="布隆过滤器(Bloom Filter)"></a><strong>布隆过滤器(Bloom Filter)</strong></h4><p>基于bitMap衍生的布隆过滤器BloomFilter，是一种在数据判重情况下非常实用的结构。结论先行：<strong>布隆过滤器对已经见过的元素不会出现误判，但是对未见过的元素存在误判的可能。</strong></p>
+<p>比如APP消息推送，有时候营销活动的需要给APP用户们推送一些活动通知。当目标群体足够大的时候，要如何保证用户不会反复推送同样通知并且兼顾性能呢？总不能每次推送之前都先去查询一下DB是否有推送记录吧！</p>
+<p>可能有的人会说，可以通过redis给每个推送过的用户记录一个key:{userId}_{xxx活动id},value:1（1表示已经推送成功）。通过简单使用redis的这种方式会造成大量的内存浪费。所以我们推荐使用布隆过滤器，判断重复。</p>
+<p>布隆过滤器的实现原理，简单理解：<strong>对一个元素的值，通过多个散列函数映射到一个足够长的位图上。若下一个元素，散列后发现每一个映射的bit位都已经有1，则判断为重复元素.布隆过滤器中存入的是每个元素的指纹信息</strong></p>
+<p>流程如下：</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/巧用位图/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8.jpg" alt="布隆过滤器.jpg"></p>
+<p>从上图中可见，其实布隆过滤器并不是完美的方案，因为如果整个数组都是标记成1了，那误判率几乎是100%了。所以它需要初始化一个预估计的空间，比如实际用户量一千万，那就设置ini_size=一千两百万（适当冗余）。相比上述的redis简单方案，布隆过滤器不需要存储每个用户的推送标记键值对，更加节省空间（一千万个键值对和一千两百万个bit，可想而知）！</p>
+<p>使用布隆过滤器是一个相对平衡的方案，它性能好，误判率低，即使出现误判，像营销消息推送这种场景，极少数人收不到通知。如果要求一定能接收到，则可以从业务流程上入手，考虑一套软补偿方案！</p>
+<h3 id="场景二的解决方案"><a href="#场景二的解决方案" class="headerlink" title="场景二的解决方案"></a>场景二的解决方案</h3>
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
@@ -202,7 +210,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是位图？"><span class="toc-text">什么是位图？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要使用位图？"><span class="toc-text">为什么要使用位图？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#排序小能手"><span class="toc-text">排序小能手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查询小能手"><span class="toc-text">查询小能手</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#怎么使用位图？"><span class="toc-text">怎么使用位图？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#场景二的解决方案"><span class="toc-text">场景二的解决方案</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是位图？"><span class="toc-text">什么是位图？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#为什么要使用位图？"><span class="toc-text">为什么要使用位图？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#排序小能手"><span class="toc-text">排序小能手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查询小能手"><span class="toc-text">查询小能手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#布隆过滤器-Bloom-Filter"><span class="toc-text">布隆过滤器(Bloom Filter)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#场景二的解决方案"><span class="toc-text">场景二的解决方案</span></a></li></ol>
   </div>
 </aside>
   
