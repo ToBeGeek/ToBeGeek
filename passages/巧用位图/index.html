@@ -198,11 +198,30 @@
 <p>比如APP消息推送，有时候营销活动的需要给APP用户们推送一些活动通知。当目标群体足够大的时候，要如何保证用户不会反复推送同样通知并且兼顾性能呢？总不能每次推送之前都先去查询一下DB是否有推送记录吧！</p>
 <p>可能有的人会说，可以通过redis给每个推送过的用户记录一个key:{userId}_{xxx活动id},value:1（1表示已经推送成功）。通过简单使用redis的这种方式会造成大量的内存浪费。所以我们推荐使用布隆过滤器，判断重复。</p>
 <p>布隆过滤器的实现原理，简单理解：<strong>对一个元素的值，通过多个散列函数映射到一个足够长的位图上。若下一个元素，散列后发现每一个映射的bit位都已经有1，则判断为重复元素.布隆过滤器中存入的是每个元素的指纹信息</strong></p>
-<p>流程如下：</p>
+<p>流程如下：hash1、hash2、hash3分别表示三个不同的hash函数</p>
 <p><img src="//lihaohanggitee.gitee.io/passages/巧用位图/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8.jpg" alt="布隆过滤器.jpg"></p>
 <p>从上图中可见，其实布隆过滤器并不是完美的方案，因为如果整个数组都是标记成1了，那误判率几乎是100%了。所以它需要初始化一个预估计的空间，比如实际用户量一千万，那就设置ini_size=一千两百万（适当冗余）。相比上述的redis简单方案，布隆过滤器不需要存储每个用户的推送标记键值对，更加节省空间（一千万个键值对和一千两百万个bit，可想而知）！</p>
 <p>使用布隆过滤器是一个相对平衡的方案，它性能好，误判率低，即使出现误判，像营销消息推送这种场景，极少数人收不到通知。如果要求一定能接收到，则可以从业务流程上入手，考虑一套软补偿方案！</p>
-<h3 id="场景二的解决方案"><a href="#场景二的解决方案" class="headerlink" title="场景二的解决方案"></a>场景二的解决方案</h3>
+<h3 id="场景二的解决方案"><a href="#场景二的解决方案" class="headerlink" title="场景二的解决方案"></a>场景二的解决方案</h3><p>好的，相信看到了这里，大家对BitMap有了基本的了解。接下来回归前言说到的场景二：如何统计活跃用户</p>
+<p>解决这个问题需要意识到两点：<br>1：需要记录每天的用户登陆情况<br>2：每次统计活跃用户，都需要把当前天的“登陆情况”和前一天的“登陆情况”做交集，找出活跃用户的这个集合</p>
+<p>利用Redis的位图可以给出这样一个解决方案。<br>第一点：为每一天“登陆情况”设定一个位图，key:{date}_{loginMap}。它的value假设是[0,1,0]，则表示ID=0，ID=2的用户没有登陆，但是ID=1的用户登陆了。</p>
+<p>第二点：计算活跃用户的时候，假设当天“登陆情况”是[0,1,1],也就是ID=1的用户是活跃用户。我们需要取交集，所以进行&amp;运算。010&amp;011=010,即得出活跃用户的“登陆情况”。并将这个交集，以key:{date}_{ActiveLoginMap}，记录下来。</p>
+<p>简单示例过程如下。</p>
+<p>首先我们需要知道几个redis的相关指令</p>
+<p><strong>setbit [key] [offset] [value]</strong>:setbit关键字用于设置指定key的offset位置的值</p>
+<p><strong>bitop [operation] [destkey] key…</strong>:bitop 表示使用运算符 and。destkey即运算后的数据集key</p>
+<p><strong>bitcount key</strong>:计算出指定位图中数值为1的数量</p>
+<p><img src="//lihaohanggitee.gitee.io/passages/巧用位图/%E7%A4%BA%E4%BE%8B%E8%BF%87%E7%A8%8B.jpg" alt="示例过程.jpg"></p>
+<p>具体代码过程就不展开了！原理简单清晰，但是要注意一点的是，建议在进行运算后的交集中，尽可能采用别的数据结构存储ActiveLoginMap，避免运算积累下来的集合占据太多内存。</p>
+<p>方案给出，小李马上加班加点地code！终于顺利上线新功能~</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p><strong>场景三：</strong><br>产品经理又来了。刚准备开口谈谈下一个需求<br>小李俯下腰，从抽屉掏出了一块Brick…</p>
+</blockquote>
+</blockquote>
+</blockquote>
+
   </article>
   <aside class="table-content" id="site-toc">
   <div class="table-content-title">
