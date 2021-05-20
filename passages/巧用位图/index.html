@@ -194,7 +194,7 @@
 <p>位图排序的优点：<br>运算效率还行，时间复杂度o(N)，不需要比较和交换顺序，对内存的占用少。</p>
 <p>位图排序的缺点：<br>数据不能出现重复，且数据必须在bitMap的长度范围中</p>
 <h4 id="查询小能手"><a href="#查询小能手" class="headerlink" title="查询小能手"></a><strong>查询小能手</strong></h4><p>位图的本质是一种数组，所以通过index的查询，性能杠杠滴！比如前面说到的场景，查找某个用户在某一天的登陆情况就非常适合。更多我就不展开叙述了。可以看看我的这篇文章<a href="https://lihaohanggitee.gitee.io/passages/%E8%AE%A4%E8%AF%86%E5%A4%A7%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E8%BD%AF%E8%B4%9F%E8%BD%BD%E4%B8%AD%E5%BF%83/">《寻找最长的元音字母字符串》</a></p>
-<h4 id="布隆过滤器-Bloom-Filter"><a href="#布隆过滤器-Bloom-Filter" class="headerlink" title="布隆过滤器(Bloom Filter)"></a><strong>布隆过滤器(Bloom Filter)</strong></h4><p>基于bitMap衍生的布隆过滤器BloomFilter，是一种在数据判重情况下非常实用的结构。结论先行：<strong>布隆过滤器对已经见过的元素不会出现误判，但是对未见过的元素存在误判的可能。</strong></p>
+<h4 id="布隆过滤器-Bloom-Filter"><a href="#布隆过滤器-Bloom-Filter" class="headerlink" title="布隆过滤器(Bloom Filter)"></a><strong>布隆过滤器(Bloom Filter)</strong></h4><p>基于bitMap衍生的布隆过滤器BloomFilter，是一种在数据判重情况下非常实用的结构。结论先行：<strong>布隆过滤器对已经见过的元素不会出现误判，但是对未见过的元素存在误判的可能。它告诉你数据不存在则一定不存在，但是告诉你数据已存在则不一定真的存在</strong></p>
 <p>比如APP消息推送，有时候营销活动的需要给APP用户们推送一些活动通知。当目标群体足够大的时候，要如何保证用户不会反复推送同样通知并且兼顾性能呢？总不能每次推送之前都先去查询一下DB是否有推送记录吧！</p>
 <p>可能有的人会说，可以通过redis给每个推送过的用户记录一个key:{userId}_{xxx活动id},value:1（1表示已经推送成功）。通过简单使用redis的这种方式会造成大量的内存浪费。所以我们推荐使用布隆过滤器，判断重复。</p>
 <p>布隆过滤器的实现原理，简单理解：<strong>对一个元素的值，通过多个散列函数映射到一个足够长的位图上。若下一个元素，散列后发现每一个映射的bit位都已经有1，则判断为重复元素.布隆过滤器中存入的是每个元素的指纹信息</strong></p>
@@ -343,7 +343,7 @@
 
 <div class="bottom-bar">
   <div class="bottom-bar-left">
-    <a href="javascript:void(0);" data-enable="false">
+    <a href="/passages/工作中如何用DelayQueue/" data-enable="true">
       <i class="fa fa-arrow-left"></i>
     </a>
     <a href="/passages/寻找最长的元音字母字符串/" data-enable="true">
