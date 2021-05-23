@@ -185,7 +185,7 @@
 <li><a href="#%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E6%A8%A1%E6%8B%9F%E4%B8%80%E6%B3%A2">单元测试模拟一波</a></li>
 </ul>
 </li>
-<li><a href="#%E6%9B%B4%E4%B8%8A%E4%B8%80%E5%B1%82%E6%A5%BC">更上一层楼</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
 </ul>
 <!-- /TOC -->
 
@@ -267,11 +267,12 @@
 
 <p>模拟结果如下：</p>
 <blockquote>
-<p>===========所有延迟任务已经加入队列===========<br>模拟延迟任务执行，获取当前执行的任务：任务_0,延迟：1022<br>模拟延迟任务执行，获取当前执行的任务：任务_1,延迟：2001<br>模拟延迟任务执行，获取当前执行的任务：任务_2,延迟：3002<br>模拟延迟任务执行，获取当前执行的任务：任务_3,延迟：4004<br>模拟延迟任务执行，获取当前执行的任务：任务_4,延迟：5007<br>模拟延迟任务执行，获取当前执行的任务：任务_5,延迟：6007<br>模拟延迟任务执行，获取当前执行的任务：任务_6,延迟：7009<br>模拟延迟任务执行，获取当前执行的任务：任务_7,延迟：8003<br>模拟延迟任务执行，获取当前执行的任务：任务_8,延迟：9001<br>模拟延迟任务执行，获取当前执行的任务：任务_9,延迟：10015</p>
+<p>===========所有延迟任务已经加入队列===========<br>模拟延迟任务执行，获取当前执行的任务：任务_0,延迟：1006<br>模拟延迟任务执行，获取当前执行的任务：任务_1,延迟：2001<br>模拟延迟任务执行，获取当前执行的任务：任务_2,延迟：3002<br>模拟延迟任务执行，获取当前执行的任务：任务_3,延迟：4004<br>模拟延迟任务执行，获取当前执行的任务：任务_4,延迟：5002<br>模拟延迟任务执行，获取当前执行的任务：任务_5,延迟：6003<br>模拟延迟任务执行，获取当前执行的任务：任务_6,延迟：7009<br>模拟延迟任务执行，获取当前执行的任务：任务_7,延迟：8003<br>模拟延迟任务执行，获取当前执行的任务：任务_8,延迟：9001<br>模拟延迟任务执行，获取当前执行的任务：任务_9,延迟：10005</p>
 </blockquote>
 <p>基本符合预期使用</p>
-<h3 id="更上一层楼"><a href="#更上一层楼" class="headerlink" title="更上一层楼"></a>更上一层楼</h3><p>本篇文章不打算对DelayQueue进行层层剖析，仅仅停留在示例与实践上，更多的是分析我在项目上遇到的一些场景和思考！</p>
-<p>进一步了解请看《<a href="https://lihaohanggitee.gitee.io/passages/RabbitMQ%E4%B9%8B%E6%AD%BB%E4%BF%A1%E5%A4%84%E7%90%86%E6%96%B9%E6%A1%88/">DelayQueue剖析</a>》</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本篇文章没有对DelayQueue进行层层剖析，更多的是分析我在项目上遇到的一些场景和实践方案梳理！关于DelayQueue其实非常值得去品一品它的源码设计，毕竟Doug Lea老爷子的水平是真的顶级。也能让人了解到关于一些二叉堆数据结构的实践。</p>
+<p>然后是上述延迟双删的方案，<strong>在大厂里的方案更多还是结合MQ中间件去做的</strong>。我这个方案在消息持久化上是有一定缺陷的，但它几乎符合了我现在所负责的业务线需要，简单，高效，不需要为了小功能引入复杂设计。毕竟嘛，杀鸡焉用牛刀。及早，过度的设计并不一定就是好事！</p>
+<p>附上一张图，可作为我目前所在业务线的一个流量示意，仅供参考。<br><img src="//lihaohanggitee.gitee.io/passages/工作中如何用DelayQueue/%E4%B8%9A%E5%8A%A1%E6%B5%81%E9%87%8F.png" alt="业务流量.png"></p>
 
   </article>
   <aside class="table-content" id="site-toc">
@@ -280,7 +281,7 @@
     <span>目录</span>
   </div>
   <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache-Aside-Pattern"><span class="toc-text">Cache-Aside Pattern</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如何解决上面说的不一致问题呢"><span class="toc-text">如何解决上面说的不一致问题呢</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何做到延迟处理"><span class="toc-text">如何做到延迟处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#DelayQueue简介"><span class="toc-text">DelayQueue简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#快速上手使用"><span class="toc-text">快速上手使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我的生产实践"><span class="toc-text">我的生产实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#延迟任务类-Delayed接口实现类"><span class="toc-text">延迟任务类-Delayed接口实现类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Manager组件"><span class="toc-text">Manager组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#单元测试模拟一波"><span class="toc-text">单元测试模拟一波</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#更上一层楼"><span class="toc-text">更上一层楼</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache-Aside-Pattern"><span class="toc-text">Cache-Aside Pattern</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如何解决上面说的不一致问题呢"><span class="toc-text">如何解决上面说的不一致问题呢</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如何做到延迟处理"><span class="toc-text">如何做到延迟处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#DelayQueue简介"><span class="toc-text">DelayQueue简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#快速上手使用"><span class="toc-text">快速上手使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我的生产实践"><span class="toc-text">我的生产实践</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#延迟任务类-Delayed接口实现类"><span class="toc-text">延迟任务类-Delayed接口实现类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Manager组件"><span class="toc-text">Manager组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#单元测试模拟一波"><span class="toc-text">单元测试模拟一波</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
   </div>
 </aside>
   
